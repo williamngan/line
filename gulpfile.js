@@ -44,16 +44,16 @@ function handleError( error ) {
 
 gulp.task('default', ["watch"]);
 
-
 // Watch
 // This just rebuild the pt-core.js and pt-extend.js files without doing the full re-build.
 gulp.task('watch', function() {
-  gulp.watch( path.src.js+"*.js", ['es6']);
+  gulp.watch( path.src.js+"/*.js", ['es6']);
+  gulp.watch( path.src.js+"**/*.js", ['es6']);
 });
 
 // ES6 Babel
 gulp.task('es6', function () {
-    return gulp.src( path.src.js+"*.js" )
-        .pipe(babel()).on('error', handleError)
+    return gulp.src( path.src.js+"**/*.js" )
+        .pipe(babel({ modules: "common"})).on('error', handleError)
         .pipe(gulp.dest( path.dist.js ));
 });
