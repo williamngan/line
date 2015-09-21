@@ -60,28 +60,6 @@ class SpeedLine extends BaseLine {
   }
 
 
-  trim() {
-    if (this.points.length > this.maxPoints ) {
-      this.disconnect( Math.floor(this.points.length/100) );
-    }
-  }
-
-
-  move(x, y, z) {
-    this.to(x, y);
-    this.trim();
-    if (this.pressed) this.drag(x, y);
-  }
-
-
-  drag(x, y) {}
-
-
-  down(x, y) {}
-
-
-  up(x, y) {}
-
 
 }
 

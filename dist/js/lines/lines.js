@@ -23,6 +23,7 @@ var BaseLine = (function (_Curve) {
     this.pressed = false; // mouse pressed
     this.form = null;
     this.maxPoints = 50;
+    this.pointThreshold = 10;
   }
 
   /**
@@ -67,9 +68,14 @@ var BaseLine = (function (_Curve) {
   }, {
     key: "move",
     value: function move(x, y, z) {
-      this.to(x, y);
-      this.trim();
-      if (this.pressed) this.drag(x, y);
+
+      var last = new Vector(this.points[this.points.length - 1]).$subtract(x, y).magnitude(false);
+      if (last > this.pointThreshold) {
+
+        this.to(x, y);
+        this.trim();
+        if (this.pressed) this.drag(x, y);
+      }
     }
 
     /**
@@ -275,29 +281,6 @@ var SpeedLine = (function (_BaseLine2) {
       //this.form.curve( this.catmullRom(5) );
       this.drawLine();
     }
-  }, {
-    key: "trim",
-    value: function trim() {
-      if (this.points.length > this.maxPoints) {
-        this.disconnect(Math.floor(this.points.length / 100));
-      }
-    }
-  }, {
-    key: "move",
-    value: function move(x, y, z) {
-      this.to(x, y);
-      this.trim();
-      if (this.pressed) this.drag(x, y);
-    }
-  }, {
-    key: "drag",
-    value: function drag(x, y) {}
-  }, {
-    key: "down",
-    value: function down(x, y) {}
-  }, {
-    key: "up",
-    value: function up(x, y) {}
   }]);
 
   return SpeedLine;
@@ -356,9 +339,6 @@ var SpeedBrush = (function (_SpeedLine) {
 
         this.form.polygon([this.lastSegments.a, this.lastSegments.b, seg2.p1, seg1.p1]);
       }
-      //this.form.line( seg1 );
-      //this.form.line( seg2 )
-
       this.lastSegments = { a: seg1.p1.clone(), b: seg2.p1.clone() };
     }
   }, {
@@ -411,4 +391,98 @@ var WiggleLine = (function (_SpeedBrush) {
   }]);
 
   return WiggleLine;
+})(SpeedBrush);
+
+var NoiseLine = (function (_SpeedBrush2) {
+  _inherits(NoiseLine, _SpeedBrush2);
+
+  function NoiseLine() {
+    _classCallCheck(this, NoiseLine);
+
+    for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+      args[_key6] = arguments[_key6];
+    }
+
+    _get(Object.getPrototypeOf(NoiseLine.prototype), "constructor", this).apply(this, args);
+
+    this.maxPoints = 50;
+
+    this.noise = new Noise();
+
+    // noise seed defines the styles
+    this.seeds = [0.7642476900946349, 0.04564903723075986, 0.4202376299072057, 0.35483957454562187, 0.9071740123908967, 0.8731264418456703, 0.7436990102287382, 0.23965814616531134];
+    this.seedIndex = 0;
+    this.noise.seed(this.seeds[this.seedIndex]);
+    this.noiseProgress = 0.01;
+
+    this.pointThreshold = 20;
+    this.layers = 15;
+    this.flipSpeed = false;
+
+    this.lastSegments = [];
+  }
+
+  _createClass(NoiseLine, [{
+    key: "drawSegments",
+    value: function drawSegments(last, curr, index) {
+
+      if (last && curr) {
+
+        // noise increment
+        this.noiseProgress += 0.4;
+
+        // find line and distance
+        var dist = Math.max(3, curr.distance(last) / this.speedRatio);
+        dist = this.flipSpeed ? 10 - Math.min(10, dist) : dist;
+        dist = (this.lastDist + dist) / 2;
+        this.lastDist = dist;
+
+        var ln = new Line(last).to(curr);
+
+        // draw noises
+        for (var n = 1; n < this.layers; n++) {
+          this.drawNoise(index, ln, dist, n);
+        }
+      }
+    }
+  }, {
+    key: "drawNoise",
+    value: function drawNoise(index, ln, dist, off) {
+
+      // noise parameters
+      var ns = index / (this.maxPoints * 5);
+      var na = off / this.layers;
+      var nb = (this.layers - off) / this.layers;
+
+      // get next noise
+      var offset = this.noise.perlin2d(ns + na / 1.2, ns + nb / 0.8);
+      var ndist = dist * offset * (0.5 + 3 * off / this.layers);
+
+      // polygon points
+      var a = ln.getPerpendicular(0.5, ndist);
+      var b = ln.getPerpendicular(0.5, ndist, true);
+
+      if (index > 1) {
+        this.form.stroke(false).fill("rgba(0,0,0,.12)");
+        this.form.polygon([this.lastSegments[off].a, this.lastSegments[off].b, b.p1, a.p1]);
+      }
+
+      this.lastSegments[off] = { a: a.p1.clone(), b: b.p1.clone() };
+
+      return [a, b];
+    }
+  }, {
+    key: "up",
+    value: function up() {
+      _get(Object.getPrototypeOf(NoiseLine.prototype), "up", this).call(this);
+
+      // new seed
+      this.seedIndex++;
+      if (this.seedIndex > this.seeds.length - 1) this.seedIndex = 0;
+      this.noise = new Noise();
+      this.noise.seed(this.seedIndex);
+    }
+  }]);
+
+  return NoiseLine;
 })(SpeedBrush);

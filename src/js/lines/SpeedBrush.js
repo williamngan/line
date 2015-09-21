@@ -43,9 +43,6 @@ class SpeedBrush extends SpeedLine {
 
       this.form.polygon( [this.lastSegments.a, this.lastSegments.b, seg2.p1, seg1.p1] );
     }
-    //this.form.line( seg1 );
-    //this.form.line( seg2 )
-
     this.lastSegments = { a: seg1.p1.clone(), b: seg2.p1.clone() };
   }
 

@@ -6,6 +6,8 @@ class BaseLine extends Curve {
     this.pressed = false; // mouse pressed
     this.form = null;
     this.maxPoints = 50;
+    this.pointThreshold = 10;
+
   }
 
   /**
@@ -39,9 +41,14 @@ class BaseLine extends Curve {
    * When moving. Override in subclass for additional features.
    */
   move(x, y, z) {
-    this.to(x, y);
-    this.trim();
-    if (this.pressed) this.drag(x, y);
+
+    var last = new Vector(this.points[this.points.length-1]).$subtract( x, y ).magnitude(false);
+    if (last > this.pointThreshold) {
+
+      this.to( x, y );
+      this.trim();
+      if (this.pressed) this.drag( x, y );
+    }
   }
 
 
