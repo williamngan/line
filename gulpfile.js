@@ -8,6 +8,14 @@ var insert = require('gulp-insert');
 var es = require('event-stream');
 var babel = require('gulp-babel');
 
+/*
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+var browserify = require('browserify');
+var watchify = require('watchify');
+var babel = require('babelify');
+*/
+
 // Define Paths
 var path = {
   src: {
@@ -22,19 +30,12 @@ var path = {
 };
 
 
-
-// To rebuild all in sequence:
-// 1) "build",
-// 2) "namespace" to add namespace versions,
-// 3) "module" to add npm module.exports versions,
-// 4) "min" to create minified version
-
-
-
 // Define class sequence manually. To be modularize later.
 // Parent classes needs to be defined before its extended children
-var coreElems = [];
-var coreFiles = coreElems.map(function(n) { return path.dist.js+n+".js"; } );
+var coreElems = [
+  "BaseLine", "DottedLine", "SpeedLine", "SpeedBrush", "WiggleLine"
+];
+var coreFiles = coreElems.map(function(n) { return path.src.js+"lines/"+n+".js"; } );
 
 
 function handleError( error ) {
@@ -42,18 +43,27 @@ function handleError( error ) {
   this.emit( 'end' );
 }
 
+
 gulp.task('default', ["watch"]);
 
 // Watch
 // This just rebuild the pt-core.js and pt-extend.js files without doing the full re-build.
 gulp.task('watch', function() {
   gulp.watch( path.src.js+"/*.js", ['es6']);
-  gulp.watch( path.src.js+"**/*.js", ['es6']);
+  gulp.watch( path.src.js+"**/*.js", ['lines']);
 });
 
 // ES6 Babel
 gulp.task('es6', function () {
-    return gulp.src( path.src.js+"**/*.js" )
+    return gulp.src( path.src.js+"*.js" )
         .pipe(babel({ modules: "common"})).on('error', handleError)
         .pipe(gulp.dest( path.dist.js ));
+});
+
+
+gulp.task('lines', function() {
+  return gulp.src( coreFiles )
+    .pipe( concat('lines.js') )
+    .pipe(babel({ modules: "common"})).on('error', handleError)
+    .pipe( gulp.dest( path.dist.js+"lines" ) )
 });

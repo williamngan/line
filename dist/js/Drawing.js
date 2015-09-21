@@ -33,20 +33,22 @@ var qfile = qs("name");
 if (qfile) {
   if (qfile.indexOf("/") >= 0 || qfile.split(".").length > 2) qfile = "";
 
-  var src = document.createElement('script');
+  /*
+  let src = document.createElement('script');
   src.setAttribute("type", "text/javascript");
   src.setAttribute("id", "src");
   src.setAttribute("src", "./dist/js/lines/" + qfile + ".js");
-
-  if (src) document.querySelector("body").appendChild(src);
+    if (src) document.querySelector("body").appendChild( src );
+  src.onload = function () {
+    console.log( "starting "+qfile);
+    start( window[qfile] );
+  };
+  */
 
   var link = document.createElement("a");
   link.setAttribute("href", "https://github.com/williamngan/pg/blob/master/src/js/lines/" + qfile + ".js");
   link.setAttribute("target", "_blank");
   link.textContent = "View source code.";
 
-  src.onload = function () {
-    console.log("starting " + qfile);
-    start(window[qfile]);
-  };
+  start(window[qfile]);
 }

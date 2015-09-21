@@ -13,17 +13,17 @@ class BaseLine extends Curve {
    * @param form Form instance
    * @param maxPoints optionally, set a maximum number of point on this line
    */
-  init( form, maxPoints = 50 ) {
+  init( form, maxPoints=false ) {
     this.form = form;
-    this.maxPoints = maxPoints;
+    if (maxPoints) this.maxPoints = maxPoints;
   }
 
   /**
    * Space's animate callback. Override in subclass for additional features and drawing styles.
    */
   animate( time, fps, context) {
-    this.form.stroke("rgba(0,0,0,.4)");
-    this.form.curve( this.catmullRom(5) );
+    this.form.stroke("rgba(0,0,0,.4)").fill(false);
+    this.form.polygon( this.points, false );
   }
 
   /**
@@ -44,10 +44,12 @@ class BaseLine extends Curve {
     if (this.pressed) this.drag(x, y);
   }
 
+
   /**
    * When dragging. Override in subclass for additional features.
    */
   drag(x, y) {}
+
 
   /**
    * When pencil is down. Override in subclass for additional features.
@@ -75,9 +77,11 @@ class BaseLine extends Curve {
     if (type == "down") {
       this.pressed = true;
       this.down(x, y)
-    } else if (type == "up" || type == "out") {
+    } else if (type == "up") {
       this.pressed = false;
-      this.up(x, y)
+      this.up(x, y);
+    } else if ( type == "out") {
+      this.pressed = false
     }
   }
 
