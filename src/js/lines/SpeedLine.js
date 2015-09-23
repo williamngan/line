@@ -3,7 +3,7 @@ class SpeedLine extends BaseLine {
   constructor( ...args ) {
     super( ...args );
 
-    this.maxPoints = 5;
+    this.maxPoints = 50;
     this.speedRatio = 2;
   }
 
@@ -17,6 +17,7 @@ class SpeedLine extends BaseLine {
     });
   }
 
+  /*
   drawSegments( last, curr, index) {
 
     if (last && curr) {
@@ -51,12 +52,16 @@ class SpeedLine extends BaseLine {
     }
 
   }
-
+  */
 
   animate( time, fps, context) {
-    //this.form.stroke("rgba(0,0,0,.4)");
+    this.form.stroke("rgba(0,0,0,.4)").fill(false);
+    // draw regular path
+    this.form.polygon( this.points, false );
+    this.form.speedLine( this.points );
+
     //this.form.curve( this.catmullRom(5) );
-    this.drawLine();
+    //this.drawLine();
   }
 
 

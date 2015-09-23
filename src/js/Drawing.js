@@ -5,7 +5,6 @@ var colors = {
 };
 
 var space = new CanvasSpace("demo", colors.b4 ).display();
-var form = new Form( space );
 
 
 
@@ -20,12 +19,12 @@ function qs(name) {
 
 function start( App ) {
   if (App) {
-    var app = new App();
-    app.init( form );
+    var app = new App().init( space );
 
     space.add( app );
     space.bindMouse();
     space.play();
+    space.stop(10000);
 
   }
 }

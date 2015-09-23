@@ -15,9 +15,10 @@ class BaseLine extends Curve {
    * @param form Form instance
    * @param maxPoints optionally, set a maximum number of point on this line
    */
-  init( form, maxPoints=false ) {
-    this.form = form;
+  init( space, maxPoints=false ) {
+    this.form = new MovingLineForm(space);
     if (maxPoints) this.maxPoints = maxPoints;
+    return this;
   }
 
   /**

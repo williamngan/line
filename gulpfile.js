@@ -33,7 +33,9 @@ var path = {
 // Define class sequence manually. To be modularize later.
 // Parent classes needs to be defined before its extended children
 var coreElems = [
-  "BaseLine", "DottedLine", "SpeedLine", "SpeedBrush", "WiggleLine", "NoiseLine"
+  "SegmentList", "MovingLineForm", "BaseLine", "DottedLine",
+  "SpeedLine", "SpeedBrush", "SmoothSpeedBrush",
+  "WiggleLine", "NoiseLine", "SmoothNoiseLine"
 ];
 var coreFiles = coreElems.map(function(n) { return path.src.js+"lines/"+n+".js"; } );
 

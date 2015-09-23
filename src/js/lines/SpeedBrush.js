@@ -3,14 +3,12 @@ class SpeedBrush extends SpeedLine {
   constructor(...args) {
     super(...args);
 
-    this.lastDist = 1;
-    this.lastSegments = {a: false, b: false};
-    this.flipSpeed = false;
-
+    this.flipSpeed = 0;
     this.maxPoints = 100;
   }
 
 
+  /*
   drawSegments( last, curr, index) {
 
     if (last && curr) {
@@ -45,9 +43,23 @@ class SpeedBrush extends SpeedLine {
     }
     this.lastSegments = { a: seg1.p1.clone(), b: seg2.p1.clone() };
   }
+  */
+
+  animate( time, fps, context) {
+    this.form.stroke("rgba(0,0,0,.2)").fill(false);
+    // draw regular path
+    this.form.polygon( this.points, false );
+
+    this.form.stroke( "rgba(0,0,0,.2)" ).fill( "rgba(0,0,0,.6)" );
+    this.form.speedPolygon( this.points, this.flipSpeed, 0.5, 1 );
+
+    //this.form.curve( this.catmullRom(5) );
+    //this.drawLine();
+  }
+
 
 
   up(x, y) {
-    this.flipSpeed = !this.flipSpeed;
+    this.flipSpeed = (this.flipSpeed > 0) ? 0 : 10;
   }
 }
