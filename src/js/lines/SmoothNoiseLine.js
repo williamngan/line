@@ -6,6 +6,7 @@ class SmoothNoiseLine extends SpeedBrush {
     this.maxPoints = 50;
 
     this.noise = new Noise();
+    this.noiseProgress = 0.01;
 
     // noise seed defines the styles
     this.seeds = [
@@ -18,113 +19,48 @@ class SmoothNoiseLine extends SpeedBrush {
       0.7436990102287382,
       0.23965814616531134
     ];
+
     this.seedIndex = 2;
     this.noise.seed( this.seeds[this.seedIndex] );
-    this.noiseProgress = 0.01;
+
+    this.noiseFactorIndex = 0.01;
+    this.noiseFactorLayer = 0.03;
+    this.alpha = 0.25;
 
     this.pointThreshold = 20;
-
-    this.flipSpeed = false;
-
-    this.lastSegments = [];
-    this.lastDist = [];
-
-
-    this.layers = 12;
-    this.segs = new SegmentList(this.layers);
+    this.flipSpeed = 0;
 
   }
 
-  avgDist( d, steps=3 ) {
-    this.lastDist.push( d );
-    if (this.lastDist.length > steps) this.lastDist.shift();
-    return this.lastDist.reduce( (a,b) => a+b, 0) / this.lastDist.length;
-  }
 
-  getSegments( last, curr, index) {
-
-    if (last && curr) {
-
-      // noise increment
-      this.noiseProgress += 0.4;
-
-      // find line and distance
-      let dist = Math.max( 3, curr.distance( last ) / this.speedRatio );
-      dist = (this.flipSpeed) ? 10 - Math.min(10, dist) : dist;
-      dist = this.avgDist(dist);
-
-      var ln = new Line(last).to(curr);
-
-      // draw noises
-      for (var n=0; n<this.layers; n++) {
-        this.getNoisePoints( index, ln, dist, n );
-      }
-    }
+  seed() {
+    this.noise = new Noise();
+    this.seedIndex = (this.seedIndex >= this.seeds.length-1) ? 0 : this.seedIndex+1;
+    this.noise.seed( this.seedIndex );
   }
 
 
-  getNoisePoints( index, ln, dist, layer ) {
+  animate( time, fps, context) {
+    this.form.stroke( false ).fill( `rgba(0,0,0,${this.alpha})` );
 
-    // noise parameters
-    let ns = index/(this.maxPoints * 5);
-    let na = layer/this.layers;
-    let nb = (this.layers-layer)/this.layers;
+    let distRatio = 0.5;
+    let smooth = 4;
+    let layers = 12;
+    let magnify = 2;
+    let curveSegments = 3;
 
-    // get next noise
-    let layerset = this.noise.perlin2d( ns+na/1.2, ns+nb/0.8);
-    let ndist = dist * layerset * (0.5+3*layer/this.layers);
-
-    // polygon points
-    var a = ln.getPerpendicular( 0.5, ndist );
-    var b = ln.getPerpendicular( 0.5, ndist, true );
-
-    this.segs.add( layer, a.p1.clone(), b.p1.clone() );
-
-
-    /*
-    if (index > 1) {
-      this.form.stroke( false ).fill( `rgba(0,0,0,.12)` );
-      this.form.polygon( [this.lastSegments[layer].a, this.lastSegments[layer].b, b.p1, a.p1] );
-    }
-
-    this.lastSegments[layer] = { a: a.p1.clone(), b: b.p1.clone() };
-
-    return [a, b];
-    */
-  }
-
-
-
-  drawLine() {
-
-    this.form.stroke( false ).fill( `rgba(0,0,0,.3)` );
-
-    this.segs.reset();
-
-    var last = this.points[0] || new Vector();
-    var count = 0;
-    for (var p of this.points) {
-      let vec = new Vector( p );
-      this.getSegments( last, vec, count );
-      last = vec.clone();
-      count++;
-    }
-
-    for (var i=0; i<this.layers; i++) {
-      var s = this.segs.join(i);
-      var curve = new Curve().to( s );
-      form.polygon( curve.catmullRom(3) );
-    }
+    this.noiseProgress += 0.002;
+    let noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
+    this.form.noisePolygon( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
   }
 
 
   up() {
-    super.up();
+    this.seed();
 
-    // new seed
-    this.seedIndex++;
-    if (this.seedIndex > this.seeds.length-1) this.seedIndex = 0;
-    this.noise = new Noise();
-    this.noise.seed( this.seedIndex );
+    this.noiseFactorIndex = Math.max( 0.002, Math.random()/10 );
+    this.noiseFactorLayer = Math.max( 0.002, Math.random()/10 );
+    this.alpha += 0.1;
+    if (this.alpha > 0.7) this.alpha = 0.05;
   }
 }

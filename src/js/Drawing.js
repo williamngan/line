@@ -21,10 +21,12 @@ function start( App ) {
   if (App) {
     var app = new App().init( space );
 
+    //space.ctx.globalCompositeOperation = "darken";
+
     space.add( app );
     space.bindMouse();
     space.play();
-    space.stop(10000);
+    space.stop(100000);
 
   }
 }

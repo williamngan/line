@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x12, _x13, _x14) { var _again = true; _function: while (_again) { var object = _x12, property = _x13, receiver = _x14; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x12 = parent; _x13 = property; _x14 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x19, _x20, _x21) { var _again = true; _function: while (_again) { var object = _x19, property = _x20, receiver = _x21; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x19 = parent; _x20 = property; _x21 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -67,8 +67,8 @@ var MovingLineForm = (function (_Form) {
     }
   }, {
     key: "_getSegmentNormal",
-    value: function _getSegmentNormal(last, curr, index, dist) {
-      var t = arguments.length <= 4 || arguments[4] === undefined ? 0.5 : arguments[4];
+    value: function _getSegmentNormal(last, curr, dist) {
+      var t = arguments.length <= 3 || arguments[3] === undefined ? 0.5 : arguments[3];
 
       if (last) {
         var ln = new Line(last).to(curr);
@@ -76,6 +76,28 @@ var MovingLineForm = (function (_Form) {
       } else {
         return { p1: curr.clone(), p2: curr.clone() };
       }
+    }
+
+    /**
+     * Draw noise polygons
+     * @param noise noise instance (seeded)
+     * @param noiseIncrement noise value addition
+     * @param dist thickness of brush
+     * @param layerRatio a ratio based on current-layer / total-layers
+     * @param magnify magnification ratio
+     */
+  }, {
+    key: "_getNoiseDistance",
+    value: function _getNoiseDistance(noise, noiseIncrement, dist, layerRatio) {
+      var magnify = arguments.length <= 4 || arguments[4] === undefined ? 3 : arguments[4];
+
+      // noise parameters
+      var na = layerRatio;
+      var nb = 1 - layerRatio;
+
+      // get next noise
+      var layerset = noise.simplex2d(na + noiseIncrement, nb + noiseIncrement);
+      return dist * layerset * (0.5 + magnify * layerRatio);
     }
 
     /**
@@ -96,6 +118,14 @@ var MovingLineForm = (function (_Form) {
       }, 0);
       return avg / bufferList.length;
     }
+
+    /**
+     * Draw dotted lines
+     * @param pts points list
+     * @param subdivision how many extra dots per line segments
+     * @param largeSize size of vertex
+     * @param smallSize size of interpolated points
+     */
   }, {
     key: "dottedLine",
     value: function dottedLine(pts) {
@@ -113,6 +143,12 @@ var MovingLineForm = (function (_Form) {
         last = new Vector(ln);
       }
     }
+
+    /**
+     * Draw polygons based on "speed
+     * @param pts points list
+     * @param distRatio distance ratio (0.5)
+     */
   }, {
     key: "speedLine",
     value: function speedLine(pts) {
@@ -123,14 +159,23 @@ var MovingLineForm = (function (_Form) {
       for (var i = 0; i < pts.length; i++) {
         var vec = new Vector(pts[i]);
 
+        // smooth distance
         var dist = this._getSegmentDistance(last, vec, i) * distRatio;
-        var normal = this._getSegmentNormal(last, vec, i, dist);
+        var normal = this._getSegmentNormal(last, vec, dist);
         last = vec.clone();
 
         // draw normal lines
         this.line(new Line(normal.p1).to(normal.p2));
       }
     }
+
+    /**
+     * Draw polygons based on "speed
+     * @param pts points list
+     * @param flipSpeed flip thickness (0 or a value such as 10)
+     * @param distRatio distance ratio (0.5)
+     * @param smoothSteps number of steps per average
+     */
   }, {
     key: "speedPolygon",
     value: function speedPolygon(pts) {
@@ -142,19 +187,78 @@ var MovingLineForm = (function (_Form) {
       var lastNormal = { p1: false, p2: false };
       var distSteps = [];
 
+      // go through each points
       for (var i = 0; i < pts.length; i++) {
         var vec = new Vector(pts[i]);
 
+        // smooth distance
         var dist = this._getSegmentDistance(last, vec, i) * distRatio;
         dist = flipSpeed > 0 ? flipSpeed - Math.min(flipSpeed, dist) : dist;
         dist = this._smooth(distSteps, dist, smoothSteps);
 
-        var normal = this._getSegmentNormal(last, vec, i, dist);
+        var normal = this._getSegmentNormal(last, vec, dist);
         last = vec.clone();
 
-        // draw normal lines
+        // draw polygon (quad)
         this.polygon([lastNormal.p1, lastNormal.p2, normal.p2, normal.p1]);
         lastNormal = normal;
+      }
+    }
+
+    /**
+     * Draw noise polygons
+     * @param pts points list
+     * @param noise noise instance (seeded)
+     * @param nf noise factors { a: current noise value, b: noise scale for layer index, c: noise scale for point index }
+     * @param flipSpeed flip thickness (0 or a value such as 10)
+     * @param distRatio distance ratio (0.5)
+     * @param smoothSteps number of steps per average
+     * @param layers number of layers
+     * @param magnify magnification ratio
+     * @param curveSegments number of segments for curve, or 0 for no curve
+     */
+  }, {
+    key: "noisePolygon",
+    value: function noisePolygon(pts, noise) {
+      var nf = arguments.length <= 2 || arguments[2] === undefined ? { a: 0, b: 0.005, c: 0.005 } : arguments[2];
+      var flipSpeed = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+      var distRatio = arguments.length <= 4 || arguments[4] === undefined ? 0.5 : arguments[4];
+      var smoothSteps = arguments.length <= 5 || arguments[5] === undefined ? 1 : arguments[5];
+      var layers = arguments.length <= 6 || arguments[6] === undefined ? 15 : arguments[6];
+      var magnify = arguments.length <= 7 || arguments[7] === undefined ? 3 : arguments[7];
+      var curveSegments = arguments.length <= 8 || arguments[8] === undefined ? 0 : arguments[8];
+
+      var last = null;
+      var distSteps = [];
+
+      // segment list keeps track of the points (a simplified convex hull)
+      var segs = new SegmentList(layers);
+
+      // go through each points
+      for (var i = 0; i < pts.length; i++) {
+        var vec = new Vector(pts[i]);
+
+        // smooth distance
+        var dist = this._getSegmentDistance(last, vec, i) * distRatio;
+        dist = flipSpeed > 0 ? flipSpeed - Math.min(flipSpeed, dist) : dist;
+        dist = this._smooth(distSteps, dist, smoothSteps);
+
+        // noise segments for each layer
+        for (var n = 1; n < layers; n++) {
+          var nfactors = nf.a + n * nf.b + i * nf.c;
+          var ndist = this._getNoiseDistance(noise, nfactors, dist, n / layers, magnify);
+          var normal = this._getSegmentNormal(last, vec, ndist);
+          segs.add(n, normal.p1, normal.p2);
+        }
+
+        last = vec.clone();
+      }
+
+      // draw layered polygons from segment list
+      for (var n = 1; n < layers; n++) {
+        var s = segs.join(n);
+        var curve = new Curve().to(s);
+        this.polygon(curveSegments > 0 ? curve.catmullRom(curveSegments) : curve.points);
       }
     }
   }]);
@@ -545,76 +649,40 @@ var NoiseLine = (function (_SpeedBrush2) {
 
     // noise seed defines the styles
     this.seeds = [0.7642476900946349, 0.04564903723075986, 0.4202376299072057, 0.35483957454562187, 0.9071740123908967, 0.8731264418456703, 0.7436990102287382, 0.23965814616531134];
-    this.seedIndex = 0;
+
+    this.seedIndex = 2;
     this.noise.seed(this.seeds[this.seedIndex]);
-    this.noiseProgress = 0.01;
 
     this.pointThreshold = 20;
-    this.layers = 15;
-    this.flipSpeed = false;
-
-    this.lastSegments = [];
+    this.flipSpeed = 0;
   }
 
   _createClass(NoiseLine, [{
-    key: "drawSegments",
-    value: function drawSegments(last, curr, index) {
-
-      if (last && curr) {
-
-        // noise increment
-        this.noiseProgress += 0.4;
-
-        // find line and distance
-        var dist = Math.max(3, curr.distance(last) / this.speedRatio);
-        dist = this.flipSpeed ? 10 - Math.min(10, dist) : dist;
-        dist = (this.lastDist + dist) / 2;
-        this.lastDist = dist;
-
-        var ln = new Line(last).to(curr);
-
-        // draw noises
-        for (var n = 1; n < this.layers; n++) {
-          this.drawNoise(index, ln, dist, n);
-        }
-      }
+    key: "seed",
+    value: function seed() {
+      this.noise = new Noise();
+      this.seedIndex = this.seedIndex >= this.seeds.length - 1 ? 0 : this.seedIndex + 1;
+      this.noise.seed(this.seedIndex);
     }
   }, {
-    key: "drawNoise",
-    value: function drawNoise(index, ln, dist, layer) {
+    key: "animate",
+    value: function animate(time, fps, context) {
+      this.form.stroke(false).fill("rgba(0,0,0,.6)");
 
-      // noise parameters
-      var ns = index / (this.maxPoints * 5);
-      var na = layer / this.layers;
-      var nb = (this.layers - layer) / this.layers;
+      var distRatio = 0.5;
+      var smooth = 3;
+      var layers = 5;
+      var magnify = 2;
+      var curveSegments = 3;
 
-      // get next noise
-      var layerset = this.noise.perlin2d(ns + na / 1.2, ns + nb / 0.8);
-      var ndist = dist * layerset * (0.5 + 3 * layer / this.layers);
-
-      // polygon points
-      var a = ln.getPerpendicular(0.5, ndist);
-      var b = ln.getPerpendicular(0.5, ndist, true);
-
-      if (index > 1) {
-        this.form.stroke(false).fill("rgba(0,0,0,.12)");
-        this.form.polygon([this.lastSegments[layer].a, this.lastSegments[layer].b, b.p1, a.p1]);
-      }
-
-      this.lastSegments[layer] = { a: a.p1.clone(), b: b.p1.clone() };
-
-      return [a, b];
+      var noiseFactors = { a: 0, b: 0.01, c: 0.01 };
+      this.form.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
     }
   }, {
     key: "up",
     value: function up() {
       _get(Object.getPrototypeOf(NoiseLine.prototype), "up", this).call(this);
-
-      // new seed
-      this.seedIndex++;
-      if (this.seedIndex > this.seeds.length - 1) this.seedIndex = 0;
-      this.noise = new Noise();
-      this.noise.seed(this.seedIndex);
+      this.seed();
     }
   }]);
 
@@ -636,139 +704,53 @@ var SmoothNoiseLine = (function (_SpeedBrush3) {
     this.maxPoints = 50;
 
     this.noise = new Noise();
+    this.noiseProgress = 0.01;
 
     // noise seed defines the styles
     this.seeds = [0.7642476900946349, 0.04564903723075986, 0.4202376299072057, 0.35483957454562187, 0.9071740123908967, 0.8731264418456703, 0.7436990102287382, 0.23965814616531134];
+
     this.seedIndex = 2;
     this.noise.seed(this.seeds[this.seedIndex]);
-    this.noiseProgress = 0.01;
+
+    this.noiseFactorIndex = 0.01;
+    this.noiseFactorLayer = 0.03;
+    this.alpha = 0.25;
 
     this.pointThreshold = 20;
-
-    this.flipSpeed = false;
-
-    this.lastSegments = [];
-    this.lastDist = [];
-
-    this.layers = 12;
-    this.segs = new SegmentList(this.layers);
+    this.flipSpeed = 0;
   }
 
   _createClass(SmoothNoiseLine, [{
-    key: "avgDist",
-    value: function avgDist(d) {
-      var steps = arguments.length <= 1 || arguments[1] === undefined ? 3 : arguments[1];
-
-      this.lastDist.push(d);
-      if (this.lastDist.length > steps) this.lastDist.shift();
-      return this.lastDist.reduce(function (a, b) {
-        return a + b;
-      }, 0) / this.lastDist.length;
+    key: "seed",
+    value: function seed() {
+      this.noise = new Noise();
+      this.seedIndex = this.seedIndex >= this.seeds.length - 1 ? 0 : this.seedIndex + 1;
+      this.noise.seed(this.seedIndex);
     }
   }, {
-    key: "getSegments",
-    value: function getSegments(last, curr, index) {
+    key: "animate",
+    value: function animate(time, fps, context) {
+      this.form.stroke(false).fill("rgba(0,0,0," + this.alpha + ")");
 
-      if (last && curr) {
+      var distRatio = 0.5;
+      var smooth = 4;
+      var layers = 12;
+      var magnify = 2;
+      var curveSegments = 3;
 
-        // noise increment
-        this.noiseProgress += 0.4;
-
-        // find line and distance
-        var dist = Math.max(3, curr.distance(last) / this.speedRatio);
-        dist = this.flipSpeed ? 10 - Math.min(10, dist) : dist;
-        dist = this.avgDist(dist);
-
-        var ln = new Line(last).to(curr);
-
-        // draw noises
-        for (var n = 0; n < this.layers; n++) {
-          this.getNoisePoints(index, ln, dist, n);
-        }
-      }
-    }
-  }, {
-    key: "getNoisePoints",
-    value: function getNoisePoints(index, ln, dist, layer) {
-
-      // noise parameters
-      var ns = index / (this.maxPoints * 5);
-      var na = layer / this.layers;
-      var nb = (this.layers - layer) / this.layers;
-
-      // get next noise
-      var layerset = this.noise.perlin2d(ns + na / 1.2, ns + nb / 0.8);
-      var ndist = dist * layerset * (0.5 + 3 * layer / this.layers);
-
-      // polygon points
-      var a = ln.getPerpendicular(0.5, ndist);
-      var b = ln.getPerpendicular(0.5, ndist, true);
-
-      this.segs.add(layer, a.p1.clone(), b.p1.clone());
-
-      /*
-      if (index > 1) {
-        this.form.stroke( false ).fill( `rgba(0,0,0,.12)` );
-        this.form.polygon( [this.lastSegments[layer].a, this.lastSegments[layer].b, b.p1, a.p1] );
-      }
-        this.lastSegments[layer] = { a: a.p1.clone(), b: b.p1.clone() };
-        return [a, b];
-      */
-    }
-  }, {
-    key: "drawLine",
-    value: function drawLine() {
-
-      this.form.stroke(false).fill("rgba(0,0,0,.3)");
-
-      this.segs.reset();
-
-      var last = this.points[0] || new Vector();
-      var count = 0;
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = this.points[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var p = _step.value;
-
-          var vec = new Vector(p);
-          this.getSegments(last, vec, count);
-          last = vec.clone();
-          count++;
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator["return"]) {
-            _iterator["return"]();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      for (var i = 0; i < this.layers; i++) {
-        var s = this.segs.join(i);
-        var curve = new Curve().to(s);
-        form.polygon(curve.catmullRom(3));
-      }
+      this.noiseProgress += 0.002;
+      var noiseFactors = { a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
+      this.form.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
     }
   }, {
     key: "up",
     value: function up() {
-      _get(Object.getPrototypeOf(SmoothNoiseLine.prototype), "up", this).call(this);
+      this.seed();
 
-      // new seed
-      this.seedIndex++;
-      if (this.seedIndex > this.seeds.length - 1) this.seedIndex = 0;
-      this.noise = new Noise();
-      this.noise.seed(this.seedIndex);
+      this.noiseFactorIndex = Math.max(0.002, Math.random() / 10);
+      this.noiseFactorLayer = Math.max(0.002, Math.random() / 10);
+      this.alpha += 0.1;
+      if (this.alpha > 0.7) this.alpha = 0.05;
     }
   }]);
 
