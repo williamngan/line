@@ -35,7 +35,8 @@ var path = {
 var coreElems = [
   "SegmentList", "MovingLineForm", "BaseLine", "DottedLine",
   "SpeedLine", "SpeedBrush", "SmoothSpeedBrush",
-  "WiggleLine", "NoiseLine", "SmoothNoiseLine"
+  "WiggleLine", "NoiseLine", "SmoothNoiseLine",
+    "ContinuousLine"
 ];
 var coreFiles = coreElems.map(function(n) { return path.src.js+"lines/"+n+".js"; } );
 

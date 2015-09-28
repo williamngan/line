@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x19, _x20, _x21) { var _again = true; _function: while (_again) { var object = _x19, property = _x20, receiver = _x21; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x19 = parent; _x20 = property; _x21 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x27, _x28, _x29) { var _again = true; _function: while (_again) { var object = _x27, property = _x28, receiver = _x29; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x27 = parent; _x28 = property; _x29 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -306,8 +306,15 @@ var BaseLine = (function (_Curve) {
   }, {
     key: "animate",
     value: function animate(time, fps, context) {
-      this.form.stroke("rgba(0,0,0,.4)").fill(false);
-      this.form.polygon(this.points, false);
+      this.draw();
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      f.stroke("rgba(0,0,0,.4)").fill(false);
+      f.curve(this.catmullRom(5), false);
     }
 
     /**
@@ -400,10 +407,12 @@ var DottedLine = (function (_BaseLine) {
   }
 
   _createClass(DottedLine, [{
-    key: "animate",
-    value: function animate(time, fps, context) {
-      this.form.fill("rgba(0,0,0,.3").stroke(false);
-      this.form.dottedLine(this.points);
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      f.fill("rgba(0,0,0,.3").stroke(false);
+      f.dottedLine(this.points);
     }
   }]);
 
@@ -468,12 +477,14 @@ var SpeedLine = (function (_BaseLine2) {
     */
 
   }, {
-    key: "animate",
-    value: function animate(time, fps, context) {
-      this.form.stroke("rgba(0,0,0,.4)").fill(false);
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      f.stroke("rgba(0,0,0,.4)").fill(false);
       // draw regular path
-      this.form.polygon(this.points, false);
-      this.form.speedLine(this.points);
+      f.polygon(this.points, false);
+      f.speedLine(this.points);
 
       //this.form.curve( this.catmullRom(5) );
       //this.drawLine();
@@ -529,14 +540,16 @@ var SpeedBrush = (function (_SpeedLine) {
   */
 
   _createClass(SpeedBrush, [{
-    key: "animate",
-    value: function animate(time, fps, context) {
-      this.form.stroke("rgba(0,0,0,.2)").fill(false);
-      // draw regular path
-      this.form.polygon(this.points, false);
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
-      this.form.stroke("rgba(0,0,0,.2)").fill("rgba(0,0,0,.6)");
-      this.form.speedPolygon(this.points, this.flipSpeed, 0.5, 1);
+      f.stroke("rgba(0,0,0,.2)").fill(false);
+      // draw regular path
+      f.polygon(this.points, false);
+
+      f.stroke("rgba(0,0,0,.2)").fill("rgba(0,0,0,.6)");
+      f.speedPolygon(this.points, this.flipSpeed, 0.5, 1);
 
       //this.form.curve( this.catmullRom(5) );
       //this.drawLine();
@@ -568,16 +581,17 @@ var SmoothSpeedBrush = (function (_SpeedLine2) {
   }
 
   _createClass(SmoothSpeedBrush, [{
-    key: "animate",
-    value: function animate(time, fps, context) {
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
       // draw regular path
-      this.form.stroke("rgba(0,0,0,.2)").fill(false);
-      this.form.polygon(this.points, false);
+      f.stroke("rgba(0,0,0,.2)").fill(false);
+      f.polygon(this.points, false);
 
       // connect polygons
-      this.form.stroke("rgba(0,0,0,.2)").fill("rgba(0,0,0,.6)");
-      this.form.speedPolygon(this.points, this.flipSpeed, 0.5, 5);
+      f.stroke("rgba(0,0,0,.2)").fill("rgba(0,0,0,.6)");
+      f.speedPolygon(this.points, this.flipSpeed, 0.5, 5);
     }
   }, {
     key: "up",
@@ -665,9 +679,11 @@ var NoiseLine = (function (_SpeedBrush2) {
       this.noise.seed(this.seedIndex);
     }
   }, {
-    key: "animate",
-    value: function animate(time, fps, context) {
-      this.form.stroke(false).fill("rgba(0,0,0,.6)");
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      f.stroke(false).fill("rgba(0,0,0,.6)");
 
       var distRatio = 0.5;
       var smooth = 3;
@@ -676,7 +692,7 @@ var NoiseLine = (function (_SpeedBrush2) {
       var curveSegments = 3;
 
       var noiseFactors = { a: 0, b: 0.01, c: 0.01 };
-      this.form.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
+      f.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
     }
   }, {
     key: "up",
@@ -728,9 +744,11 @@ var SmoothNoiseLine = (function (_SpeedBrush3) {
       this.noise.seed(this.seedIndex);
     }
   }, {
-    key: "animate",
-    value: function animate(time, fps, context) {
-      this.form.stroke(false).fill("rgba(0,0,0," + this.alpha + ")");
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      f.stroke(false).fill("rgba(0,0,0," + this.alpha + ")");
 
       var distRatio = 0.5;
       var smooth = 4;
@@ -740,7 +758,7 @@ var SmoothNoiseLine = (function (_SpeedBrush3) {
 
       this.noiseProgress += 0.002;
       var noiseFactors = { a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
-      this.form.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
+      f.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
     }
   }, {
     key: "up",
@@ -756,3 +774,100 @@ var SmoothNoiseLine = (function (_SpeedBrush3) {
 
   return SmoothNoiseLine;
 })(SpeedBrush);
+
+var ContinuousLine = (function (_NoiseLine) {
+  _inherits(ContinuousLine, _NoiseLine);
+
+  function ContinuousLine() {
+    _classCallCheck(this, ContinuousLine);
+
+    for (var _len10 = arguments.length, args = Array(_len10), _key10 = 0; _key10 < _len10; _key10++) {
+      args[_key10] = arguments[_key10];
+    }
+
+    _get(Object.getPrototypeOf(ContinuousLine.prototype), "constructor", this).apply(this, args);
+
+    this.maxPoints = 30;
+    this.bounds = null;
+    this.splitLines = [];
+  }
+
+  _createClass(ContinuousLine, [{
+    key: "onSpaceResize",
+    value: function onSpaceResize(w, h, evt) {
+      this.bounds = new Rectangle(0, 0).to(w, h);
+    }
+
+    /**
+     * Move the split lines
+     * @param pts
+     * @private
+     */
+  }, {
+    key: "_continuous",
+    value: function _continuous(pts) {
+      var d1 = pts.$getAt(1).$subtract(pts.getAt(0));
+      pts.disconnect(0);
+      pts.to(pts.$getAt(pts.points.length - 1).$add(d1));
+    }
+
+    /**
+     * Check if the split line is out of bound
+     * @param pts
+     * @private
+     */
+  }, {
+    key: "_checkBounds",
+    value: function _checkBounds(pts) {
+      if (!this.bounds || pts.points.length === 0) return;
+
+      var count = -1;
+      for (var i = pts.points.length - 1; i >= 0; i--) {
+        if (!this.bounds.withinBounds(pts.points[i])) {
+          count = i;
+        }
+      }
+
+      if (count >= 0) {
+        pts.disconnect(pts.points.length - count);
+      }
+    }
+
+    /**
+     * Trim and create new split line
+     */
+  }, {
+    key: "trim",
+    value: function trim() {
+      if (this.points.length >= this.maxPoints) {
+        var sp = new NoiseLine().to(this.clone().points);
+        this.splitLines.push(sp);
+        this.points = [];
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      var _this = this;
+
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      _get(Object.getPrototypeOf(ContinuousLine.prototype), "draw", this).call(this, f);
+
+      // track split lines
+      var clear = this.splitLines.map(function (sp, i) {
+        sp.draw(f);
+        _this._continuous(sp);
+        _this._checkBounds(sp);
+        return sp.points.length === 0 ? i : -1;
+      });
+
+      // clear empty split lines
+      for (var i = 0; i < clear.length; i++) {
+        if (clear[i] >= 0) this.splitLines.splice(clear[i], 1);
+      }
+    }
+  }]);
+
+  return ContinuousLine;
+})(NoiseLine);

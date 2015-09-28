@@ -54,11 +54,11 @@ class SpeedLine extends BaseLine {
   }
   */
 
-  animate( time, fps, context) {
-    this.form.stroke("rgba(0,0,0,.4)").fill(false);
+  draw( f=this.form ) {
+    f.stroke("rgba(0,0,0,.4)").fill(false);
     // draw regular path
-    this.form.polygon( this.points, false );
-    this.form.speedLine( this.points );
+    f.polygon( this.points, false );
+    f.speedLine( this.points );
 
     //this.form.curve( this.catmullRom(5) );
     //this.drawLine();

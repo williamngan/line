@@ -45,13 +45,13 @@ class SpeedBrush extends SpeedLine {
   }
   */
 
-  animate( time, fps, context) {
-    this.form.stroke("rgba(0,0,0,.2)").fill(false);
+  draw( f=this.form ) {
+    f.stroke("rgba(0,0,0,.2)").fill(false);
     // draw regular path
-    this.form.polygon( this.points, false );
+    f.polygon( this.points, false );
 
-    this.form.stroke( "rgba(0,0,0,.2)" ).fill( "rgba(0,0,0,.6)" );
-    this.form.speedPolygon( this.points, this.flipSpeed, 0.5, 1 );
+    f.stroke( "rgba(0,0,0,.2)" ).fill( "rgba(0,0,0,.6)" );
+    f.speedPolygon( this.points, this.flipSpeed, 0.5, 1 );
 
     //this.form.curve( this.catmullRom(5) );
     //this.drawLine();

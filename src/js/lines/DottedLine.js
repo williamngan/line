@@ -5,9 +5,8 @@ class DottedLine extends BaseLine {
   }
 
 
-  animate( time, fps, context) {
-    this.form.fill( "rgba(0,0,0,.3" ).stroke(false);
-    this.form.dottedLine( this.points );
+  draw( f=this.form ) {
+    f.fill( "rgba(0,0,0,.3" ).stroke(false);
+    f.dottedLine( this.points );
   }
-
 }

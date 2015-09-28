@@ -7,15 +7,15 @@ class SmoothSpeedBrush extends SpeedLine {
     this.maxPoints = 100;
   }
 
-  animate( time, fps, context) {
+  draw( f=this.form ) {
 
     // draw regular path
-    this.form.stroke("rgba(0,0,0,.2)").fill(false);
-    this.form.polygon( this.points, false );
+    f.stroke("rgba(0,0,0,.2)").fill(false);
+    f.polygon( this.points, false );
 
     // connect polygons
-    this.form.stroke( "rgba(0,0,0,.2)" ).fill( "rgba(0,0,0,.6)" );
-    this.form.speedPolygon( this.points, this.flipSpeed, 0.5, 5);
+    f.stroke( "rgba(0,0,0,.2)" ).fill( "rgba(0,0,0,.6)" );
+    f.speedPolygon( this.points, this.flipSpeed, 0.5, 5);
   }
 
   up(x, y) {

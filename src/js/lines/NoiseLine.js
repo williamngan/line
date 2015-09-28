@@ -35,8 +35,8 @@ class NoiseLine extends SpeedBrush {
   }
 
 
-  animate( time, fps, context) {
-    this.form.stroke( false ).fill( `rgba(0,0,0,.6)` );
+  draw( f=this.form ) {
+    f.stroke( false ).fill( `rgba(0,0,0,.6)` );
 
     let distRatio = 0.5;
     let smooth = 3;
@@ -45,7 +45,7 @@ class NoiseLine extends SpeedBrush {
     let curveSegments = 3;
 
     let noiseFactors = {a: 0, b: 0.01, c: 0.01};
-    this.form.noisePolygon( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
+    f.noisePolygon( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
   }
 
 

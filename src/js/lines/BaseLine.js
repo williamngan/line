@@ -25,8 +25,13 @@ class BaseLine extends Curve {
    * Space's animate callback. Override in subclass for additional features and drawing styles.
    */
   animate( time, fps, context) {
-    this.form.stroke("rgba(0,0,0,.4)").fill(false);
-    this.form.polygon( this.points, false );
+    this.draw();
+  }
+
+
+  draw( f=this.form ) {
+    f.stroke("rgba(0,0,0,.4)").fill(false);
+    f.curve( this.catmullRom(5), false );
   }
 
   /**
