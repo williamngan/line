@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x27, _x28, _x29) { var _again = true; _function: while (_again) { var object = _x27, property = _x28, receiver = _x29; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x27 = parent; _x28 = property; _x29 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x29, _x30, _x31) { var _again = true; _function: while (_again) { var object = _x29, property = _x30, receiver = _x31; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x29 = parent; _x30 = property; _x31 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -870,4 +870,107 @@ var ContinuousLine = (function (_NoiseLine) {
   }]);
 
   return ContinuousLine;
+})(NoiseLine);
+
+var StepperLine = (function (_NoiseLine2) {
+  _inherits(StepperLine, _NoiseLine2);
+
+  function StepperLine() {
+    _classCallCheck(this, StepperLine);
+
+    for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
+      args[_key11] = arguments[_key11];
+    }
+
+    _get(Object.getPrototypeOf(StepperLine.prototype), "constructor", this).apply(this, args);
+
+    this.maxPoints = 50;
+    this.splitLines = [];
+  }
+
+  _createClass(StepperLine, [{
+    key: "onSpaceResize",
+    value: function onSpaceResize(w, h, evt) {
+
+      this.splitLines = [];
+      var dw = w / 9;
+      for (var i = 0; i < 8; i++) {
+        this.splitLines.push(new BaseLine().to(dw + dw * i, h / 2));
+      }
+    }
+
+    /**
+     * Move the split lines
+     * @param pts
+     * @private
+     */
+  }, {
+    key: "_continuous",
+    value: function _continuous(sp, pts) {
+      var offset = arguments.length <= 2 || arguments[2] === undefined ? 5 : arguments[2];
+
+      var ps = [];
+      var pa = pts.slice(1, offset);
+      var pb = pts.slice(offset);
+
+      // double
+      if (pb.length > 1 && pa.length > 1) {
+
+        var ang = pb[pb.length - 1].angle(pb[pb.length - 2]);
+        var ang2 = pa[1].angle(pa[0]);
+
+        pb = pb.map(function (p) {
+          return p.$subtract(pb[0]).add(sp.getAt(0));
+        });
+        pa = pa.map(function (p, i) {
+          return p.$subtract(pa[0]).rotate2D(ang - ang2).add(pb[pb.length - 1]);
+        });
+        ps = pb.concat(pa);
+
+        // single
+      } else if (pa.length < 2) {
+          ps = pb.map(function (p) {
+            return p.$subtract(pb[0]).add(sp.getAt(0));
+          });
+        } else if (pb.length < 2) {
+          ps = pa.map(function (p) {
+            return p.$subtract(pa[0]).add(sp.getAt(0));
+          });
+        }
+
+      for (var i = 0; i < ps.length; i++) {
+        sp.setAt(i + 1, ps[i]);
+      }
+    }
+
+    /**
+     * Trim and create new split line
+     */
+  }, {
+    key: "trim",
+    value: function trim() {
+      if (this.points.length > this.maxPoints) {
+        this.disconnect(Math.floor(this.points.length / 100));
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      var _this2 = this;
+
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      _get(Object.getPrototypeOf(StepperLine.prototype), "draw", this).call(this, f);
+
+      var pts = this.$op("subtract", this.$getAt(0)).toArray();
+
+      // track split lines
+      this.splitLines.map(function (sp, i) {
+        sp.draw(f);
+        _this2._continuous(sp, pts, Math.floor(i * pts.length / _this2.splitLines.length));
+      });
+    }
+  }]);
+
+  return StepperLine;
 })(NoiseLine);
