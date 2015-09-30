@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x29, _x30, _x31) { var _again = true; _function: while (_again) { var object = _x29, property = _x30, receiver = _x31; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x29 = parent; _x30 = property; _x31 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x30, _x31, _x32) { var _again = true; _function: while (_again) { var object = _x30, property = _x31, receiver = _x32; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x30 = parent; _x31 = property; _x32 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -748,7 +748,7 @@ var SmoothNoiseLine = (function (_SpeedBrush3) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
-      f.stroke(false).fill("rgba(0,0,0," + this.alpha + ")");
+      f.stroke(false).fill("rgba(20,0,70," + this.alpha + ")");
 
       var distRatio = 0.5;
       var smooth = 4;
@@ -973,4 +973,106 @@ var StepperLine = (function (_NoiseLine2) {
   }]);
 
   return StepperLine;
+})(NoiseLine);
+
+var ReflectLine = (function (_NoiseLine3) {
+  _inherits(ReflectLine, _NoiseLine3);
+
+  function ReflectLine() {
+    _classCallCheck(this, ReflectLine);
+
+    for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
+      args[_key12] = arguments[_key12];
+    }
+
+    _get(Object.getPrototypeOf(ReflectLine.prototype), "constructor", this).apply(this, args);
+
+    this.maxPoints = 20;
+    this.splitLines = [];
+    this.radian = 0;
+    this.offset = 20;
+  }
+
+  _createClass(ReflectLine, [{
+    key: "onSpaceResize",
+    value: function onSpaceResize(w, h, evt) {
+
+      this.splitLines = [];
+      this.cutLines = [];
+
+      var dw = w / 10;
+      var dw2 = dw / 2;
+      var dh = h / 10;
+      var dh2 = dh / 2;
+
+      this.offset = w / 20;
+      for (var i = 0; i < 10; i++) {
+        this.cutLines.push(new Line(dw2 + dw * i, 0).to(dw2 + dw * i, h));
+        this.splitLines.push(new SmoothSpeedBrush());
+      }
+
+      for (var i = 0; i < 10; i++) {
+        this.cutLines.push(new Line(0, dh2 + dh * i).to(w, dh2 + dh * i));
+        this.splitLines.push(new SmoothSpeedBrush());
+      }
+    }
+
+    /**
+     * Move the split lines
+     * @param pts
+     * @private
+     */
+  }, {
+    key: "_continuous",
+    value: function _continuous(cutline, index, form) {
+      var _this3 = this;
+
+      this.points.map(function (p, i) {
+        _this3.splitLines[index].setAt(i, p.clone().reflect2D(cutline));
+      });
+
+      this.splitLines[index].draw(form);
+    }
+
+    /**
+     * Trim and create new split line
+     */
+  }, {
+    key: "trim",
+    value: function trim() {
+      if (this.points.length > this.maxPoints) {
+        this.disconnect(Math.floor(this.points.length / 100));
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      var _this4 = this;
+
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      this.radian += Const.one_degree / 5;
+      var offset = this.offset * Math.sin(this.radian);
+
+      _get(Object.getPrototypeOf(ReflectLine.prototype), "draw", this).call(this, f);
+
+      // track split lines
+      this.cutLines.map(function (cut, i) {
+
+        var c, di;
+        if (i < 10) {
+          di = i % Math.floor(_this4.cutLines.length / 2) + 1;
+          c = new Line(cut.$add(offset * di, 0)).to(cut.p1.$add(-offset * di, 0));
+        } else {
+          di = (i - 10) % Math.floor(_this4.cutLines.length / 2) + 1;
+          c = new Line(cut.$add(0, offset * di)).to(cut.p1.$add(0, -offset * di));
+        }
+        f.stroke("#fff").line(c);
+
+        _this4._continuous(c, i, f);
+      });
+    }
+  }]);
+
+  return ReflectLine;
 })(NoiseLine);

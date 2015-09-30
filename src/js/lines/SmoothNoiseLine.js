@@ -41,7 +41,7 @@ class SmoothNoiseLine extends SpeedBrush {
 
 
   draw( f=this.form ) {
-    f.stroke( false ).fill( `rgba(0,0,0,${this.alpha})` );
+    f.stroke( false ).fill( `rgba(20,0,70,${this.alpha})` );
 
     let distRatio = 0.5;
     let smooth = 4;
