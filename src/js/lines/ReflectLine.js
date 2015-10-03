@@ -44,7 +44,7 @@ class ReflectLine extends NoiseLine {
 
     this.splitLines[index].draw( form );
   }
-  
+
 
   /**
    * Trim and create new split line
@@ -59,7 +59,7 @@ class ReflectLine extends NoiseLine {
   draw( f=this.form ) {
 
     this.radian += Const.one_degree/5;
-    var offset = this.offset * Math.sin( this.radian );
+
 
     super.draw(f);
 
@@ -67,6 +67,7 @@ class ReflectLine extends NoiseLine {
     this.cutLines.map( (cut, i) => {
 
       var c, di;
+      var offset = this.offset * Math.sin( this.radian*(i+1)/10 );
       if (i<10) {
         di = (i % Math.floor(this.cutLines.length/2))+1;
         c = new Line( cut.$add( offset * di, 0 ) ).to( cut.p1.$add( -offset * di, 0 ) );
