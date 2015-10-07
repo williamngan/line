@@ -1,30 +1,51 @@
-"use strict";
+(function() {
 
-var colors = {
-  a1: "#ff2d5d", a2: "#42dc8e", a3: "#2e43eb", a4: "#ffe359",
-  b1: "#96bfed", b2: "#f5ead6", b3: "#f1f3f7", b4: "#e2e6ef"
-};
+  var roll = Roll.verticalScroller( "#wrapper", "#pane", ".step", 100 );
+  var views = document.querySelectorAll( ".step" );
+  var viewport = document.querySelector( "#wrapper" );
+  views[0].className = "step curr";
 
-var space = new CanvasSpace("demo", colors.b4).display();
+  function track() {
+    roll.on( "step", function ( curr, last ) {
 
-function start() {
+      var currH = viewport.offsetHeight;
+      console.log( currH );
+      for (var i = 0; i < roll.steps.length; i++) {
+        var cls = Roll.stepName( i, curr );
+        views[i].className = "step " + cls;
+        views[i].style.top = Roll.stepName( i, curr, -currH, currH, 0) +"px";
+      }
+    } );
 
-  var rs = [];
-  var pad = 100;
-  var h = 100;
-
-  var app = new WalkSteps(50, 0).to(300, (pad + h) * 10);
-
-  for (var i = 0; i < 10; i++) {
-    rs.push(new Rectangle(100, i * h + i * pad).resizeTo(200, h));
+    roll.on( "roll", function ( step, progress, total ) {
+      var curr = (step >= 0) ? step : "(padding)";
+      var str = "Step " + curr + " at " + Math.floor( progress * 100 ) + "% (total: " + total + ")";
+      console.log( str );
+      //document.querySelector( "#progress" ).textContent = str;
+    } );
   }
 
-  app.init(space, new Rectangle(50, 0).to(300, 200), rs);
+  track();
 
-  space.add(app);
-  space.bindMouse();
-  space.play();
-  space.stop(1000000);
-}
+  window.goto = function(index) {
+    roll.scroll(index, viewport);
+  };
 
-start();
+
+  window.addEventListener("resize", function(evt) {
+    var viewpane = document.querySelector( "#steps" );
+
+    console.log( evt, this );
+    var h = window.innerHeight / 2 +"px";
+    viewport.style.height = h;
+    viewpane.style.height = h;
+    for (var i=0; i<views.length; i++) {
+      views[i].style.height = h;
+    }
+
+    roll = Roll.verticalScroller( "#wrapper", "#pane", ".step", 100 );
+    track();
+  });
+
+
+})();

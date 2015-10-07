@@ -5,7 +5,7 @@ var colors = {
   b1: "#96bfed", b2: "#f5ead6", b3: "#f1f3f7", b4: "#e2e6ef"
 };
 
-var space = new CanvasSpace("demo", colors.b4).display();
+var space = new CanvasSpace("demo", false).display();
 
 // Load file
 
@@ -20,7 +20,8 @@ function start(App) {
   if (App) {
     var app = new App().init(space);
 
-    //space.ctx.globalCompositeOperation = "darken";
+    space.refresh(false);
+    //space.ctx.globalCompositeOperation = "destination-over";
 
     space.add(app);
     space.bindMouse();
