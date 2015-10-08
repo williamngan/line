@@ -3,6 +3,7 @@ class BaseLine extends Curve {
   constructor( ...args ) {
     super( ...args );
 
+    this.canvasSize = new Vector();
     this.pressed = false; // mouse pressed
     this.form = null;
     this.maxPoints = 50;
@@ -16,6 +17,7 @@ class BaseLine extends Curve {
    * @param maxPoints optionally, set a maximum number of point on this line
    */
   init( space, maxPoints=false ) {
+    this.canvasSize.set( space.size );
     this.form = new MovingLineForm(space);
     if (maxPoints) this.maxPoints = maxPoints;
     return this;

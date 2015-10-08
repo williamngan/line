@@ -20,7 +20,8 @@ function start(App) {
   if (App) {
     var app = new App().init(space);
 
-    space.refresh(false);
+    //space.clear();
+    //space.refresh(false);
     //space.ctx.globalCompositeOperation = "destination-over";
 
     space.add(app);

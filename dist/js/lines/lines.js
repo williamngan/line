@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x30, _x31, _x32) { var _again = true; _function: while (_again) { var object = _x30, property = _x31, receiver = _x32; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x30 = parent; _x31 = property; _x32 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x34, _x35, _x36) { var _again = true; _function: while (_again) { var object = _x34, property = _x35, receiver = _x36; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x34 = parent; _x35 = property; _x36 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -153,6 +153,7 @@ var MovingLineForm = (function (_Form) {
     key: "speedLine",
     value: function speedLine(pts) {
       var distRatio = arguments.length <= 1 || arguments[1] === undefined ? 0.5 : arguments[1];
+      var maxDist = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
 
       var last = null;
 
@@ -161,6 +162,7 @@ var MovingLineForm = (function (_Form) {
 
         // smooth distance
         var dist = this._getSegmentDistance(last, vec, i) * distRatio;
+        if (maxDist > 0) dist = Math.min(dist, maxDist);
         var normal = this._getSegmentNormal(last, vec, dist);
         last = vec.clone();
 
@@ -182,6 +184,7 @@ var MovingLineForm = (function (_Form) {
       var flipSpeed = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
       var distRatio = arguments.length <= 2 || arguments[2] === undefined ? 0.5 : arguments[2];
       var smoothSteps = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
+      var maxDist = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
 
       var last = null;
       var lastNormal = { p1: false, p2: false };
@@ -193,6 +196,7 @@ var MovingLineForm = (function (_Form) {
 
         // smooth distance
         var dist = this._getSegmentDistance(last, vec, i) * distRatio;
+        if (maxDist > 0) dist = Math.min(dist, maxDist);
         dist = flipSpeed > 0 ? flipSpeed - Math.min(flipSpeed, dist) : dist;
         dist = this._smooth(distSteps, dist, smoothSteps);
 
@@ -224,9 +228,10 @@ var MovingLineForm = (function (_Form) {
       var flipSpeed = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
       var distRatio = arguments.length <= 4 || arguments[4] === undefined ? 0.5 : arguments[4];
       var smoothSteps = arguments.length <= 5 || arguments[5] === undefined ? 1 : arguments[5];
-      var layers = arguments.length <= 6 || arguments[6] === undefined ? 15 : arguments[6];
-      var magnify = arguments.length <= 7 || arguments[7] === undefined ? 3 : arguments[7];
-      var curveSegments = arguments.length <= 8 || arguments[8] === undefined ? 0 : arguments[8];
+      var maxDist = arguments.length <= 6 || arguments[6] === undefined ? 0 : arguments[6];
+      var layers = arguments.length <= 7 || arguments[7] === undefined ? 15 : arguments[7];
+      var magnify = arguments.length <= 8 || arguments[8] === undefined ? 3 : arguments[8];
+      var curveSegments = arguments.length <= 9 || arguments[9] === undefined ? 0 : arguments[9];
 
       var last = null;
       var distSteps = [];
@@ -240,6 +245,7 @@ var MovingLineForm = (function (_Form) {
 
         // smooth distance
         var dist = this._getSegmentDistance(last, vec, i) * distRatio;
+        if (maxDist > 0) dist = Math.min(dist, maxDist);
         dist = flipSpeed > 0 ? flipSpeed - Math.min(flipSpeed, dist) : dist;
         dist = this._smooth(distSteps, dist, smoothSteps);
 
@@ -278,6 +284,7 @@ var BaseLine = (function (_Curve) {
 
     _get(Object.getPrototypeOf(BaseLine.prototype), "constructor", this).apply(this, args);
 
+    this.canvasSize = new Vector();
     this.pressed = false; // mouse pressed
     this.form = null;
     this.maxPoints = 50;
@@ -295,6 +302,7 @@ var BaseLine = (function (_Curve) {
     value: function init(space) {
       var maxPoints = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
+      this.canvasSize.set(space.size);
       this.form = new MovingLineForm(space);
       if (maxPoints) this.maxPoints = maxPoints;
       return this;
@@ -477,6 +485,13 @@ var SpeedLine = (function (_BaseLine2) {
     */
 
   }, {
+    key: "maxDistance",
+    value: function maxDistance() {
+      var ratio = arguments.length <= 0 || arguments[0] === undefined ? 20 : arguments[0];
+
+      return Math.min(this.canvasSize.x, this.canvasSize.y) / ratio;
+    }
+  }, {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
@@ -484,7 +499,7 @@ var SpeedLine = (function (_BaseLine2) {
       f.stroke("rgba(0,0,0,.4)").fill(false);
       // draw regular path
       f.polygon(this.points, false);
-      f.speedLine(this.points);
+      f.speedLine(this.points, 0.5, this.maxDistance());
 
       //this.form.curve( this.catmullRom(5) );
       //this.drawLine();
@@ -549,7 +564,7 @@ var SpeedBrush = (function (_SpeedLine) {
       f.polygon(this.points, false);
 
       f.stroke("rgba(0,0,0,.2)").fill("rgba(0,0,0,.6)");
-      f.speedPolygon(this.points, this.flipSpeed, 0.5, 1);
+      f.speedPolygon(this.points, this.flipSpeed, 0.5, 1, this.maxDistance());
 
       //this.form.curve( this.catmullRom(5) );
       //this.drawLine();
@@ -591,7 +606,7 @@ var SmoothSpeedBrush = (function (_SpeedLine2) {
 
       // connect polygons
       f.stroke("rgba(0,0,0,.2)").fill("rgba(0,0,0,.6)");
-      f.speedPolygon(this.points, this.flipSpeed, 0.5, 5);
+      f.speedPolygon(this.points, this.flipSpeed, 0.5, 5, this.maxDistance());
     }
   }, {
     key: "up",
@@ -692,7 +707,7 @@ var NoiseLine = (function (_SpeedBrush2) {
       var curveSegments = 3;
 
       var noiseFactors = { a: 0, b: 0.01, c: 0.01 };
-      f.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
+      f.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
     }
   }, {
     key: "up",
@@ -758,7 +773,7 @@ var SmoothNoiseLine = (function (_SpeedBrush3) {
 
       this.noiseProgress += 0.002;
       var noiseFactors = { a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
-      f.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
+      f.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
     }
   }, {
     key: "up",

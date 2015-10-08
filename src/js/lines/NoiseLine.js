@@ -45,7 +45,7 @@ class NoiseLine extends SpeedBrush {
     let curveSegments = 3;
 
     let noiseFactors = {a: 0, b: 0.01, c: 0.01};
-    f.noisePolygon( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, layers, magnify, curveSegments);
+    f.noisePolygon( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
   }
 
 

@@ -15,7 +15,7 @@ class SmoothSpeedBrush extends SpeedLine {
 
     // connect polygons
     f.stroke( "rgba(0,0,0,.2)" ).fill( "rgba(0,0,0,.6)" );
-    f.speedPolygon( this.points, this.flipSpeed, 0.5, 5);
+    f.speedPolygon( this.points, this.flipSpeed, 0.5, 5, this.maxDistance());
   }
 
   up(x, y) {

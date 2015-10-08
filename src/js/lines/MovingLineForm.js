@@ -78,7 +78,7 @@ class MovingLineForm extends Form {
    * @param pts points list
    * @param distRatio distance ratio (0.5)
    */
-  speedLine( pts, distRatio=0.5 ) {
+  speedLine( pts, distRatio=0.5, maxDist=0 ) {
 
     var last = null;
 
@@ -87,6 +87,7 @@ class MovingLineForm extends Form {
 
       // smooth distance
       let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
+      if (maxDist>0) dist = Math.min(dist, maxDist);
       let normal = this._getSegmentNormal( last, vec, dist );
       last = vec.clone();
 
@@ -102,7 +103,7 @@ class MovingLineForm extends Form {
    * @param distRatio distance ratio (0.5)
    * @param smoothSteps number of steps per average
    */
-  speedPolygon( pts, flipSpeed=0, distRatio=0.5, smoothSteps=1 ) {
+  speedPolygon( pts, flipSpeed=0, distRatio=0.5, smoothSteps=1, maxDist=0 ) {
 
     var last = null;
     var lastNormal = {p1: false, p2: false};
@@ -114,6 +115,7 @@ class MovingLineForm extends Form {
 
       // smooth distance
       let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
+      if (maxDist>0) dist = Math.min(dist, maxDist);
       dist = (flipSpeed > 0) ? flipSpeed - Math.min(flipSpeed, dist) : dist;
       dist = this._smooth(distSteps, dist, smoothSteps);
 
@@ -139,7 +141,7 @@ class MovingLineForm extends Form {
    * @param magnify magnification ratio
    * @param curveSegments number of segments for curve, or 0 for no curve
    */
-  noisePolygon( pts, noise, nf={a:0, b:0.005, c:0.005}, flipSpeed=0, distRatio=0.5, smoothSteps=1, layers=15, magnify=3, curveSegments=0 ) {
+  noisePolygon( pts, noise, nf={a:0, b:0.005, c:0.005}, flipSpeed=0, distRatio=0.5, smoothSteps=1, maxDist=0, layers=15,  magnify=3, curveSegments=0 ) {
 
     var last = null;
     var distSteps = [];
@@ -153,6 +155,7 @@ class MovingLineForm extends Form {
 
       // smooth distance
       let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
+      if (maxDist>0) dist = Math.min(dist, maxDist);
       dist = (flipSpeed > 0) ? flipSpeed - Math.min(flipSpeed, dist) : dist;
       dist = this._smooth(distSteps, dist, smoothSteps);
 
