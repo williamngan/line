@@ -563,7 +563,7 @@ var SpeedBrush = (function (_SpeedLine) {
       // draw regular path
       f.polygon(this.points, false);
 
-      f.stroke("rgba(0,0,0,.2)").fill("rgba(0,0,0,.6)");
+      f.stroke("rgba(0,0,0,.5)").fill("rgba(0,0,0,.1)");
       f.speedPolygon(this.points, this.flipSpeed, 0.5, 1, this.maxDistance());
 
       //this.form.curve( this.catmullRom(5) );

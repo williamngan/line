@@ -1,5 +1,6 @@
 body {
-  overflow: hidden; }
+  overflow: hidden;
+  font-family: 'Roboto Slab', serif; }
 
 #pt {
   width: 100%;
@@ -34,19 +35,36 @@ body {
     top: 100%;
     left: 0;
     transition: top .5s; }
+    #walks .step:before {
+      content: "";
+      width: 30px;
+      display: inline-block;
+      height: 100%;
+      line-height: 100%;
+      vertical-align: middle; }
     #walks .step .heading {
-      position: absolute;
-      top: 50vh;
-      left: 30px;
+      display: inline-block;
       opacity: 1;
       transition: opacity 2s;
-      background: #f00; }
+      vertical-align: middle;
+      width: 50vw;
+      max-width: 500px; }
+      #walks .step .heading h1 {
+        margin: 0 0 10px;
+        font-weight: 400;
+        font-size: 28px;
+        color: #334057; }
+        #walks .step .heading h1 strong {
+          color: #ff2d5d;
+          font-weight: 400; }
+      #walks .step .heading p {
+        font-size: 14px;
+        line-height: 1.55;
+        font-weight: 300;
+        color: #99a5b3; }
     #walks .step.prev {
-      top: -100vh;
-      opacity: 1; }
+      top: -100vh; }
     #walks .step.next {
-      top: 100vh;
-      opacity: 1; }
+      top: 100vh; }
     #walks .step.curr {
-      top: 0;
-      opacity: 1; }
+      top: 0; }
