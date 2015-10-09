@@ -36,20 +36,20 @@ class SmoothNoiseLine extends SpeedBrush {
   seed() {
     this.noise = new Noise();
     this.seedIndex = (this.seedIndex >= this.seeds.length-1) ? 0 : this.seedIndex+1;
-    this.noise.seed( this.seedIndex );
+    this.noise.seed( this.seeds[this.seedIndex] );
   }
 
 
   draw( f=this.form ) {
-    f.stroke( false ).fill( `rgba(20,0,70,${this.alpha})` );
+    f.fill( `rgba(255,255,255,${this.alpha})` ).stroke( `rgba(20,0,70,${this.alpha})` );
 
-    let distRatio = 0.5;
+    let distRatio = 1;
     let smooth = 4;
-    let layers = 12;
-    let magnify = 2;
+    let layers = 8;
+    let magnify = 1.2;
     let curveSegments = 3;
 
-    this.noiseProgress += 0.002;
+    this.noiseProgress += 0.004;
     let noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
     f.noisePolygon( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
   }

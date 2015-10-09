@@ -1,32 +1,20 @@
-class WiggleLine extends SpeedBrush {
+class WiggleLine extends InnerLine {
 
   constructor(...args) {
-    super( ...args );
+    super(...args);
 
+    this.flipSpeed = 0;
     this.maxPoints = 100;
-
+    this.angle = 0;
   }
 
-  drawSegments( last, curr, index) {
+  draw( f=this.form ) {
 
-    if (last && curr) {
+    this.angle += Const.one_degree*1;
 
-      let wiggle = (this.pressed) ? 25 : 8;
-
-      let offset = Math.abs( Math.sin( index * wiggle * Const.deg_to_rad ) );
-
-      let dist = curr.distance( last ) / this.speedRatio;
-      dist = (this.flipSpeed) ? 10 - Math.min(10, dist) : dist;
-      dist = (this.lastDist + dist) / 2;
-      this.lastDist = dist;
-
-      var ln = new Line(last).to(curr);
-      var a = ln.getPerpendicular( 0.5, dist * offset );
-      var b = ln.getPerpendicular( 0.5, dist * (1-offset), true );
-
-      this.drawSpeed( index, dist, ln, a, b );
-    }
+    // connect polygons
+    f.stroke( "rgba(0,0,0,0.3)" ).fill( false );
+    f.innerWiggleLine( this.points, 20, 70, {angle: this.angle, step: Const.one_degree*5 }, 1.5, 2 );
   }
-
 
 }

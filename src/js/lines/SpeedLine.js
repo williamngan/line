@@ -3,7 +3,7 @@ class SpeedLine extends BaseLine {
   constructor( ...args ) {
     super( ...args );
 
-    this.maxPoints = 50;
+    this.maxPoints = 150;
     this.speedRatio = 2;
   }
 

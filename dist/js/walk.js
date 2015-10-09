@@ -9,6 +9,22 @@
   var space = new CanvasSpace("demo", false).display();
   var line = new BaseLine().init(space);
 
+  /**
+   * Get query string
+   * @param name
+   * @returns {string}
+   */
+  function qs(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+  }
+
+  /**
+   * Load Line class
+   * @param LineClass
+   */
   function updateTo(LineClass) {
     var _temp = line.clone();
     space.remove(line);
@@ -17,6 +33,9 @@
     space.add(line);
   }
 
+  /**
+   * Track roll
+   */
   function track() {
     roll.on("step", function (curr, last) {
 
@@ -41,7 +60,6 @@
     roll.on("roll", function (step, progress, total) {
       var curr = step >= 0 ? step : "(padding)";
       var str = "Step " + curr + " at " + Math.floor(progress * 100) + "% (total: " + total + ")";
-      console.log(str);
 
       /*
       line.points.map( (p) => {
@@ -82,4 +100,13 @@
     roll = Roll.verticalScroller("#wrapper", "#pane", ".step", 100);
     track();
   });
+
+  // query string
+  var qfile = qs("step");
+
+  if (qfile) {
+    if (qfile.indexOf("/") >= 0 || qfile.length > 3) qfile = "";
+    var sid = parseInt(qfile);
+    if (sid >= 0) step(sid);
+  }
 })();

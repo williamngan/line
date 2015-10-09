@@ -6,8 +6,9 @@ class BaseLine extends Curve {
     this.canvasSize = new Vector();
     this.pressed = false; // mouse pressed
     this.form = null;
-    this.maxPoints = 50;
+    this.maxPoints = 200;
     this.pointThreshold = 10;
+    this.distanceThreshold = 200*200;
 
   }
 
@@ -45,6 +46,21 @@ class BaseLine extends Curve {
     }
   }
 
+  glue(mag) {
+    if ( mag > this.distanceThreshold ) {
+
+      if (mag > this.distanceThreshold * 3) {
+        this.points = [ this.points.pop() ];
+        return;
+      }
+      let p2 = this.points.pop();
+      let p1 = this.points.pop();
+      let lns = new Line( p1 ).to( p2 ).subpoints( Math.floor(this.distanceThreshold/5000) );
+
+      this.to( lns );
+    }
+  }
+
   /**
    * When moving. Override in subclass for additional features.
    */
@@ -55,6 +71,8 @@ class BaseLine extends Curve {
 
       this.to( x, y );
       this.trim();
+      this.glue( last );
+
       if (this.pressed) this.drag( x, y );
     }
   }

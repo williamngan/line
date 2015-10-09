@@ -9,10 +9,12 @@ class MovingLineForm extends Form {
   }
 
 
-  _getSegmentNormal( last, curr, dist, t=0.5 ) {
+  _getSegmentNormal( last, curr, dist, t=0.5, distRatio ) {
     if (last) {
       let ln = new Line( last ).to( curr );
-      return {p1: ln.getPerpendicular( 0.5, dist ).p1, p2: ln.getPerpendicular( 0.5, dist, true ).p1 };
+      let dr1 = (distRatio != null) ? distRatio : 1;
+      let dr2 = (distRatio != null) ? 1-distRatio : 1;
+      return {p1: ln.getPerpendicular( t, dist * dr1 ).p1, p2: ln.getPerpendicular( t, dist * dr2, true ).p1 };
     } else {
       return {p1: curr.clone(), p2: curr.clone()};
     }
@@ -94,6 +96,69 @@ class MovingLineForm extends Form {
       // draw normal lines
       this.line( new Line(normal.p1).to(normal.p2));
     }
+  }
+
+
+  innerLine( pts, nums = 5, distRatio=0.5, smoothSteps=3, maxDist=0 ) {
+
+    var last = null;
+    var normals = [];
+    var distSteps = [];
+
+    // init normal arrays
+    for (var n=0; n<nums; n++) { normals[n] = []; }
+
+    for (var i=0; i<pts.length; i++) {
+      let vec = new Vector( pts[i] );
+
+      // smooth distance
+      let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
+      if (maxDist>0) dist = Math.min(dist, maxDist);
+      dist = this._smooth(distSteps, dist, smoothSteps);
+
+      let normal = this._getSegmentNormal( last, vec, dist );
+      last = vec.clone();
+
+      let subs = new Line(normal.p1).to(normal.p2).subpoints(nums);
+      for (n=0; n<nums; n++) { normals[n].push( subs[n] ); }
+
+    }
+
+    for (n=0; n<nums; n++) { this.polygon( normals[n], false, false ); }
+
+  }
+
+
+  innerWiggleLine( pts, nums=5, thickness=100, wiggle={angle: 0, step: 0.01}, distRatio=0.5, smoothSteps=3, maxDist=0 ) {
+
+    var last = null;
+    var normals = [];
+    var distSteps = [];
+
+    // init normal arrays
+    for (var n=0; n<nums; n++) { normals[n] = []; }
+
+    for (var i=0; i<pts.length; i++) {
+      let vec = new Vector( pts[i] );
+
+      // smooth distance
+      let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
+      if (maxDist>0) dist = Math.min(dist, maxDist);
+      dist = thickness - Math.max(10, Math.min(thickness, dist) );
+      dist = this._smooth(distSteps, dist, smoothSteps);
+
+      let w = (Math.sin( wiggle.angle + wiggle.step*i ) + 1) / 2;
+
+      let normal = this._getSegmentNormal( last, vec, dist, 0.5, w );
+      last = vec.clone();
+
+      let subs = new Line(normal.p1).to(normal.p2).subpoints(nums);
+      for (n=0; n<nums; n++) { normals[n].push( subs[n] ); }
+
+    }
+
+    for (n=0; n<nums; n++) { this.polygon( normals[n], false, false ); }
+
   }
 
   /**
