@@ -99,6 +99,29 @@ class MovingLineForm extends Form {
   }
 
 
+  zigZagLine( pts, distRatio=0.5, maxDist=0 ) {
+
+    var last = null;
+    var zz = [];
+
+    for (var i=0; i<pts.length; i++) {
+      let vec = new Vector( pts[i] );
+
+      // smooth distance
+      let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
+      if (maxDist>0) dist = Math.min(dist, maxDist);
+
+      if (!last) last = vec.clone();
+      let ln = new Line(last).to(vec);
+      zz.push( ln.getPerpendicular( 0, dist, i%2===0 ).p1 );
+
+      last = vec.clone();
+    }
+
+    this.polygon( new Curve().to(zz).catmullRom(5), false, false );
+  }
+
+
   innerLine( pts, nums = 5, distRatio=0.5, smoothSteps=3, maxDist=0 ) {
 
     var last = null;

@@ -9,6 +9,8 @@
   var space = new CanvasSpace("demo", false).display();
   var line = new BaseLine().init(space);
 
+  var isTracing = false;
+
   /**
    * Get query string
    * @param name
@@ -30,6 +32,7 @@
     space.remove(line);
     line = new LineClass().init(space);
     line.points = _temp.points;
+    line.trace(isTracing); // sync tracing state
     space.add(line);
   }
 
@@ -77,8 +80,15 @@
     roll.scroll(index, viewport);
   }
 
-  space.add(line);
+  space.bindCanvas("mouseup", function (evt) {
+    isTracing = !isTracing;
+    space.refresh(!isTracing);
+    line.trace(isTracing);
+  });
+
   space.bindMouse();
+
+  space.add(line);
   space.play();
   space.stop(100000);
 

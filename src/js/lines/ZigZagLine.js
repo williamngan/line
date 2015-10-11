@@ -1,4 +1,4 @@
-class SpeedLine extends BaseLine {
+class ZigZagLine extends SpeedLine {
 
   constructor( ...args ) {
     super( ...args );
@@ -53,15 +53,20 @@ class SpeedLine extends BaseLine {
   }
   */
 
+
   maxDistance(ratio=20) {
     return Math.min(this.canvasSize.x, this.canvasSize.y)/ratio;
   }
 
   draw( f=this.form ) {
-    f.stroke("rgba(0,0,0,.4)").fill(false);
+
+    let c =  this.getColor();
     // draw regular path
-    f.polygon( this.points, false );
-    f.speedLine( this.points, 0.5, this.maxDistance() );
+    //f.polygon( this.points, false );
+    f.stroke(false).fill( c );
+    f.points( this.points, 1);
+    f.stroke( c ).fill(false);
+    f.zigZagLine( this.points, 0.5, this.maxDistance() );
 
     //this.form.curve( this.catmullRom(5) );
     //this.drawLine();

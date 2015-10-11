@@ -4,6 +4,7 @@ class NoiseLine extends SpeedBrush {
     super( ...args );
 
     this.maxPoints = 50;
+    this.maxTracePoints = 20;
 
     this.noise = new Noise();
 
@@ -25,6 +26,14 @@ class NoiseLine extends SpeedBrush {
     this.pointThreshold = 20;
     this.flipSpeed = 0;
 
+    // override color
+    this.color = {
+      dark: "rgba(0,0,0,.6)",
+      dark2: "rgba(0,0,0,.05)",
+      light: "#f3f5f9",
+      light2: "rgba(243,245,249, 0)"
+    };
+
   }
 
 
@@ -36,7 +45,7 @@ class NoiseLine extends SpeedBrush {
 
 
   draw( f=this.form ) {
-    f.stroke( false ).fill( `rgba(0,0,0,.6)` );
+    f.stroke( false ).fill( this.getColor() );
 
     let distRatio = 0.5;
     let smooth = 3;

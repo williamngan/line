@@ -24,11 +24,15 @@ function start( App ) {
     //space.clear();
     //space.refresh(false);
     //space.ctx.globalCompositeOperation = "destination-over";
-
     space.add( app );
+
+
     space.bindMouse();
+
     space.play();
     space.stop(100000);
+
+
 
   }
 }
