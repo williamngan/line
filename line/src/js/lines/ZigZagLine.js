@@ -4,6 +4,22 @@ class ZigZagLine extends SpeedLine {
     super( ...args );
 
     this.maxPoints = 150;
+
+    this.pointThreshold = 50;
+
+    this.color = {
+      dark: "#66758c",
+      dark2: "rgba(102,117,140, .1)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .1)"
+    };
+
+    this.color2 = {
+      dark: "#42dc8e",
+      dark2: "rgba(66,220,142, .1)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .1)"
+    };
   }
 
   distances() {
@@ -24,16 +40,12 @@ class ZigZagLine extends SpeedLine {
 
   draw( f=this.form ) {
 
-    let c =  this.getColor();
-    // draw regular path
-    //f.polygon( this.points, false );
-    f.stroke(false).fill( c );
+    f.stroke(false).fill( this.getColor("color2") );
     f.points( this.points, 1);
-    f.stroke( c ).fill(false);
+
+    f.stroke( this.getColor() ).fill(false);
     f.zigZagLine( this.points, 0.5, this.maxDistance() );
 
-    //this.form.curve( this.catmullRom(5) );
-    //this.drawLine();
   }
 
 

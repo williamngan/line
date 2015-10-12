@@ -124,6 +124,7 @@ class MovingLineForm extends Form {
 
   innerLine( pts, nums = 5, distRatio=0.5, smoothSteps=3, maxDist=0 ) {
 
+
     var last = null;
     var normals = [];
     var distSteps = [];

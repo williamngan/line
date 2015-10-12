@@ -14,10 +14,10 @@ class BaseLine extends Curve {
     this.distanceThreshold = 200*200;
 
     this.color = {
-      dark: "#456",
-      dark2: "rgba(68,85,102, .1)",
-      light: "#f3f5f9",
-      light2: "rgba(243,245,249, .1)"
+      dark: "#ff2d5d",
+      dark2: "rgba(255,45,93, .1)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .1)"
     };
 
     this.tracing = false;
@@ -38,11 +38,11 @@ class BaseLine extends Curve {
   }
 
 
-  getColor() {
+  getColor( c="color") {
     if (!this.tracing) {
-      return this.color.dark;
+      return this[c].dark;
     } else {
-      return (this.counter%2===0) ? this.color.dark2 : this.color.light2;
+      return (this.counter%2===0) ? this[c].dark2 : this[c].light2;
     }
   }
 

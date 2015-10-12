@@ -2,7 +2,12 @@ $h: 400px;
 
 body {
   overflow: hidden;
-  font-family: 'Noto', "Helvetica Neue", Helvetica, sans-serif;
+  font-family: 'Lato', "Helvetica Neue", Helvetica, sans-serif;
+
+  .zh {
+    font-family: "Hiragino Sans GB", "Microsoft YaHei", "Simhei", "WenQuanYi Micro Hei", sans-serif;
+    font-weight: normal;
+  }
 }
 
 #pt {
@@ -14,14 +19,7 @@ body {
 
   position: absolute;
   top: 0; bottom: 0; left: 0; right: 0;
-  background: #f3f5f9;
-  //width: 80%;
-  //height: $h;
-  //
-  //
-  //position: relative;
-
-
+  background: #fff;
 
   #wrapper {
     overflow: auto;
@@ -40,10 +38,6 @@ body {
     right: 20px;
     height: 100vh;
     pointer-events: none;
-    //top: 0; bottom: 0; left: 0; right: 0;
-    //
-    //overflow-y: hidden;
-    //overflow-x: visible;
   }
 
   .step {
@@ -66,8 +60,6 @@ body {
     }
 
     .heading {
-      //position: absolute;
-      //top: 50vh; left: 30px;
       display: inline-block;
       opacity: 1;
       transition: opacity 2s;
@@ -77,8 +69,8 @@ body {
 
       h1 {
         margin: 0 0 10px;
-        font-weight: 400;
-        font-size: 28px;
+        font-weight: 700;
+        font-size: 24px;
         color: #334057;
 
         strong {
@@ -88,8 +80,8 @@ body {
       }
       p {
         font-size: 14px;
-        line-height: 1.55;
-        font-weight: 300;
+        line-height: 1.4;
+        font-weight: 400;
         color: #99a5b3;
       }
     }

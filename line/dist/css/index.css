@@ -1,6 +1,9 @@
 body {
   overflow: hidden;
-  font-family: 'Noto', "Helvetica Neue", Helvetica, sans-serif; }
+  font-family: 'Lato', "Helvetica Neue", Helvetica, sans-serif; }
+  body .zh {
+    font-family: "Hiragino Sans GB", "Microsoft YaHei", "Simhei", "WenQuanYi Micro Hei", sans-serif;
+    font-weight: normal; }
 
 #pt {
   width: 100%;
@@ -12,7 +15,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #f3f5f9; }
+  background: #fff; }
   #walks #wrapper {
     overflow: auto;
     width: 100%;
@@ -51,16 +54,16 @@ body {
       max-width: 500px; }
       #walks .step .heading h1 {
         margin: 0 0 10px;
-        font-weight: 400;
-        font-size: 28px;
+        font-weight: 700;
+        font-size: 24px;
         color: #334057; }
         #walks .step .heading h1 strong {
           color: #ff2d5d;
           font-weight: 400; }
       #walks .step .heading p {
         font-size: 14px;
-        line-height: 1.55;
-        font-weight: 300;
+        line-height: 1.4;
+        font-weight: 400;
         color: #99a5b3; }
     #walks .step.prev {
       top: -100vh; }
