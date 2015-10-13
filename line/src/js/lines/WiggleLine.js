@@ -8,7 +8,7 @@ class WiggleLine extends InnerLine {
     this.angle = 0;
 
     this.color = {
-      dark: "rgba(0,0,0,0.3)",
+      dark: "rgba(0,0,0,0.25)",
       dark2: "rgba(0,0,0, .05)",
       light: "#fff",
       light2: "rgba(255,255,255, .05)"

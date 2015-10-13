@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x50, _x51, _x52) { var _again = true; _function: while (_again) { var object = _x50, property = _x51, receiver = _x52; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x50 = parent; _x51 = property; _x52 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x51, _x52, _x53) { var _again = true; _function: while (_again) { var object = _x51, property = _x52, receiver = _x53; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x51 = parent; _x52 = property; _x53 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -897,7 +897,7 @@ var WiggleLine = (function (_InnerLine) {
     this.angle = 0;
 
     this.color = {
-      dark: "rgba(0,0,0,0.3)",
+      dark: "rgba(0,0,0,0.25)",
       dark2: "rgba(0,0,0, .05)",
       light: "#fff",
       light2: "rgba(255,255,255, .05)"
@@ -932,6 +932,77 @@ var NoiseLine = (function (_SpeedBrush) {
 
     _get(Object.getPrototypeOf(NoiseLine.prototype), "constructor", this).apply(this, args);
 
+    this.maxPoints = 60;
+    this.maxTracePoints = 20;
+
+    this.noise = new Noise();
+
+    // noise seed defines the styles
+    this.seeds = [0.7642476900946349, 0.04564903723075986, 0.4202376299072057, 0.35483957454562187, 0.9071740123908967, 0.8731264418456703, 0.7436990102287382, 0.23965814616531134];
+
+    this.seedIndex = 2;
+    this.noise.seed(this.seeds[this.seedIndex]);
+
+    this.pointThreshold = 20;
+    this.flipSpeed = 0;
+
+    // override color
+    this.color = {
+      dark: "rgba(0,0,0,.3)",
+      dark2: "rgba(0,0,0,.05)",
+      light: "#f3f5f9",
+      light2: "rgba(243,245,249, 0)"
+    };
+  }
+
+  _createClass(NoiseLine, [{
+    key: "seed",
+    value: function seed() {
+      this.noise = new Noise();
+      this.seedIndex = this.seedIndex >= this.seeds.length - 1 ? 0 : this.seedIndex + 1;
+      this.noise.seed(this.seedIndex);
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      f.stroke(this.getColor()).fill(false);
+
+      var distRatio = 2;
+      var smooth = 3;
+      var layers = 8;
+      var magnify = 1;
+      var curveSegments = 3;
+
+      var noiseFactors = { a: 0, b: 0.01, c: 0.01 };
+      f.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
+    }
+  }, {
+    key: "up",
+    value: function up() {
+      if (++this._flip % 2 === 0) {
+        this.flipSpeed = this.flipSpeed > 0 ? 0 : 25;
+      }
+      this.seed();
+    }
+  }]);
+
+  return NoiseLine;
+})(SpeedBrush);
+
+var NoiseBrush = (function (_SpeedBrush2) {
+  _inherits(NoiseBrush, _SpeedBrush2);
+
+  function NoiseBrush() {
+    _classCallCheck(this, NoiseBrush);
+
+    for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
+      args[_key11] = arguments[_key11];
+    }
+
+    _get(Object.getPrototypeOf(NoiseBrush.prototype), "constructor", this).apply(this, args);
+
     this.maxPoints = 50;
     this.maxTracePoints = 20;
 
@@ -955,7 +1026,7 @@ var NoiseLine = (function (_SpeedBrush) {
     };
   }
 
-  _createClass(NoiseLine, [{
+  _createClass(NoiseBrush, [{
     key: "seed",
     value: function seed() {
       this.noise = new Noise();
@@ -981,22 +1052,22 @@ var NoiseLine = (function (_SpeedBrush) {
   }, {
     key: "up",
     value: function up() {
-      _get(Object.getPrototypeOf(NoiseLine.prototype), "up", this).call(this);
+      _get(Object.getPrototypeOf(NoiseBrush.prototype), "up", this).call(this);
       this.seed();
     }
   }]);
 
-  return NoiseLine;
+  return NoiseBrush;
 })(SpeedBrush);
 
-var SmoothNoiseLine = (function (_SpeedBrush2) {
-  _inherits(SmoothNoiseLine, _SpeedBrush2);
+var SmoothNoiseLine = (function (_SpeedBrush3) {
+  _inherits(SmoothNoiseLine, _SpeedBrush3);
 
   function SmoothNoiseLine() {
     _classCallCheck(this, SmoothNoiseLine);
 
-    for (var _len11 = arguments.length, args = Array(_len11), _key11 = 0; _key11 < _len11; _key11++) {
-      args[_key11] = arguments[_key11];
+    for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
+      args[_key12] = arguments[_key12];
     }
 
     _get(Object.getPrototypeOf(SmoothNoiseLine.prototype), "constructor", this).apply(this, args);
@@ -1018,6 +1089,13 @@ var SmoothNoiseLine = (function (_SpeedBrush2) {
 
     this.pointThreshold = 20;
     this.flipSpeed = 0;
+
+    this.color = {
+      dark: "rgba(50,30,140, .3)",
+      dark2: "rgba(50,30,140, .05)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .05)"
+    };
   }
 
   _createClass(SmoothNoiseLine, [{
@@ -1032,7 +1110,9 @@ var SmoothNoiseLine = (function (_SpeedBrush2) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
-      f.fill("rgba(255,255,255," + this.alpha + ")").stroke("rgba(20,0,70," + this.alpha + ")");
+      //f.fill( `rgba(255,255,255,${this.alpha})` ).stroke( `rgba(20,0,70,${this.alpha})` );
+
+      f.fill(false).stroke(this.getColor());
 
       var distRatio = 1;
       var smooth = 4;
@@ -1065,8 +1145,8 @@ var ContinuousLine = (function (_NoiseLine) {
   function ContinuousLine() {
     _classCallCheck(this, ContinuousLine);
 
-    for (var _len12 = arguments.length, args = Array(_len12), _key12 = 0; _key12 < _len12; _key12++) {
-      args[_key12] = arguments[_key12];
+    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
+      args[_key13] = arguments[_key13];
     }
 
     _get(Object.getPrototypeOf(ContinuousLine.prototype), "constructor", this).apply(this, args);
@@ -1162,8 +1242,8 @@ var StepperLine = (function (_NoiseLine2) {
   function StepperLine() {
     _classCallCheck(this, StepperLine);
 
-    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
-      args[_key13] = arguments[_key13];
+    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
+      args[_key14] = arguments[_key14];
     }
 
     _get(Object.getPrototypeOf(StepperLine.prototype), "constructor", this).apply(this, args);
@@ -1265,8 +1345,8 @@ var ReflectLine = (function (_NoiseLine3) {
   function ReflectLine() {
     _classCallCheck(this, ReflectLine);
 
-    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
-      args[_key14] = arguments[_key14];
+    for (var _len15 = arguments.length, args = Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
+      args[_key15] = arguments[_key15];
     }
 
     _get(Object.getPrototypeOf(ReflectLine.prototype), "constructor", this).apply(this, args);
