@@ -49,7 +49,7 @@ class BaseLine extends Curve {
   /**
    * Space's animate callback. Override in subclass for additional features and drawing styles.
    */
-  animate( time, fps, context) {
+  animate( time, fs, context) {
     this.counter++;
     this.draw();
   }

@@ -2,6 +2,9 @@
   var roll = Roll.verticalScroller( "#wrapper", "#pane", ".step", 100 );
   var views = document.querySelectorAll( ".step" );
   var viewport = document.querySelector( "#wrapper" );
+  var message = document.querySelector( "#message" );
+  var msgTimeout = -1;
+
   views[0].className = "step curr";
 
   var space = new CanvasSpace("demo", false ).display();
@@ -92,6 +95,17 @@
 
 
   space.add( line );
+  space.add( {
+    animate: function (time, fs) {
+      if ( time>5000 && 1000/fs < 19) {
+        clearTimeout(msgTimeout);
+        message.className = "show";
+        setTimeout( function() {
+          message.className = "";
+        }, 5000);
+      }
+    }
+  });
   space.play();
   space.stop(100000);
 
@@ -104,7 +118,7 @@
   window.addEventListener( "resize", function ( evt ) {
     var viewpane = document.querySelector( "#steps" );
 
-    var h = window.innerHeight / 2 + "px";
+    var h = window.innerHeight + "px";
     viewport.style.height = h;
     viewpane.style.height = h;
     for (var i = 0; i < views.length; i++) {
@@ -113,6 +127,8 @@
 
     roll = Roll.verticalScroller( "#wrapper", "#pane", ".step", 100 );
     track();
+
+    message.className = "";
   } );
 
 

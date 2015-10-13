@@ -446,7 +446,7 @@ var BaseLine = (function (_Curve) {
      */
   }, {
     key: "animate",
-    value: function animate(time, fps, context) {
+    value: function animate(time, fs, context) {
       this.counter++;
       this.draw();
     }
