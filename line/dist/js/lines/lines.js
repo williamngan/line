@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x51, _x52, _x53) { var _again = true; _function: while (_again) { var object = _x51, property = _x52, receiver = _x53; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x51 = parent; _x52 = property; _x53 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x62, _x63, _x64) { var _again = true; _function: while (_again) { var object = _x62, property = _x63, receiver = _x64; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x62 = parent; _x63 = property; _x64 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -67,8 +67,9 @@ var MovingLineForm = (function (_Form) {
     }
   }, {
     key: "_getSegmentNormal",
-    value: function _getSegmentNormal(last, curr, dist, t, distRatio) {
-      if (t === undefined) t = 0.5;
+    value: function _getSegmentNormal(last, curr, dist) {
+      var t = arguments.length <= 3 || arguments[3] === undefined ? 0.5 : arguments[3];
+      var distRatio = arguments.length <= 4 || arguments[4] === undefined ? null : arguments[4];
 
       if (last) {
         var ln = new Line(last).to(curr);
@@ -373,6 +374,55 @@ var MovingLineForm = (function (_Form) {
         var s = segs.join(n);
         var curve = new Curve().to(s);
         this.polygon(curveSegments > 0 ? curve.catmullRom(curveSegments) : curve.points);
+      }
+    }
+  }, {
+    key: "noiseDashLine",
+    value: function noiseDashLine(pts, noise) {
+      var nf = arguments.length <= 2 || arguments[2] === undefined ? { a: 0, b: 0.005, c: 0.005 } : arguments[2];
+      var flipSpeed = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+      var distRatio = arguments.length <= 4 || arguments[4] === undefined ? 0.5 : arguments[4];
+      var smoothSteps = arguments.length <= 5 || arguments[5] === undefined ? 1 : arguments[5];
+      var maxDist = arguments.length <= 6 || arguments[6] === undefined ? 0 : arguments[6];
+      var layers = arguments.length <= 7 || arguments[7] === undefined ? 15 : arguments[7];
+      var magnify = arguments.length <= 8 || arguments[8] === undefined ? 3 : arguments[8];
+      var curveSegments = arguments.length <= 9 || arguments[9] === undefined ? 0 : arguments[9];
+
+      var last = null;
+      var lastLayer = [];
+      var olderLayer = [];
+      var distSteps = [];
+
+      // go through each points
+      for (var i = 0; i < pts.length; i++) {
+        var vec = new Vector(pts[i]);
+
+        // smooth distance
+        var dist = this._getSegmentDistance(last, vec, i) * distRatio;
+        if (maxDist > 0) dist = Math.min(dist, maxDist);
+        dist = flipSpeed > 0 ? flipSpeed - Math.min(flipSpeed, dist) : dist;
+        dist = this._smooth(distSteps, dist, smoothSteps);
+
+        // noise segments for each layer
+        for (var n = 1; n < layers; n++) {
+
+          var nfactors = nf.a + n * nf.b + i * nf.c;
+          var ndist = this._getNoiseDistance(noise, nfactors, dist, n / layers, magnify);
+          var normal = this._getSegmentNormal(last, vec, ndist, 0.5, distRatio);
+
+          if (lastLayer[n] && (i + n) % 2 === 0) {
+            var older = olderLayer[n] && Math.abs(i - n) % 3 == 0 ? olderLayer : lastLayer;
+
+            this.line(new Line(older[n].p1).to(normal.p1));
+            this.line(new Line(older[n].p2).to(normal.p2));
+
+            olderLayer[n] = { p1: lastLayer[n].p1, p2: lastLayer[n].p2 };
+          }
+
+          lastLayer[n] = { p1: normal.p1, p2: normal.p2 };
+        }
+
+        last = vec.clone();
       }
     }
   }]);
@@ -1139,14 +1189,94 @@ var SmoothNoiseLine = (function (_SpeedBrush3) {
   return SmoothNoiseLine;
 })(SpeedBrush);
 
+var NoiseDashLine = (function (_SpeedBrush4) {
+  _inherits(NoiseDashLine, _SpeedBrush4);
+
+  function NoiseDashLine() {
+    _classCallCheck(this, NoiseDashLine);
+
+    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
+      args[_key13] = arguments[_key13];
+    }
+
+    _get(Object.getPrototypeOf(NoiseDashLine.prototype), "constructor", this).apply(this, args);
+
+    this.maxPoints = 50;
+
+    this.noise = new Noise();
+    this.noiseProgress = 0.01;
+
+    // noise seed defines the styles
+    this.seeds = [0.7642476900946349, 0.04564903723075986, 0.4202376299072057, 0.35483957454562187, 0.9071740123908967, 0.8731264418456703, 0.7436990102287382, 0.23965814616531134];
+
+    this.seedIndex = 5;
+    this.noise.seed(this.seeds[this.seedIndex]);
+
+    this.noiseFactorIndex = 0.01;
+    this.noiseFactorLayer = 0.03;
+    this.alpha = 0.25;
+
+    this.pointThreshold = 20;
+    this.flipSpeed = 0;
+
+    this.color = {
+      dark: "rgba(20,10,0, .3)",
+      dark2: "rgba(20,10,0, .05)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .05)"
+    };
+  }
+
+  _createClass(NoiseDashLine, [{
+    key: "seed",
+    value: function seed() {
+      this.noise = new Noise();
+      this.seedIndex = this.seedIndex >= this.seeds.length - 1 ? 0 : this.seedIndex + 1;
+      this.noise.seed(this.seeds[this.seedIndex]);
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      //f.fill( `rgba(255,255,255,${this.alpha})` ).stroke( `rgba(20,0,70,${this.alpha})` );
+
+      f.fill(false).stroke(this.getColor());
+
+      var distRatio = (this.seedIndex + 1) / 5;
+      var smooth = 4;
+      var layers = 8;
+      var magnify = 1.2;
+      var curveSegments = 3;
+
+      this.noiseProgress += 0.004;
+      var noiseFactors = { a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
+      f.noiseDashLine(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
+    }
+  }, {
+    key: "up",
+    value: function up() {
+      _get(Object.getPrototypeOf(NoiseDashLine.prototype), "up", this).call(this);
+      this.seed();
+
+      this.noiseFactorIndex = Math.max(0.002, Math.random() / 10);
+      this.noiseFactorLayer = Math.max(0.002, Math.random() / 10);
+      this.alpha += 0.1;
+      if (this.alpha > 0.7) this.alpha = 0.05;
+    }
+  }]);
+
+  return NoiseDashLine;
+})(SpeedBrush);
+
 var ContinuousLine = (function (_NoiseLine) {
   _inherits(ContinuousLine, _NoiseLine);
 
   function ContinuousLine() {
     _classCallCheck(this, ContinuousLine);
 
-    for (var _len13 = arguments.length, args = Array(_len13), _key13 = 0; _key13 < _len13; _key13++) {
-      args[_key13] = arguments[_key13];
+    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
+      args[_key14] = arguments[_key14];
     }
 
     _get(Object.getPrototypeOf(ContinuousLine.prototype), "constructor", this).apply(this, args);
@@ -1242,8 +1372,8 @@ var StepperLine = (function (_NoiseLine2) {
   function StepperLine() {
     _classCallCheck(this, StepperLine);
 
-    for (var _len14 = arguments.length, args = Array(_len14), _key14 = 0; _key14 < _len14; _key14++) {
-      args[_key14] = arguments[_key14];
+    for (var _len15 = arguments.length, args = Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
+      args[_key15] = arguments[_key15];
     }
 
     _get(Object.getPrototypeOf(StepperLine.prototype), "constructor", this).apply(this, args);
@@ -1345,8 +1475,8 @@ var ReflectLine = (function (_NoiseLine3) {
   function ReflectLine() {
     _classCallCheck(this, ReflectLine);
 
-    for (var _len15 = arguments.length, args = Array(_len15), _key15 = 0; _key15 < _len15; _key15++) {
-      args[_key15] = arguments[_key15];
+    for (var _len16 = arguments.length, args = Array(_len16), _key16 = 0; _key16 < _len16; _key16++) {
+      args[_key16] = arguments[_key16];
     }
 
     _get(Object.getPrototypeOf(ReflectLine.prototype), "constructor", this).apply(this, args);

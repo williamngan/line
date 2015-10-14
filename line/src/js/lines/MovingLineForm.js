@@ -9,7 +9,7 @@ class MovingLineForm extends Form {
   }
 
 
-  _getSegmentNormal( last, curr, dist, t=0.5, distRatio ) {
+  _getSegmentNormal( last, curr, dist, t=0.5, distRatio=null ) {
     if (last) {
       let ln = new Line( last ).to( curr );
       let dr1 = (distRatio != null) ? distRatio : 1;
@@ -268,4 +268,47 @@ class MovingLineForm extends Form {
 
   }
 
+
+  noiseDashLine( pts, noise, nf={a:0, b:0.005, c:0.005}, flipSpeed=0, distRatio=0.5, smoothSteps=1, maxDist=0, layers=15,  magnify=3, curveSegments=0 ) {
+
+    var last = null;
+    var lastLayer = [];
+    var olderLayer = [];
+    var distSteps = [];
+
+    // go through each points
+    for (let i=0; i<pts.length; i++) {
+      let vec = new Vector( pts[i] );
+
+      // smooth distance
+      let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
+      if (maxDist>0) dist = Math.min(dist, maxDist);
+      dist = (flipSpeed > 0) ? flipSpeed - Math.min(flipSpeed, dist) : dist;
+      dist = this._smooth(distSteps, dist, smoothSteps);
+
+      // noise segments for each layer
+      for (let n=1; n<layers; n++) {
+
+        let nfactors =  nf.a + n*nf.b + i*nf.c;
+        let ndist = this._getNoiseDistance( noise, nfactors, dist, n/layers, magnify);
+        let normal = this._getSegmentNormal( last, vec, ndist, 0.5, distRatio );
+
+
+        if (lastLayer[n] && (i+n)%2===0) {
+          let older = (olderLayer[n] && Math.abs(i-n)%3==0 ) ? olderLayer : lastLayer;
+
+          this.line( new Line(older[n].p1).to( normal.p1 ) );
+          this.line( new Line(older[n].p2).to( normal.p2 ) );
+
+          olderLayer[n] = {p1: lastLayer[n].p1, p2: lastLayer[n].p2 };
+        }
+
+
+        lastLayer[n] = {p1: normal.p1, p2: normal.p2 };
+      }
+
+      last = vec.clone();
+    }
+
+  }
 }
