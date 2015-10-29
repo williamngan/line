@@ -34,7 +34,7 @@ var path = {
 // Parent classes needs to be defined before its extended children
 var coreElems = [
   "SegmentList", "MovingLineForm", "BaseLine", "DottedLine",
-  "SpeedLine", "ZigZagLine", "SpeedBrush", "SmoothSpeedBrush", "InnerLine",
+  "SpeedLine", "ZigZagLine", "RestatedLine", "SpeedBrush", "SmoothSpeedBrush", "InnerLine",
   "WiggleLine", "NoiseLine", "NoiseBrush", "SmoothNoiseLine", "NoiseDashLine",
     "ContinuousLine", "StepperLine", "ReflectLine", "WalkSteps"
 ];

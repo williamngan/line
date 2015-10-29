@@ -121,6 +121,13 @@ class MovingLineForm extends Form {
     this.polygon( new Curve().to(zz).catmullRom(5), false, false );
   }
 
+  restatedLine( pts ) {
+
+    var curve =  new Curve().to(pts);
+    this.polygon( curve.cardinal(5, 0.2), false, false );
+    this.polygon( curve.cardinal(5, 0.8), false, false );
+    this.polygon( curve.bspline(5), false, false );
+  }
 
   innerLine( pts, nums = 5, distRatio=0.5, smoothSteps=3, maxDist=0 ) {
 

@@ -47,9 +47,9 @@ class NoiseLine extends SpeedBrush {
   draw( f=this.form ) {
     f.stroke( this.getColor() ).fill( false );
 
-    let distRatio = 2;
+    let distRatio = 1;
     let smooth = 3;
-    let layers = 8;
+    let layers = 3;
     let magnify = 1;
     let curveSegments = 3;
 
