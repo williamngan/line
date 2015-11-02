@@ -5,7 +5,7 @@ class RestatedLine extends SpeedLine {
 
     this.maxPoints = 150;
 
-    this.pointThreshold = 20*20;
+    this.pointThreshold = 7*7;
 
     this.color = {
       dark: "rgba(102,117,140, .5)",

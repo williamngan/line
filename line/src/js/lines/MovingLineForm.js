@@ -123,10 +123,23 @@ class MovingLineForm extends Form {
 
   restatedLine( pts ) {
 
-    var curve =  new Curve().to(pts);
-    this.polygon( curve.cardinal(5, 0.2), false, false );
-    this.polygon( curve.cardinal(5, 0.8), false, false );
-    this.polygon( curve.bspline(5), false, false );
+
+    var c1 = [];
+    var c2 = [];
+    var c3 = [];
+
+    for (var i=0; i<pts.length; i++) {
+      if (i%3===0) {
+        c1.push( pts[i] );
+      } else if (i%3 === 1) {
+        c2.push( pts[i] );
+      } else {
+        c3.push( pts[i] );
+      }
+    }
+    this.polygon( new Curve().to(c1).cardinal(5, 0.6), false, false );
+    this.polygon(  new Curve().to(c2).cardinal(5, 0.45), false, false );
+    this.polygon(  new Curve().to(c3).bspline(5), false, false );
   }
 
   innerLine( pts, nums = 5, distRatio=0.5, smoothSteps=3, maxDist=0 ) {
@@ -312,6 +325,50 @@ class MovingLineForm extends Form {
 
 
         lastLayer[n] = {p1: normal.p1, p2: normal.p2 };
+      }
+
+      last = vec.clone();
+    }
+
+  }
+
+
+  noiseChopLine( pts, noise, nf={a:0, b:0.005, c:0.005}, flipSpeed=0, distRatio=0.5, smoothSteps=1, maxDist=0, layers=15,  magnify=3, curveSegments=0 ) {
+
+    var last = null;
+    var lastPt = [];
+    var olderLayer = [];
+    var distSteps = [];
+
+
+    // go through each points
+    for (let i=0; i<pts.length; i++) {
+      let vec = new Vector( pts[i] );
+
+      // smooth distance
+      let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
+      if (maxDist>0) dist = Math.min(dist, maxDist);
+      dist = (flipSpeed > 0) ? flipSpeed - Math.min(flipSpeed, dist) : dist;
+      dist = this._smooth(distSteps, dist, smoothSteps);
+
+      // noise segments for each layer
+      for (let n=1; n<layers; n++) {
+
+        let nfactors =  nf.a + n*nf.b + i*nf.c;
+        let ndist = this._getNoiseDistance( noise, nfactors, dist, n/layers, magnify);
+        let normal = this._getSegmentNormal( last, vec, ndist, 0.2, distRatio );
+        let normal2 = this._getSegmentNormal( last, vec, ndist, 0.8, distRatio );
+
+        if (lastPt[n]) {
+          var chop = Math.floor( 10 * ndist/dist );
+          if ( chop > 2 ) {
+            this.line( new Line( lastPt[n].np1 ).to( normal2.p1 ) );
+            this.line( new Line( lastPt[n].p1 ).to( normal.p1 ) );
+          }
+        }
+
+        lastPt[n] = {p1: normal.p1.clone(), p2: normal.p2.clone(), np1: normal2.p1.clone(), np2: normal2.p2.clone() };
+
       }
 
       last = vec.clone();

@@ -49,6 +49,5 @@ class ZigZagLine extends SpeedLine {
   }
 
 
-
 }
 
