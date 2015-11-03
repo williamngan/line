@@ -33,7 +33,7 @@ var path = {
 // Define class sequence manually. To be modularize later.
 // Parent classes needs to be defined before its extended children
 var coreElems = [
-  "SegmentList", "MovingLineForm", "BaseLine", "DottedLine",
+  "SegmentList", "MovingLineForm", "BaseLine", "DottedLine", "InterpolatedLine",
   "SpeedLine", "ZigZagLine", "RestatedLine", "SpeedBrush", "SmoothSpeedBrush", "InnerLine",
   "WiggleLine", "NoiseLine", "NoiseBrush", "SmoothNoiseLine", "NoiseDashLine", "NoiseChopLine",
     "ContinuousLine", "StepperLine", "ReflectLine"

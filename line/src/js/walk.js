@@ -8,7 +8,7 @@
   views[0].className = "step curr";
 
   var space = new CanvasSpace("demo", false ).display();
-  var line = new BaseLine().init( space );
+  var line = new InterpolatedLine().init( space );
 
   var isTracing = false;
 
