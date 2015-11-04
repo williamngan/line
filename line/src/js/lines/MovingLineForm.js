@@ -123,7 +123,6 @@ class MovingLineForm extends Form {
 
   restatedLine( pts ) {
 
-
     var c1 = [];
     var c2 = [];
     var c3 = [];
@@ -140,6 +139,26 @@ class MovingLineForm extends Form {
     this.polygon( new Curve().to(c1).cardinal(5, 0.6), false, false );
     this.polygon(  new Curve().to(c2).cardinal(5, 0.45), false, false );
     this.polygon(  new Curve().to(c3).bspline(5), false, false );
+  }
+
+  hatchingLine( pts, gap=3 ) {
+
+    var ps1 = [];
+    var ps2 = [];
+    var ps3 = [];
+
+    for (var i=0; i<pts.length; i++) {
+      var d1 = i%gap;
+      var d2 = i%(gap*2);
+      var d3 = i%(gap*3);
+      if (ps1[d1] && ps2[d2] && ps3[d3]) {
+        this.curve( new Curve().to( [ ps3[d3], ps2[d2], ps1[d1], pts[i] ] ).bspline(10) );
+      }
+
+      ps3[d3] = ps2[d2];
+      ps2[d2] = ps1[d1];
+      ps1[d1] = pts[i];
+    }
   }
 
   innerLine( pts, nums = 5, distRatio=0.5, smoothSteps=3, maxDist=0 ) {
