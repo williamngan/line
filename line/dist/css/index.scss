@@ -13,7 +13,7 @@ body {
 #message {
   position: fixed;
   top: 20px; right: 40px;
-  color: #abc;
+  color: #667280;
   font-size: 11px;
   opacity: 0;
   transition: opacity 1s;
@@ -35,7 +35,7 @@ body {
 
   position: absolute;
   top: 0; bottom: 0; left: 0; right: 0;
-  background: #fff;
+  background: linear-gradient(105deg, #f3f5f9 25%, #fff);
 
   #wrapper {
     overflow: auto;
@@ -82,12 +82,13 @@ body {
       transition: opacity 2s;
       vertical-align: middle;
       width: 50vw;
-      max-width: 500px;
+
 
       h1 {
         margin: 0 0 10px;
         font-weight: 700;
         font-size: 24px;
+        max-width: 350px;
         color: #334057;
 
         strong {
@@ -100,6 +101,7 @@ body {
         line-height: 1.4;
         font-weight: 400;
         color: #99a5b3;
+        max-width: 250px;
       }
     }
 
@@ -116,4 +118,30 @@ body {
     }
   }
 
+}
+
+
+#pages {
+  position: fixed;
+  right: 20px; top: 50%;
+  margin-top: -14 * 10px;
+
+  a {
+    display: block;
+    font-size: 10px;
+    color: #b7c3c9;
+    padding: 0 10px;
+    line-height: 20px;
+    height: 20px;
+    cursor: pointer;
+
+    &.selected {
+      color: #1c2328;
+    }
+
+    &:hover {
+      color: #ff2d5d;
+    }
+
+  }
 }

@@ -5,6 +5,8 @@
   var views = document.querySelectorAll(".step");
   var viewport = document.querySelector("#wrapper");
   var message = document.querySelector("#message");
+  var pages = document.querySelector("#pages");
+
   var msgTimeout = -1;
 
   views[0].className = "step curr";
@@ -39,6 +41,14 @@
     space.add(line);
   }
 
+  function _paginate(curr) {
+
+    var pgs = pages.querySelectorAll("a");
+    for (var i = 0; i < pgs.length; i++) {
+      pgs[i].className = i === curr ? "selected" : "";
+    }
+  }
+
   /**
    * Track roll
    */
@@ -61,6 +71,8 @@
           console.error(lineID + " is not a valid line");
         }
       }
+
+      _paginate(curr);
     });
 
     roll.on("roll", function (step, progress, total) {
@@ -134,5 +146,16 @@
     if (qfile.indexOf("/") >= 0 || qfile.length > 3) qfile = "";
     var sid = parseInt(qfile);
     if (sid >= 0) step(sid);
+  }
+
+  for (var i = 0; i < views.length; i++) {
+    var pg = document.createElement("a");
+    pg.textContent = i + 1 + "";
+    pages.appendChild(pg);
+    pg.addEventListener("mouseup", function (evt) {
+      var pid = parseInt(evt.target.textContent);
+      step(pid - 1);
+      return false;
+    });
   }
 })();
