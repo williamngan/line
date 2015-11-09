@@ -46,6 +46,7 @@
     var pgs = pages.querySelectorAll("a");
     for (var i=0; i<pgs.length; i++) {
       pgs[i].className = (i===curr) ? "selected" : "";
+      pgs[i].textContent = (i===curr) ? (i+1)+"" : "\u2022";
     }
   }
 
@@ -158,11 +159,16 @@
 
   for (var i=0; i<views.length; i++) {
     var pg = document.createElement("a");
-    pg.textContent = (i+1)+"";
+    pg.setAttribute("data-id", i);
+    pg.textContent = "\u2022";
+    if (i===0) {
+      pg.textContent = "1";
+      pg.className = "selected";
+    }
     pages.appendChild(pg);
     pg.addEventListener("mouseup", function( evt ) {
-      var pid = parseInt( evt.target.textContent );
-      step( pid-1 );
+      var pid = parseInt( evt.target.getAttribute("data-id") );
+      step( pid );
       return false;
     });
   }

@@ -9,15 +9,15 @@ class SpeedBrush extends SpeedLine {
 
 
     this.color = {
-      dark: "rgba(255,255,255, .8)",
-      dark2: "rgba(255,255,255, .05)",
+      dark: "#95b1f9",
+      dark2: "rgba(255,255,255, .1)",
       light: "#fff",
       light2: "rgba(255,255,255, .05)"
     };
 
     this.color2 = {
-      dark: "rgba(255,45,93, .4)",
-      dark2: "rgba(255,45,93, .05)",
+      dark: "rgba(51,64,87, .1)",
+      dark2: "rgba(51,64,87, .05)",
       light: "#fff",
       light2: "rgba(255,255,255, .05)"
     };
@@ -33,7 +33,7 @@ class SpeedBrush extends SpeedLine {
     f.stroke( false ).fill( this.getColor("color2") );
     f.speedPolygon( this.points, this.flipSpeed, 0.5, 1, this.maxDistance() );
 
-    f.stroke( this.getColor() ).fill(false);
+    f.stroke( this.getColor("color2") ).fill(false);
     f.speedLine( this.points );
 
     f.stroke( this.getColor() ).fill(false);

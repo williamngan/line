@@ -15,7 +15,7 @@ class ZigZagLine extends SpeedLine {
     };
 
     this.color2 = {
-      dark: "#42dc8e",
+      dark: "rgba(66,220,142, .5)",
       dark2: "rgba(66,220,142, .1)",
       light: "#fff",
       light2: "rgba(255,255,255, .1)"
@@ -42,6 +42,7 @@ class ZigZagLine extends SpeedLine {
 
     f.stroke(false).fill( this.getColor("color2") );
     f.points( this.points, 1);
+    f.stroke(this.getColor("color2")).fill(false).polygon( this.points, false );
 
     f.stroke( this.getColor() ).fill(false);
     f.zigZagLine( this.points, 0.5, this.maxDistance() );

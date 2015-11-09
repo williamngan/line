@@ -51,7 +51,8 @@ body {
     position: absolute;
     top: 100%;
     left: 0;
-    transition: top .5s; }
+    opacity: 1;
+    transition: top .5s, opacity .5s; }
     #walks .step:before {
       content: "";
       width: 30px;
@@ -68,24 +69,27 @@ body {
       #walks .step .heading h1 {
         margin: 0 0 10px;
         font-weight: 700;
-        font-size: 24px;
+        font-size: 21px;
         max-width: 350px;
         color: #334057; }
         #walks .step .heading h1 strong {
           color: #ff2d5d;
           font-weight: 400; }
       #walks .step .heading p {
-        font-size: 14px;
-        line-height: 1.4;
+        font-size: 13px;
+        line-height: 1.6;
         font-weight: 400;
-        color: #99a5b3;
+        color: rgba(51, 64, 87, 0.5);
         max-width: 250px; }
     #walks .step.prev {
-      top: -100vh; }
+      top: -100vh;
+      opacity: 0.2; }
     #walks .step.next {
-      top: 100vh; }
+      top: 100vh;
+      opacity: 0.2; }
     #walks .step.curr {
-      top: 0; }
+      top: 0;
+      opacity: 1; }
 
 #pages {
   position: fixed;
@@ -94,13 +98,17 @@ body {
   margin-top: -140px; }
   #pages a {
     display: block;
-    font-size: 10px;
+    font-size: 6px;
     color: #b7c3c9;
     padding: 0 10px;
     line-height: 20px;
     height: 20px;
-    cursor: pointer; }
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0);
+    width: 15px;
+    text-align: center; }
     #pages a.selected {
-      color: #1c2328; }
+      color: #334057;
+      font-size: 10px; }
     #pages a:hover {
       color: #ff2d5d; }

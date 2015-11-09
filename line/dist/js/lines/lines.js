@@ -761,8 +761,8 @@ var InterpolatedLine = (function (_BaseLine2) {
     this.direction = 1;
 
     this.color = {
-      dark: "#9ab",
-      dark2: "rgba(153,170,187, .1)",
+      dark: "rgba(51,64,87, .5)",
+      dark2: "rgba(51,64,87, .1)",
       light: "#fff",
       light2: "rgba(255,255,255, .1)"
     };
@@ -812,7 +812,7 @@ var InterpolatedLine = (function (_BaseLine2) {
       f.curve(curve.catmullRom(5), false);
 
       f.stroke(false).fill(this.getColor("color2"));
-      f.point(pos, 5, true);
+      f.point(pos, 2, true);
     }
   }]);
 
@@ -955,7 +955,7 @@ var ZigZagLine = (function (_SpeedLine) {
     };
 
     this.color2 = {
-      dark: "#42dc8e",
+      dark: "rgba(66,220,142, .5)",
       dark2: "rgba(66,220,142, .1)",
       light: "#fff",
       light2: "rgba(255,255,255, .1)"
@@ -987,6 +987,7 @@ var ZigZagLine = (function (_SpeedLine) {
 
       f.stroke(false).fill(this.getColor("color2"));
       f.points(this.points, 1);
+      f.stroke(this.getColor("color2")).fill(false).polygon(this.points, false);
 
       f.stroke(this.getColor()).fill(false);
       f.zigZagLine(this.points, 0.5, this.maxDistance());
@@ -1067,15 +1068,15 @@ var SpeedBrush = (function (_SpeedLine3) {
     this.maxPoints = 100;
 
     this.color = {
-      dark: "rgba(255,255,255, .8)",
-      dark2: "rgba(255,255,255, .05)",
+      dark: "#95b1f9",
+      dark2: "rgba(255,255,255, .1)",
       light: "#fff",
       light2: "rgba(255,255,255, .05)"
     };
 
     this.color2 = {
-      dark: "rgba(255,45,93, .4)",
-      dark2: "rgba(255,45,93, .05)",
+      dark: "rgba(51,64,87, .1)",
+      dark2: "rgba(51,64,87, .05)",
       light: "#fff",
       light2: "rgba(255,255,255, .05)"
     };
@@ -1089,7 +1090,7 @@ var SpeedBrush = (function (_SpeedLine3) {
       f.stroke(false).fill(this.getColor("color2"));
       f.speedPolygon(this.points, this.flipSpeed, 0.5, 1, this.maxDistance());
 
-      f.stroke(this.getColor()).fill(false);
+      f.stroke(this.getColor("color2")).fill(false);
       f.speedLine(this.points);
 
       f.stroke(this.getColor()).fill(false);

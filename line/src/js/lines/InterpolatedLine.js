@@ -11,8 +11,8 @@ class InterpolatedLine extends BaseLine {
     this.direction = 1;
 
     this.color = {
-      dark: "#9ab",
-      dark2: "rgba(153,170,187, .1)",
+      dark: "rgba(51,64,87, .5)",
+      dark2: "rgba(51,64,87, .1)",
       light: "#fff",
       light2: "rgba(255,255,255, .1)"
     };
@@ -59,6 +59,6 @@ class InterpolatedLine extends BaseLine {
     f.curve( curve.catmullRom( 5 ), false );
 
     f.stroke( false ).fill( this.getColor("color2") );
-    f.point( pos, 5, true );
+    f.point( pos, 2, true );
   }
 }

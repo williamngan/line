@@ -64,7 +64,8 @@ body {
     position: absolute;
     top: 100%;
     left: 0;
-    transition: top .5s;
+    opacity: 1;
+    transition: top .5s, opacity .5s;
 
     &:before {
       content: "";
@@ -87,7 +88,7 @@ body {
       h1 {
         margin: 0 0 10px;
         font-weight: 700;
-        font-size: 24px;
+        font-size: 21px;
         max-width: 350px;
         color: #334057;
 
@@ -97,24 +98,27 @@ body {
         }
       }
       p {
-        font-size: 14px;
-        line-height: 1.4;
+        font-size: 13px;
+        line-height: 1.6;
         font-weight: 400;
-        color: #99a5b3;
+        color: rgba(51,64,87, .5);
         max-width: 250px;
       }
     }
 
     &.prev {
       top: -100vh;
+      opacity: 0.2;
     }
 
     &.next {
       top: 100vh;
+      opacity: 0.2;
     }
 
     &.curr {
       top: 0;
+      opacity: 1;
     }
   }
 
@@ -128,15 +132,19 @@ body {
 
   a {
     display: block;
-    font-size: 10px;
+    font-size: 6px;
     color: #b7c3c9;
     padding: 0 10px;
     line-height: 20px;
     height: 20px;
     cursor: pointer;
+    background: rgba(0,0,0,0);
+    width: 15px;
+    text-align: center;
 
     &.selected {
-      color: #1c2328;
+      color: #334057;
+      font-size: 10px;
     }
 
     &:hover {
