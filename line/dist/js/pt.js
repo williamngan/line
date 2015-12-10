@@ -1140,6 +1140,12 @@ Form = (function() {
     return results;
   };
 
+  Form.arc = function(ctx, pt, radius, start, end) {
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, radius, start, end);
+    return ctx.stroke();
+  };
+
   Form.polygon = function(ctx, pts, closePath, fill, stroke) {
     var aa, i, ref;
     if (closePath == null) {
@@ -1266,6 +1272,11 @@ Form = (function() {
 
   Form.prototype.circle = function(p) {
     Form.circle(this.cc, p, this.filled, this.stroked);
+    return this;
+  };
+
+  Form.prototype.arc = function(p, start, end) {
+    Form.arc(this.cc, p, p.radius, start, end);
     return this;
   };
 

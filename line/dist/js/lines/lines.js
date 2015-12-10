@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x77, _x78, _x79) { var _again = true; _function: while (_again) { var object = _x77, property = _x78, receiver = _x79; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x77 = parent; _x78 = property; _x79 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x84, _x85, _x86) { var _again = true; _function: while (_again) { var object = _x84, property = _x85, receiver = _x86; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x84 = parent; _x85 = property; _x86 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -171,6 +171,42 @@ var MovingLineForm = (function (_Form) {
 
         // draw normal lines
         this.line(new Line(normal.p1).to(normal.p2));
+      }
+    }
+  }, {
+    key: "arcLine",
+    value: function arcLine(pts) {
+      var distRatio = arguments.length <= 1 || arguments[1] === undefined ? 0.5 : arguments[1];
+      var maxDist = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+      var repeats = arguments.length <= 3 || arguments[3] === undefined ? 7 : arguments[3];
+      var startAngle = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
+
+      var last = null;
+
+      for (var i = 0; i < pts.length; i++) {
+        var vec = new Vector(pts[i]);
+
+        // smooth distance
+        var dist = this._getSegmentDistance(last, vec, i) * distRatio;
+        if (maxDist > 0) dist = Math.min(dist, maxDist);
+
+        // draw normal lines
+        if (last != null) {
+
+          var gap = dist / 3;
+          var r = Math.PI / 8;
+
+          for (var n = 1; n < repeats; n++) {
+            var offset = n / 10 + 2 * i / pts.length + startAngle;
+            var circle = new Circle(vec.$subtract(last).divide(2).add(last)).setRadius(gap * n + gap);
+            var d = n % 2 == 0 ? offset : -offset;
+            d *= i * Const.one_degree;
+            this.arc(circle, d, d + r);
+          }
+        }
+
+        last = vec.clone();
+        //this.line( new Line(normal.p1).to(normal.p2));
       }
     }
   }, {
@@ -1623,14 +1659,89 @@ var NoiseChopLine = (function (_SpeedBrush5) {
   return NoiseChopLine;
 })(SpeedBrush);
 
+var LagLine = (function (_BaseLine5) {
+  _inherits(LagLine, _BaseLine5);
+
+  function LagLine() {
+    _classCallCheck(this, LagLine);
+
+    for (var _len18 = arguments.length, args = Array(_len18), _key18 = 0; _key18 < _len18; _key18++) {
+      args[_key18] = arguments[_key18];
+    }
+
+    _get(Object.getPrototypeOf(LagLine.prototype), "constructor", this).apply(this, args);
+
+    this.pointThreshold = 50;
+    this.maxPoints = 200;
+
+    this.targets = [];
+    this.ang = 0;
+
+    this.color = {
+      dark: "rgba(51,64,87, .5)",
+      dark2: "rgba(51,64,87, .1)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .1)"
+    };
+
+    this.color2 = {
+      dark: "rgba(255,0,0,.8)",
+      dark2: "rgba(255,0,0, .1)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .1)"
+    };
+  }
+
+  _createClass(LagLine, [{
+    key: "trim",
+    value: function trim() {
+      _get(Object.getPrototypeOf(LagLine.prototype), "trim", this).call(this);
+    }
+  }, {
+    key: "move",
+    value: function move(x, y, z) {
+      _get(Object.getPrototypeOf(LagLine.prototype), "move", this).call(this, x, y, z);
+      this.targets = [];
+      for (var i = 2; i < this.points.length - 2; i++) {
+        this.targets[i - 2] = this.points[i - 2];
+        //this.targets[i-2] = this.points[i-2].clone();
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      this.ang += Const.one_degree;
+
+      if (this.targets.length > 3 && this.points.length > 10) {
+        for (var t = 0; t < this.targets.length; t++) {
+
+          var d = this.targets[t].$subtract(this.points[t + 1]);
+          var d2 = this.points[t].$subtract(this.points[t + 1]);
+          this.targets[t].subtract(d2.multiply(0.11));
+        }
+
+        f.stroke(this.getColor()).fill(false);
+        //f.dottedLine( this.points );
+
+        //f.stroke( this.getColor("color2") ).fill( false );
+        f.zigZagLine(this.targets);
+      }
+    }
+  }]);
+
+  return LagLine;
+})(BaseLine);
+
 var ContinuousLine = (function (_NoiseLine) {
   _inherits(ContinuousLine, _NoiseLine);
 
   function ContinuousLine() {
     _classCallCheck(this, ContinuousLine);
 
-    for (var _len18 = arguments.length, args = Array(_len18), _key18 = 0; _key18 < _len18; _key18++) {
-      args[_key18] = arguments[_key18];
+    for (var _len19 = arguments.length, args = Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
+      args[_key19] = arguments[_key19];
     }
 
     _get(Object.getPrototypeOf(ContinuousLine.prototype), "constructor", this).apply(this, args);
@@ -1726,8 +1837,8 @@ var StepperLine = (function (_NoiseLine2) {
   function StepperLine() {
     _classCallCheck(this, StepperLine);
 
-    for (var _len19 = arguments.length, args = Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
-      args[_key19] = arguments[_key19];
+    for (var _len20 = arguments.length, args = Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
+      args[_key20] = arguments[_key20];
     }
 
     _get(Object.getPrototypeOf(StepperLine.prototype), "constructor", this).apply(this, args);
@@ -1829,8 +1940,8 @@ var ReflectLine = (function (_NoiseLine3) {
   function ReflectLine() {
     _classCallCheck(this, ReflectLine);
 
-    for (var _len20 = arguments.length, args = Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
-      args[_key20] = arguments[_key20];
+    for (var _len21 = arguments.length, args = Array(_len21), _key21 = 0; _key21 < _len21; _key21++) {
+      args[_key21] = arguments[_key21];
     }
 
     _get(Object.getPrototypeOf(ReflectLine.prototype), "constructor", this).apply(this, args);
@@ -1924,3 +2035,66 @@ var ReflectLine = (function (_NoiseLine3) {
 
   return ReflectLine;
 })(NoiseLine);
+
+var ArcLine = (function (_BaseLine6) {
+  _inherits(ArcLine, _BaseLine6);
+
+  function ArcLine() {
+    _classCallCheck(this, ArcLine);
+
+    for (var _len22 = arguments.length, args = Array(_len22), _key22 = 0; _key22 < _len22; _key22++) {
+      args[_key22] = arguments[_key22];
+    }
+
+    _get(Object.getPrototypeOf(ArcLine.prototype), "constructor", this).apply(this, args);
+
+    this.color = {
+      dark: "#374a58",
+      dark2: "rgba(55,74,88, .1)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .1)"
+    };
+
+    this.color2 = {
+      dark: "#95b1f9",
+      dark2: "rgba(149,177,249, .1)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .1)"
+    };
+
+    this.ang = 0;
+  }
+
+  _createClass(ArcLine, [{
+    key: "distances",
+    value: function distances() {
+      var last = null;
+      this.points.map(function (p) {
+        if (!last) return 0;
+        var dist = p.distance(last);
+        last = p.clone();
+        return dist;
+      });
+    }
+  }, {
+    key: "maxDistance",
+    value: function maxDistance() {
+      var ratio = arguments.length <= 0 || arguments[0] === undefined ? 20 : arguments[0];
+
+      return Math.min(this.canvasSize.x, this.canvasSize.y) / ratio;
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      f.stroke(this.getColor()).fill(false);
+      f.polygon(this.points, false);
+
+      f.stroke(this.getColor("color2"));
+      f.arcLine(this.points, 0.5, this.maxDistance(), 7, this.ang += Const.one_degree / 10);
+    }
+  }]);
+
+  return ArcLine;
+})(BaseLine);

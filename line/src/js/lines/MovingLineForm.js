@@ -98,6 +98,37 @@ class MovingLineForm extends Form {
     }
   }
 
+  arcLine( pts, distRatio=0.5, maxDist=0, repeats=7, startAngle=0 ) {
+
+    var last = null;
+
+    for (var i=0; i<pts.length; i++) {
+      let vec = new Vector( pts[i] );
+
+      // smooth distance
+      let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
+      if (maxDist>0) dist = Math.min(dist, maxDist);
+
+      // draw normal lines
+      if (last != null) {
+
+        var gap = dist/3;
+        var r = Math.PI/8;
+
+        for (var n=1; n<repeats; n++) {
+          var offset = n/10 + 2*i/pts.length + startAngle;
+          let circle = new Circle( vec.$subtract( last ).divide( 2 ).add( last ) ).setRadius( gap*n+gap );
+          var d = (n%2 == 0) ? offset : -offset;
+          d *= i * Const.one_degree;
+          this.arc( circle, d, d + r);
+        }
+      }
+
+      last = vec.clone();
+      //this.line( new Line(normal.p1).to(normal.p2));
+    }
+  }
+
 
   zigZagLine( pts, distRatio=0.5, maxDist=0 ) {
 

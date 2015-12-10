@@ -22,8 +22,6 @@ class SpeedBrush extends SpeedLine {
       light2: "rgba(255,255,255, .05)"
     };
 
-
-
   }
 
 
