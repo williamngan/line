@@ -129,6 +129,25 @@ class MovingLineForm extends Form {
     }
   }
 
+  growLine( pts, lastPts ) {
+
+    var last = pts[0] || new Vector();
+
+    for (var i=0; i<pts.length; i++) {
+      if (lastPts[i]) {
+        pts[i].z += 1; // use z for count
+
+        var ln = new Line( last ).to( pts[i] );
+        var ip = ln.interpolate( Math.min(30, pts[i].z) / 10 );
+        this.line( new Line( last ).to( ip ) );
+
+        last = pts[i];
+      }
+
+      lastPts[i] = pts[i];
+    }
+  }
+
 
   zigZagLine( pts, distRatio=0.5, maxDist=0 ) {
 

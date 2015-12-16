@@ -4,7 +4,7 @@ class ArcLine extends BaseLine {
     super( ...args );
 
     this.color = {
-      dark: "#374a58",
+      dark: "#65739a",
       dark2: "rgba(55,74,88, .1)",
       light: "#fff",
       light2: "rgba(255,255,255, .1)"
