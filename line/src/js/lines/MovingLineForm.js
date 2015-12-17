@@ -138,8 +138,36 @@ class MovingLineForm extends Form {
         pts[i].z += 1; // use z for count
 
         var ln = new Line( last ).to( pts[i] );
-        var ip = ln.interpolate( Math.min(30, pts[i].z) / 10 );
+        var ip = ln.interpolate( Math.min( 30, pts[i].z ) / 10 );
         this.line( new Line( last ).to( ip ) );
+
+        last = pts[i];
+      }
+
+      lastPts[i] = pts[i];
+    }
+  }
+
+
+  jaggedLine( pts, lastPts ) {
+
+    var last = pts[0] || new Vector();
+
+    for (var i=0; i<pts.length; i++) {
+      if (lastPts[i]) {
+        pts[i].z += 1; // use z for count
+
+        var ln = new Line( last ).to( pts[i] );
+        var dist = this._getSegmentDistance( last, pts[i], i ) * 1;
+
+        for (var s=0; s<10; s++) {
+
+          var normal = this._getSegmentNormal( last, pts[i], dist * Math.min( 30, pts[i].z ) / 30, s/10, Math.abs(s-5)/5 );
+          //var ip = ln.interpolate( Math.min( 30, pts[i].z ) / 10 );
+          //this.line( new Line( last ).to( ip ) );
+          this.line( new Line( normal.p1 ).to( new Pair( normal.p1).to( normal.p2 ).midpoint() ) );
+
+        }
 
         last = pts[i];
       }

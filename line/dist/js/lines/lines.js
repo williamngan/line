@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x85, _x86, _x87) { var _again = true; _function: while (_again) { var object = _x85, property = _x86, receiver = _x87; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x85 = parent; _x86 = property; _x87 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x86, _x87, _x88) { var _again = true; _function: while (_again) { var object = _x86, property = _x87, receiver = _x88; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x86 = parent; _x87 = property; _x88 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -222,6 +222,33 @@ var MovingLineForm = (function (_Form) {
           var ln = new Line(last).to(pts[i]);
           var ip = ln.interpolate(Math.min(30, pts[i].z) / 10);
           this.line(new Line(last).to(ip));
+
+          last = pts[i];
+        }
+
+        lastPts[i] = pts[i];
+      }
+    }
+  }, {
+    key: "jaggedLine",
+    value: function jaggedLine(pts, lastPts) {
+
+      var last = pts[0] || new Vector();
+
+      for (var i = 0; i < pts.length; i++) {
+        if (lastPts[i]) {
+          pts[i].z += 1; // use z for count
+
+          var ln = new Line(last).to(pts[i]);
+          var dist = this._getSegmentDistance(last, pts[i], i) * 1;
+
+          for (var s = 0; s < 10; s++) {
+
+            var normal = this._getSegmentNormal(last, pts[i], dist * Math.min(30, pts[i].z) / 30, s / 10, Math.abs(s - 5) / 5);
+            //var ip = ln.interpolate( Math.min( 30, pts[i].z ) / 10 );
+            //this.line( new Line( last ).to( ip ) );
+            this.line(new Line(normal.p1).to(new Pair(normal.p1).to(normal.p2).midpoint()));
+          }
 
           last = pts[i];
         }
@@ -2179,4 +2206,58 @@ var GrowLine = (function (_BaseLine7) {
   }]);
 
   return GrowLine;
+})(BaseLine);
+
+var JaggedLine = (function (_BaseLine8) {
+  _inherits(JaggedLine, _BaseLine8);
+
+  function JaggedLine() {
+    _classCallCheck(this, JaggedLine);
+
+    for (var _len24 = arguments.length, args = Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
+      args[_key24] = arguments[_key24];
+    }
+
+    _get(Object.getPrototypeOf(JaggedLine.prototype), "constructor", this).apply(this, args);
+
+    this.maxPoints = 100;
+
+    this.color = {
+      dark: "#65739a",
+      dark2: "rgba(55,74,88, .1)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .1)"
+    };
+
+    this.color2 = {
+      dark: "#95b1f9",
+      dark2: "rgba(149,177,249, .1)",
+      light: "#fff",
+      light2: "rgba(255,255,255, .1)"
+    };
+
+    this.ang = 0;
+
+    this.lastPoints = [];
+  }
+
+  _createClass(JaggedLine, [{
+    key: "trim",
+    value: function trim() {
+      var m = this.tracing ? this.maxTracePoints : this.maxPoints;
+      if (this.points.length > m) {
+        this.disconnect(Math.floor(this.points.length / 100));
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      f.stroke(this.getColor()).fill(false);
+      f.jaggedLine(this.points, this.lastPoints);
+    }
+  }]);
+
+  return JaggedLine;
 })(BaseLine);
