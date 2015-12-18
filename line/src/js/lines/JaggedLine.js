@@ -7,7 +7,7 @@ class JaggedLine extends BaseLine {
 
     this.color = {
       dark: "#65739a",
-      dark2: "rgba(55,74,88, .1)",
+      dark2: "rgba(55,74,88, .15)",
       light: "#fff",
       light2: "rgba(255,255,255, .1)"
     };
@@ -34,6 +34,8 @@ class JaggedLine extends BaseLine {
   draw( f=this.form ) {
 
     f.stroke( this.getColor() ).fill( false );
+
+    f.polygon( this.points, false );
     f.jaggedLine( this.points, this.lastPoints );
   }
 

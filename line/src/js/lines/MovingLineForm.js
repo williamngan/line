@@ -4,11 +4,22 @@ class MovingLineForm extends Form {
     super(...args);
   }
 
-  _getSegmentDistance( last, curr, index ) {
+
+  _getSegmentDistance( last, curr ) {
     return (last && curr) ? curr.distance( last ) : 0;
   }
 
 
+  /**
+   * Get a normal line (which cuts cross two points) from an interpolated point of the two points
+   * @param last Point 1
+   * @param curr Point 2
+   * @param dist distance of the line
+   * @param t interpolate value (0 to 1), defaults to middle (0.5)
+   * @param distRatio scale factor of the distance, defaults to 1
+   * @returns {{p1: *, p2: *}}
+   * @private
+   */
   _getSegmentNormal( last, curr, dist, t=0.5, distRatio=null ) {
     if (last) {
       let ln = new Line( last ).to( curr );
@@ -19,6 +30,7 @@ class MovingLineForm extends Form {
       return {p1: curr.clone(), p2: curr.clone()};
     }
   }
+
 
   /**
    * Draw noise polygons
@@ -75,10 +87,12 @@ class MovingLineForm extends Form {
     }
   }
 
+
   /**
    * Draw polygons based on "speed
    * @param pts points list
-   * @param distRatio distance ratio (0.5)
+   * @param distRatio distance scaling ratio, defaults to 0.5
+   * @param maxDist maximum distance
    */
   speedLine( pts, distRatio=0.5, maxDist=0 ) {
 
@@ -98,6 +112,14 @@ class MovingLineForm extends Form {
     }
   }
 
+  /**
+   * Draw a line with arcs tracing around its points
+   * @param pts points list
+   * @param distRatio distance scaling ratio, defaults to 0.5
+   * @param maxDist maximum distance
+   * @param repeats number of arcs to draw around the point
+   * @param startAngle start angle of the arc
+   */
   arcLine( pts, distRatio=0.5, maxDist=0, repeats=7, startAngle=0 ) {
 
     var last = null;
@@ -129,6 +151,12 @@ class MovingLineForm extends Form {
     }
   }
 
+
+  /**
+   * Draw a line that composes of "overshooting" straight line segments
+   * @param pts points list
+   * @param lastPts last points list (for calculations)
+   */
   growLine( pts, lastPts ) {
 
     var last = pts[0] || new Vector();
@@ -149,24 +177,34 @@ class MovingLineForm extends Form {
   }
 
 
-  jaggedLine( pts, lastPts ) {
+  /**
+   * A line with perpendicular lines that cuts across it in an expanding zigzag pattern
+   * @param pts points list
+   * @param lastPts last points list (for calculations)
+   * @param speed number of cycles to finish the expanding perpendicular lines
+   */
+  jaggedLine( pts, lastPts, speed=40 ) {
 
     var last = pts[0] || new Vector();
+    var halfSpeed = speed/2;
 
     for (var i=0; i<pts.length; i++) {
       if (lastPts[i]) {
-        pts[i].z += 1; // use z for count
 
-        var ln = new Line( last ).to( pts[i] );
+        pts[i].z += 1; // use z for count
         var dist = this._getSegmentDistance( last, pts[i], i ) * 1;
 
         for (var s=0; s<10; s++) {
+          var ds = s/10;
+          var normal = this._getSegmentNormal(
+              last, pts[i],
+              dist * Math.min( speed, pts[i].z ) / halfSpeed,
+              ds, Math.abs(ds-0.5)
+          );
 
-          var normal = this._getSegmentNormal( last, pts[i], dist * Math.min( 30, pts[i].z ) / 30, s/10, Math.abs(s-5)/5 );
-          //var ip = ln.interpolate( Math.min( 30, pts[i].z ) / 10 );
-          //this.line( new Line( last ).to( ip ) );
-          this.line( new Line( normal.p1 ).to( new Pair( normal.p1).to( normal.p2 ).midpoint() ) );
-
+          var ln = new Line( normal.p1).to( normal.p2 );
+          ln.to( ln.midpoint() );
+          this.line( ln );
         }
 
         last = pts[i];
@@ -177,6 +215,12 @@ class MovingLineForm extends Form {
   }
 
 
+  /**
+   * A line that's complemented by another curve that zigzags around it
+   * @param pts points list
+   * @param distRatio last points list (for calculations)
+   * @param maxDist maximum distance
+   */
   zigZagLine( pts, distRatio=0.5, maxDist=0 ) {
 
     var last = null;
@@ -199,6 +243,11 @@ class MovingLineForm extends Form {
     this.polygon( new Curve().to(zz).catmullRom(5), false, false );
   }
 
+
+  /**
+   * A line complemented by variations of its restatements
+   * @param pts points list
+   */
   restatedLine( pts ) {
 
     var c1 = [];
@@ -219,6 +268,12 @@ class MovingLineForm extends Form {
     this.polygon(  new Curve().to(c3).bspline(5), false, false );
   }
 
+
+  /**
+   * A line whose path is shaped by small curved hatchings
+   * @param pts points list
+   * @param gap gap distance between hatchings, defaults to 3
+   */
   hatchingLine( pts, gap=3 ) {
 
     var ps1 = [];
@@ -239,8 +294,15 @@ class MovingLineForm extends Form {
     }
   }
 
+  /**
+   * A brushstroke created by stripes of thin lines
+   * @param pts points list
+   * @param nums number of inner lines
+   * @param distRatio distance scaling ratio, defaults to 0.5
+   * @param smoothSteps number of steps for the smoothing function. defaults to 3.
+   * @param maxDist maximum distance
+   */
   innerLine( pts, nums = 5, distRatio=0.5, smoothSteps=3, maxDist=0 ) {
-
 
     var last = null;
     var normals = [];
@@ -269,7 +331,16 @@ class MovingLineForm extends Form {
 
   }
 
-
+  /**
+   * A flat brushstroke created by stripes of thin lines moving in waves
+   * @param pts points list
+   * @param nums number of inner lines
+   * @param thickness thickness of the brushstroke
+   * @param wiggle an object { angle, step } which specifies the current angle and step for wave movement
+   * @param distRatio distance scaling function
+   * @param smoothSteps number of steps for the smoothing function. defaults to 3.
+   * @param maxDist maximum distance
+   */
   innerWiggleLine( pts, nums=5, thickness=100, wiggle={angle: 0, step: 0.01}, distRatio=0.5, smoothSteps=3, maxDist=0 ) {
 
     var last = null;
@@ -303,11 +374,12 @@ class MovingLineForm extends Form {
   }
 
   /**
-   * Draw polygons based on "speed
+   * Draw a polygonal brushstroke that's based on the distanced travelled between segments (speed)
    * @param pts points list
-   * @param flipSpeed flip thickness (0 or a value such as 10)
-   * @param distRatio distance ratio (0.5)
-   * @param smoothSteps number of steps per average
+   * @param flipSpeed a value to invert the distance-to-thickness calculation. Either 0 or specifies a max distance.
+   * @param distRatio distance scaling factor
+   * @param smoothSteps number of steps for the smoothing function. defaults to 3.
+   * @param maxDist maximum distance
    */
   speedPolygon( pts, flipSpeed=0, distRatio=0.5, smoothSteps=1, maxDist=0 ) {
 
@@ -336,13 +408,14 @@ class MovingLineForm extends Form {
 
 
   /**
-   * Draw noise polygons
+   * Draw simplex noise polygons
    * @param pts points list
    * @param noise noise instance (seeded)
    * @param nf noise factors { a: current noise value, b: noise scale for layer index, c: noise scale for point index }
-   * @param flipSpeed flip thickness (0 or a value such as 10)
+   * @param flipSpeed flip thickness (0 or a value that specifies max distance, such as 10)
    * @param distRatio distance ratio (0.5)
    * @param smoothSteps number of steps per average
+   * @param maxDist maximum distance
    * @param layers number of layers
    * @param magnify magnification ratio
    * @param curveSegments number of segments for curve, or 0 for no curve
@@ -385,7 +458,19 @@ class MovingLineForm extends Form {
 
   }
 
-
+  /**
+   * Draw waving dashed lines with simplex noise
+   * @param pts points list
+   * @param noise noise instance (seeded)
+   * @param nf noise factors { a: current noise value, b: noise scale for layer index, c: noise scale for point index }
+   * @param flipSpeed flip thickness (0 or a value that specifies max distance, such as 10)
+   * @param distRatio distance ratio (0.5)
+   * @param smoothSteps number of steps per average
+   * @param maxDist maximum distance
+   * @param layers number of layers
+   * @param magnify magnification ratio
+   * @param curveSegments number of segments for curve, or 0 for no curve
+   */
   noiseDashLine( pts, noise, nf={a:0, b:0.005, c:0.005}, flipSpeed=0, distRatio=0.5, smoothSteps=1, maxDist=0, layers=15,  magnify=3, curveSegments=0 ) {
 
     var last = null;
@@ -429,14 +514,24 @@ class MovingLineForm extends Form {
 
   }
 
-
+  /**
+   * Draw choppy lines with simplex noise
+   * @param pts points list
+   * @param noise noise instance (seeded)
+   * @param nf noise factors { a: current noise value, b: noise scale for layer index, c: noise scale for point index }
+   * @param flipSpeed flip thickness (0 or a value that specifies max distance, such as 10)
+   * @param distRatio distance ratio (0.5)
+   * @param smoothSteps number of steps per average
+   * @param maxDist maximum distance
+   * @param layers number of layers
+   * @param magnify magnification ratio
+   * @param curveSegments number of segments for curve, or 0 for no curve
+   */
   noiseChopLine( pts, noise, nf={a:0, b:0.005, c:0.005}, flipSpeed=0, distRatio=0.5, smoothSteps=1, maxDist=0, layers=15,  magnify=3, curveSegments=0 ) {
 
     var last = null;
     var lastPt = [];
-    var olderLayer = [];
     var distSteps = [];
-
 
     // go through each points
     for (let i=0; i<pts.length; i++) {
@@ -465,7 +560,6 @@ class MovingLineForm extends Form {
         }
 
         lastPt[n] = {p1: normal.p1.clone(), p2: normal.p2.clone(), np1: normal2.p1.clone(), np2: normal2.p2.clone() };
-
       }
 
       last = vec.clone();

@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x86, _x87, _x88) { var _again = true; _function: while (_again) { var object = _x86, property = _x87, receiver = _x88; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x86 = parent; _x87 = property; _x88 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x87, _x88, _x89) { var _again = true; _function: while (_again) { var object = _x87, property = _x88, receiver = _x89; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x87 = parent; _x88 = property; _x89 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -62,9 +62,20 @@ var MovingLineForm = (function (_Form) {
 
   _createClass(MovingLineForm, [{
     key: "_getSegmentDistance",
-    value: function _getSegmentDistance(last, curr, index) {
+    value: function _getSegmentDistance(last, curr) {
       return last && curr ? curr.distance(last) : 0;
     }
+
+    /**
+     * Get a normal line (which cuts cross two points) from an interpolated point of the two points
+     * @param last Point 1
+     * @param curr Point 2
+     * @param dist distance of the line
+     * @param t interpolate value (0 to 1), defaults to middle (0.5)
+     * @param distRatio scale factor of the distance, defaults to 1
+     * @returns {{p1: *, p2: *}}
+     * @private
+     */
   }, {
     key: "_getSegmentNormal",
     value: function _getSegmentNormal(last, curr, dist) {
@@ -150,7 +161,8 @@ var MovingLineForm = (function (_Form) {
     /**
      * Draw polygons based on "speed
      * @param pts points list
-     * @param distRatio distance ratio (0.5)
+     * @param distRatio distance scaling ratio, defaults to 0.5
+     * @param maxDist maximum distance
      */
   }, {
     key: "speedLine",
@@ -173,6 +185,15 @@ var MovingLineForm = (function (_Form) {
         this.line(new Line(normal.p1).to(normal.p2));
       }
     }
+
+    /**
+     * Draw a line with arcs tracing around its points
+     * @param pts points list
+     * @param distRatio distance scaling ratio, defaults to 0.5
+     * @param maxDist maximum distance
+     * @param repeats number of arcs to draw around the point
+     * @param startAngle start angle of the arc
+     */
   }, {
     key: "arcLine",
     value: function arcLine(pts) {
@@ -209,6 +230,12 @@ var MovingLineForm = (function (_Form) {
         //this.line( new Line(normal.p1).to(normal.p2));
       }
     }
+
+    /**
+     * Draw a line that composes of "overshooting" straight line segments
+     * @param pts points list
+     * @param lastPts last points list (for calculations)
+     */
   }, {
     key: "growLine",
     value: function growLine(pts, lastPts) {
@@ -229,25 +256,34 @@ var MovingLineForm = (function (_Form) {
         lastPts[i] = pts[i];
       }
     }
+
+    /**
+     * A line with perpendicular lines that cuts across it in an expanding zigzag pattern
+     * @param pts points list
+     * @param lastPts last points list (for calculations)
+     * @param speed number of cycles to finish the expanding perpendicular lines
+     */
   }, {
     key: "jaggedLine",
     value: function jaggedLine(pts, lastPts) {
+      var speed = arguments.length <= 2 || arguments[2] === undefined ? 40 : arguments[2];
 
       var last = pts[0] || new Vector();
+      var halfSpeed = speed / 2;
 
       for (var i = 0; i < pts.length; i++) {
         if (lastPts[i]) {
-          pts[i].z += 1; // use z for count
 
-          var ln = new Line(last).to(pts[i]);
+          pts[i].z += 1; // use z for count
           var dist = this._getSegmentDistance(last, pts[i], i) * 1;
 
           for (var s = 0; s < 10; s++) {
+            var ds = s / 10;
+            var normal = this._getSegmentNormal(last, pts[i], dist * Math.min(speed, pts[i].z) / halfSpeed, ds, Math.abs(ds - 0.5));
 
-            var normal = this._getSegmentNormal(last, pts[i], dist * Math.min(30, pts[i].z) / 30, s / 10, Math.abs(s - 5) / 5);
-            //var ip = ln.interpolate( Math.min( 30, pts[i].z ) / 10 );
-            //this.line( new Line( last ).to( ip ) );
-            this.line(new Line(normal.p1).to(new Pair(normal.p1).to(normal.p2).midpoint()));
+            var ln = new Line(normal.p1).to(normal.p2);
+            ln.to(ln.midpoint());
+            this.line(ln);
           }
 
           last = pts[i];
@@ -256,6 +292,13 @@ var MovingLineForm = (function (_Form) {
         lastPts[i] = pts[i];
       }
     }
+
+    /**
+     * A line that's complemented by another curve that zigzags around it
+     * @param pts points list
+     * @param distRatio last points list (for calculations)
+     * @param maxDist maximum distance
+     */
   }, {
     key: "zigZagLine",
     value: function zigZagLine(pts) {
@@ -281,6 +324,11 @@ var MovingLineForm = (function (_Form) {
 
       this.polygon(new Curve().to(zz).catmullRom(5), false, false);
     }
+
+    /**
+     * A line complemented by variations of its restatements
+     * @param pts points list
+     */
   }, {
     key: "restatedLine",
     value: function restatedLine(pts) {
@@ -302,6 +350,12 @@ var MovingLineForm = (function (_Form) {
       this.polygon(new Curve().to(c2).cardinal(5, 0.45), false, false);
       this.polygon(new Curve().to(c3).bspline(5), false, false);
     }
+
+    /**
+     * A line whose path is shaped by small curved hatchings
+     * @param pts points list
+     * @param gap gap distance between hatchings, defaults to 3
+     */
   }, {
     key: "hatchingLine",
     value: function hatchingLine(pts) {
@@ -324,6 +378,15 @@ var MovingLineForm = (function (_Form) {
         ps1[d1] = pts[i];
       }
     }
+
+    /**
+     * A brushstroke created by stripes of thin lines
+     * @param pts points list
+     * @param nums number of inner lines
+     * @param distRatio distance scaling ratio, defaults to 0.5
+     * @param smoothSteps number of steps for the smoothing function. defaults to 3.
+     * @param maxDist maximum distance
+     */
   }, {
     key: "innerLine",
     value: function innerLine(pts) {
@@ -362,6 +425,17 @@ var MovingLineForm = (function (_Form) {
         this.polygon(normals[n], false, false);
       }
     }
+
+    /**
+     * A flat brushstroke created by stripes of thin lines moving in waves
+     * @param pts points list
+     * @param nums number of inner lines
+     * @param thickness thickness of the brushstroke
+     * @param wiggle an object { angle, step } which specifies the current angle and step for wave movement
+     * @param distRatio distance scaling function
+     * @param smoothSteps number of steps for the smoothing function. defaults to 3.
+     * @param maxDist maximum distance
+     */
   }, {
     key: "innerWiggleLine",
     value: function innerWiggleLine(pts) {
@@ -407,11 +481,12 @@ var MovingLineForm = (function (_Form) {
     }
 
     /**
-     * Draw polygons based on "speed
+     * Draw a polygonal brushstroke that's based on the distanced travelled between segments (speed)
      * @param pts points list
-     * @param flipSpeed flip thickness (0 or a value such as 10)
-     * @param distRatio distance ratio (0.5)
-     * @param smoothSteps number of steps per average
+     * @param flipSpeed a value to invert the distance-to-thickness calculation. Either 0 or specifies a max distance.
+     * @param distRatio distance scaling factor
+     * @param smoothSteps number of steps for the smoothing function. defaults to 3.
+     * @param maxDist maximum distance
      */
   }, {
     key: "speedPolygon",
@@ -445,13 +520,14 @@ var MovingLineForm = (function (_Form) {
     }
 
     /**
-     * Draw noise polygons
+     * Draw simplex noise polygons
      * @param pts points list
      * @param noise noise instance (seeded)
      * @param nf noise factors { a: current noise value, b: noise scale for layer index, c: noise scale for point index }
-     * @param flipSpeed flip thickness (0 or a value such as 10)
+     * @param flipSpeed flip thickness (0 or a value that specifies max distance, such as 10)
      * @param distRatio distance ratio (0.5)
      * @param smoothSteps number of steps per average
+     * @param maxDist maximum distance
      * @param layers number of layers
      * @param magnify magnification ratio
      * @param curveSegments number of segments for curve, or 0 for no curve
@@ -502,6 +578,20 @@ var MovingLineForm = (function (_Form) {
         this.polygon(curveSegments > 0 ? curve.catmullRom(curveSegments) : curve.points);
       }
     }
+
+    /**
+     * Draw waving dashed lines with simplex noise
+     * @param pts points list
+     * @param noise noise instance (seeded)
+     * @param nf noise factors { a: current noise value, b: noise scale for layer index, c: noise scale for point index }
+     * @param flipSpeed flip thickness (0 or a value that specifies max distance, such as 10)
+     * @param distRatio distance ratio (0.5)
+     * @param smoothSteps number of steps per average
+     * @param maxDist maximum distance
+     * @param layers number of layers
+     * @param magnify magnification ratio
+     * @param curveSegments number of segments for curve, or 0 for no curve
+     */
   }, {
     key: "noiseDashLine",
     value: function noiseDashLine(pts, noise) {
@@ -551,6 +641,20 @@ var MovingLineForm = (function (_Form) {
         last = vec.clone();
       }
     }
+
+    /**
+     * Draw choppy lines with simplex noise
+     * @param pts points list
+     * @param noise noise instance (seeded)
+     * @param nf noise factors { a: current noise value, b: noise scale for layer index, c: noise scale for point index }
+     * @param flipSpeed flip thickness (0 or a value that specifies max distance, such as 10)
+     * @param distRatio distance ratio (0.5)
+     * @param smoothSteps number of steps per average
+     * @param maxDist maximum distance
+     * @param layers number of layers
+     * @param magnify magnification ratio
+     * @param curveSegments number of segments for curve, or 0 for no curve
+     */
   }, {
     key: "noiseChopLine",
     value: function noiseChopLine(pts, noise) {
@@ -565,7 +669,6 @@ var MovingLineForm = (function (_Form) {
 
       var last = null;
       var lastPt = [];
-      var olderLayer = [];
       var distSteps = [];
 
       // go through each points
@@ -2224,7 +2327,7 @@ var JaggedLine = (function (_BaseLine8) {
 
     this.color = {
       dark: "#65739a",
-      dark2: "rgba(55,74,88, .1)",
+      dark2: "rgba(55,74,88, .15)",
       light: "#fff",
       light2: "rgba(255,255,255, .1)"
     };
@@ -2255,6 +2358,8 @@ var JaggedLine = (function (_BaseLine8) {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
       f.stroke(this.getColor()).fill(false);
+
+      f.polygon(this.points, false);
       f.jaggedLine(this.points, this.lastPoints);
     }
   }]);
