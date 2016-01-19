@@ -18,10 +18,11 @@ class InnerLine extends SmoothSpeedBrush {
 
     // connect polygons
     f.stroke( this.getColor() ).fill( false );
-    f.innerLine( this.points, 10, 1, 7 );
+    f.innerLine( this.points, 20, 1, 7 );
   }
 
   up() {
 
   }
+
 }

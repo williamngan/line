@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x88, _x89, _x90) { var _again = true; _function: while (_again) { var object = _x88, property = _x89, receiver = _x90; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x88 = parent; _x89 = property; _x90 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x87, _x88, _x89) { var _again = true; _function: while (_again) { var object = _x87, property = _x88, receiver = _x89; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x87 = parent; _x88 = property; _x89 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -1254,14 +1254,14 @@ var SpeedBrush = (function (_SpeedLine3) {
     this.maxPoints = 100;
 
     this.color = {
-      dark: "#95b1f9",
+      dark: "rgba(200,220,230, .2)",
       dark2: "rgba(255,255,255, .1)",
       light: "#fff",
       light2: "rgba(255,255,255, .05)"
     };
 
     this.color2 = {
-      dark: "rgba(51,64,87, .1)",
+      dark: "#95b1f9",
       dark2: "rgba(51,64,87, .05)",
       light: "#fff",
       light2: "rgba(255,255,255, .05)"
@@ -1273,16 +1273,14 @@ var SpeedBrush = (function (_SpeedLine3) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
-      f.stroke(false).fill(this.getColor("color2"));
-      f.speedPolygon(this.points, this.flipSpeed, 0.5, 1, this.maxDistance());
+      f.stroke(false).fill(this.getColor());
+      f.speedPolygon(this.points, 0, 0.5, 3, this.maxDistance(30));
 
       f.stroke(this.getColor("color2")).fill(false);
       f.speedLine(this.points);
 
-      f.stroke(this.getColor()).fill(false);
+      f.stroke(this.getColor("color2")).fill(false);
       f.polygon(this.points, false);
-      //this.form.curve( this.catmullRom(5) );
-      //this.drawLine();
     }
   }, {
     key: "up",
@@ -1382,7 +1380,7 @@ var InnerLine = (function (_SmoothSpeedBrush) {
 
       // connect polygons
       f.stroke(this.getColor()).fill(false);
-      f.innerLine(this.points, 10, 1, 7);
+      f.innerLine(this.points, 20, 1, 7);
     }
   }, {
     key: "up",
@@ -2365,88 +2363,4 @@ var JaggedLine = (function (_BaseLine8) {
   }]);
 
   return JaggedLine;
-})(BaseLine);
-
-var Snow = (function (_BaseLine9) {
-  _inherits(Snow, _BaseLine9);
-
-  function Snow() {
-    _classCallCheck(this, Snow);
-
-    for (var _len25 = arguments.length, args = Array(_len25), _key25 = 0; _key25 < _len25; _key25++) {
-      args[_key25] = arguments[_key25];
-    }
-
-    _get(Object.getPrototypeOf(Snow.prototype), "constructor", this).apply(this, args);
-
-    this.maxPoints = 60;
-    this.maxTracePoints = 20;
-
-    this.noise = new Noise();
-
-    // noise seed defines the styles
-    this.seeds = [0.7642476900946349, 0.04564903723075986, 0.4202376299072057, 0.35483957454562187, 0.9071740123908967, 0.8731264418456703, 0.7436990102287382, 0.23965814616531134];
-
-    this.seedIndex = 2;
-    this.noise.seed(this.seeds[this.seedIndex]);
-
-    this.pointThreshold = 20;
-    this.flipSpeed = 0;
-
-    // override color
-    this.color = {
-      dark: "rgba(0,0,0,.3)",
-      dark2: "rgba(0,0,0,.05)",
-      light: "#f3f5f9",
-      light2: "rgba(243,245,249, 0)"
-    };
-  }
-
-  _createClass(Snow, [{
-    key: "seed",
-    value: function seed() {
-      this.noise = new Noise();
-      this.seedIndex = this.seedIndex >= this.seeds.length - 1 ? 0 : this.seedIndex + 1;
-      this.noise.seed(this.seedIndex);
-    }
-  }, {
-    key: "draw",
-    value: function draw() {
-      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
-
-      f.stroke(this.getColor()).fill(false);
-
-      var distRatio = 1;
-      var smooth = 3;
-      var layers = 3;
-      var magnify = 1;
-      var curveSegments = 3;
-
-      var noiseFactors = { a: 0, b: 0.01, c: 0.01 };
-
-      var n1 = 0;
-      var n2 = 0;
-      for (var i = 0; i < 10; i++) {
-        n1 += 0.01;
-        n2 += 3;
-        var dn = f._getNoiseDistance(this.noise, n1, 50, 1, 2);
-        this.points[i] = new Vector(n2, dn + 120);
-        f.point(this.points[i]);
-      }
-
-      f.polygon(this.points, false, true);
-
-      //f.noisePolygon( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, 50, layers, magnify, curveSegments);
-    }
-  }, {
-    key: "up",
-    value: function up() {
-      if (++this._flip % 2 === 0) {
-        this.flipSpeed = this.flipSpeed > 0 ? 0 : 25;
-      }
-      this.seed();
-    }
-  }]);
-
-  return Snow;
 })(BaseLine);
