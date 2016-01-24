@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x87, _x88, _x89) { var _again = true; _function: while (_again) { var object = _x87, property = _x88, receiver = _x89; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x87 = parent; _x88 = property; _x89 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x88, _x89, _x90) { var _again = true; _function: while (_again) { var object = _x88, property = _x89, receiver = _x90; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x88 = parent; _x89 = property; _x90 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -1827,25 +1827,28 @@ var LagLine = (function (_BaseLine5) {
 
     _get(Object.getPrototypeOf(LagLine.prototype), "constructor", this).apply(this, args);
 
-    this.pointThreshold = 50;
-    this.maxPoints = 200;
+    this.pointThreshold = 20;
+    this.maxPoints = 100;
 
     this.targets = [];
     this.ang = 0;
 
     this.color = {
       dark: "rgba(51,64,87, .5)",
-      dark2: "rgba(51,64,87, .1)",
+      dark2: "rgba(51,64,87, .2)",
       light: "#fff",
       light2: "rgba(255,255,255, .1)"
     };
 
     this.color2 = {
-      dark: "rgba(255,0,0,.8)",
-      dark2: "rgba(255,0,0, .1)",
+      dark: "rgba(51,64,87, .2)",
+      dark2: "rgba(255,255,255, .3)",
       light: "#fff",
       light2: "rgba(255,255,255, .1)"
     };
+
+    this.lastPoints = [];
+    this.angle = 0;
   }
 
   _createClass(LagLine, [{
@@ -1864,6 +1867,13 @@ var LagLine = (function (_BaseLine5) {
       }
     }
   }, {
+    key: "maxDistance",
+    value: function maxDistance() {
+      var ratio = arguments.length <= 0 || arguments[0] === undefined ? 20 : arguments[0];
+
+      return Math.min(this.canvasSize.x, this.canvasSize.y) / ratio;
+    }
+  }, {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
@@ -1872,17 +1882,19 @@ var LagLine = (function (_BaseLine5) {
 
       if (this.targets.length > 3 && this.points.length > 10) {
         for (var t = 0; t < this.targets.length; t++) {
-
-          var d = this.targets[t].$subtract(this.points[t + 1]);
           var d2 = this.points[t].$subtract(this.points[t + 1]);
           this.targets[t].subtract(d2.multiply(0.11));
         }
 
-        f.stroke(this.getColor()).fill(false);
-        //f.dottedLine( this.points );
+        this.angle += Const.one_degree;
+        f.stroke(this.getColor("color2")).fill(false);
+        f.innerWiggleLine(this.points, 4, 50, { angle: this.angle, step: Const.one_degree * 5 }, 1.5, 2);
 
-        //f.stroke( this.getColor("color2") ).fill( false );
-        f.zigZagLine(this.targets);
+        f.stroke(this.getColor()).fill(false);
+
+        f.hatchingLine(this.targets);
+
+        f.jaggedLine(this.points, this.lastPoints);
       }
     }
   }]);
