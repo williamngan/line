@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x88, _x89, _x90) { var _again = true; _function: while (_again) { var object = _x88, property = _x89, receiver = _x90; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x88 = parent; _x89 = property; _x90 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x90, _x91, _x92) { var _again = true; _function: while (_again) { var object = _x90, property = _x91, receiver = _x92; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x90 = parent; _x91 = property; _x92 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -730,6 +730,44 @@ var BaseLine = (function (_Curve) {
     this.pointThreshold = 10;
     this.distanceThreshold = 200 * 200;
 
+    this.colors = {
+      "black": function black() {
+        var a = arguments.length <= 0 || arguments[0] === undefined ? 0.8 : arguments[0];
+        return {
+          dark: "rgba(51,64,87, " + a + ")",
+          dark2: "rgba(51,64,87, .1)",
+          light: "#fff",
+          light2: "rgba(255,255,255, .1)"
+        };
+      },
+      "grey": function grey() {
+        var a = arguments.length <= 0 || arguments[0] === undefined ? 0.6 : arguments[0];
+        return {
+          dark: "rgba(101,115,154, " + a + ")",
+          dark2: "rgba(101,115,154,.1)",
+          light: "#fff",
+          light2: "rgba(255,255,255, .1)"
+        };
+      },
+      "tint": function tint() {
+        var a = arguments.length <= 0 || arguments[0] === undefined ? 0.5 : arguments[0];
+        return {
+          dark: "rgba(230,235,242, " + a + ")",
+          dark2: "rgba(230,235,242, .1)",
+          light: "#fff",
+          light2: "rgba(255,255,255, .1)"
+        };
+      },
+      "white": function white() {
+        var a = arguments.length <= 0 || arguments[0] === undefined ? 0.8 : arguments[0];
+        return {
+          dark: "rgba(255,255,255, " + a + ")",
+          dark2: "rgba(255,255,255, .2)",
+          light: "#fff",
+          light2: "rgba(255,255,255, .1)"
+        };
+      } };
+
     this.color = {
       dark: "#ff2d5d",
       dark2: "rgba(255,45,93, .1)",
@@ -906,12 +944,7 @@ var DottedLine = (function (_BaseLine) {
 
     this.pointThreshold = 50;
 
-    this.color = {
-      dark: "#42dc8e",
-      dark2: "rgba(66,220,142, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.black();
   }
 
   _createClass(DottedLine, [{
@@ -946,19 +979,8 @@ var InterpolatedLine = (function (_BaseLine2) {
     this._counter = 0;
     this.direction = 1;
 
-    this.color = {
-      dark: "rgba(51,64,87, .5)",
-      dark2: "rgba(51,64,87, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.color2 = {
-      dark: "rgba(255,0,0,.8)",
-      dark2: "rgba(255,0,0, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.grey();
+    this.color2 = this.colors.black();
   }
 
   _createClass(InterpolatedLine, [{
@@ -1021,29 +1043,11 @@ var HatchingLine = (function (_BaseLine3) {
 
     this.pointThreshold = 20;
 
-    this.color = {
-      dark: "rgba(102,117,140, .5)",
-      dark2: "rgba(102,117,140, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.color2 = {
-      dark: "rgba(0,10,30,.3)",
-      dark2: "rgba(0,10,30,.1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.black(0.7);
+    this.color.dark2 = this.colors.black(0.15).dark;
   }
 
   _createClass(HatchingLine, [{
-    key: "maxDistance",
-    value: function maxDistance() {
-      var ratio = arguments.length <= 0 || arguments[0] === undefined ? 20 : arguments[0];
-
-      return Math.min(this.canvasSize.x, this.canvasSize.y) / ratio;
-    }
-  }, {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
@@ -1129,23 +1133,14 @@ var ZigZagLine = (function (_SpeedLine) {
 
     _get(Object.getPrototypeOf(ZigZagLine.prototype), "constructor", this).apply(this, args);
 
-    this.maxPoints = 150;
+    this.maxPoints = 300;
 
-    this.pointThreshold = 50;
+    this.pointThreshold = 30;
 
-    this.color = {
-      dark: "#66758c",
-      dark2: "rgba(102,117,140, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.color2 = {
-      dark: "rgba(66,220,142, .5)",
-      dark2: "rgba(66,220,142, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.black();
+    this.color.dark2 = this.colors.black(.4).dark;
+    this.color2 = this.colors.grey(.3);
+    //this.color2.dark2 = "rgba(0,0,0,0)";
   }
 
   _createClass(ZigZagLine, [{
@@ -1171,11 +1166,13 @@ var ZigZagLine = (function (_SpeedLine) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
-      f.stroke(false).fill(this.getColor("color2"));
-      f.points(this.points, 1);
-      f.stroke(this.getColor("color2")).fill(false).polygon(this.points, false);
+      this.maxTracePoints = 2 + Math.floor(Math.random() * 3);
 
-      f.stroke(this.getColor()).fill(false);
+      f.stroke(false).fill(this.getColor("color2")).points(this.points, 1);
+      f.stroke(this.getColor("color2"), 1).fill(false).polygon(this.points, false);
+
+      var swidth = this.tracing ? 1 : 2;
+      f.stroke(this.getColor(), swidth).fill(false);
       f.zigZagLine(this.points, 0.5, this.maxDistance());
     }
   }]);
@@ -1196,32 +1193,13 @@ var RestatedLine = (function (_SpeedLine2) {
     _get(Object.getPrototypeOf(RestatedLine.prototype), "constructor", this).apply(this, args);
 
     this.maxPoints = 150;
-
     this.pointThreshold = 7 * 7;
 
-    this.color = {
-      dark: "rgba(102,117,140, .5)",
-      dark2: "rgba(102,117,140, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.color2 = {
-      dark: "rgba(0,10,30,.3)",
-      dark2: "rgba(0,10,30,.1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.black(0.6);
+    this.color2 = this.colors.black(0.35);
   }
 
   _createClass(RestatedLine, [{
-    key: "maxDistance",
-    value: function maxDistance() {
-      var ratio = arguments.length <= 0 || arguments[0] === undefined ? 20 : arguments[0];
-
-      return Math.min(this.canvasSize.x, this.canvasSize.y) / ratio;
-    }
-  }, {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
@@ -1253,19 +1231,10 @@ var SpeedBrush = (function (_SpeedLine3) {
     this.flipSpeed = 0;
     this.maxPoints = 100;
 
-    this.color = {
-      dark: "rgba(200,220,230, .2)",
-      dark2: "rgba(255,255,255, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color = this.colors.tint();
+    this.color.dark2 = "rgba(255,255,255,.3)";
 
-    this.color2 = {
-      dark: "#95b1f9",
-      dark2: "rgba(51,64,87, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color2 = this.colors.black();
   }
 
   _createClass(SpeedBrush, [{
@@ -1365,12 +1334,9 @@ var InnerLine = (function (_SmoothSpeedBrush) {
     this.flipSpeed = 0;
     this.maxPoints = 100;
 
-    this.color = {
-      dark: "#ff2d5d",
-      dark2: "rgba(255,45,93, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.black();
+    this.color.dark2 = this.colors.grey(0.02).dark;
+    this.color.light2 = this.colors.tint(0.02).dark;
   }
 
   _createClass(InnerLine, [{
@@ -1378,7 +1344,6 @@ var InnerLine = (function (_SmoothSpeedBrush) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
-      // connect polygons
       f.stroke(this.getColor()).fill(false);
       f.innerLine(this.points, 20, 1, 7);
     }
@@ -1529,10 +1494,10 @@ var NoiseBrush = (function (_SpeedBrush2) {
 
     // override color
     this.color = {
-      dark: "rgba(0,0,0,.6)",
-      dark2: "rgba(0,0,0,.05)",
+      dark: "rgba(0,15,20,.6)",
+      dark2: "rgba(0,15,20,.05)",
       light: "#f3f5f9",
-      light2: "rgba(243,245,249, 0)"
+      light2: "rgba(0,0,20, 0.01)"
     };
   }
 
@@ -2280,35 +2245,12 @@ var GrowLine = (function (_BaseLine7) {
     _get(Object.getPrototypeOf(GrowLine.prototype), "constructor", this).apply(this, args);
 
     this.maxPoints = 500;
-
-    this.color = {
-      dark: "#65739a",
-      dark2: "rgba(55,74,88, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.color2 = {
-      dark: "#95b1f9",
-      dark2: "rgba(149,177,249, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.ang = 0;
-
+    this.color = this.colors.black();
+    this.color.dark2 = "rgba(0,10,15,.1)";
     this.lastPoints = [];
   }
 
   _createClass(GrowLine, [{
-    key: "trim",
-    value: function trim() {
-      var m = this.tracing ? this.maxTracePoints : this.maxPoints;
-      if (this.points.length > m) {
-        this.disconnect(Math.floor(this.points.length / 100));
-      }
-    }
-  }, {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
@@ -2335,41 +2277,23 @@ var JaggedLine = (function (_BaseLine8) {
 
     this.maxPoints = 100;
 
-    this.color = {
-      dark: "#65739a",
-      dark2: "rgba(55,74,88, .15)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.black(.3);
+    this.color.dark2 = "rgba(0,0,0,0)";
 
-    this.color2 = {
-      dark: "#95b1f9",
-      dark2: "rgba(149,177,249, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.ang = 0;
+    this.color2 = this.colors.grey(1);
 
     this.lastPoints = [];
   }
 
   _createClass(JaggedLine, [{
-    key: "trim",
-    value: function trim() {
-      var m = this.tracing ? this.maxTracePoints : this.maxPoints;
-      if (this.points.length > m) {
-        this.disconnect(Math.floor(this.points.length / 100));
-      }
-    }
-  }, {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
       f.stroke(this.getColor()).fill(false);
-
       f.polygon(this.points, false);
+
+      f.stroke(this.getColor("color2"));
       f.jaggedLine(this.points, this.lastPoints);
     }
   }]);

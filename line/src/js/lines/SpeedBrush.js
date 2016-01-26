@@ -7,19 +7,10 @@ class SpeedBrush extends SpeedLine {
     this.flipSpeed = 0;
     this.maxPoints = 100;
 
-    this.color = {
-      dark: "rgba(200,220,230, .2)",
-      dark2: "rgba(255,255,255, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color = this.colors.tint();
+    this.color.dark2 = "rgba(255,255,255,.3)";
 
-    this.color2 = {
-      dark: "#95b1f9",
-      dark2: "rgba(51,64,87, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color2 = this.colors.black();
 
   }
 

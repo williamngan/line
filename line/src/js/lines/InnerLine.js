@@ -6,17 +6,13 @@ class InnerLine extends SmoothSpeedBrush {
     this.flipSpeed = 0;
     this.maxPoints = 100;
 
-    this.color = {
-      dark: "#ff2d5d",
-      dark2: "rgba(255,45,93, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.black();
+    this.color.dark2 = this.colors.grey(0.02).dark;
+    this.color.light2 = this.colors.tint(0.02).dark;
   }
 
   draw( f=this.form ) {
 
-    // connect polygons
     f.stroke( this.getColor() ).fill( false );
     f.innerLine( this.points, 20, 1, 7 );
   }

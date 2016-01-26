@@ -5,37 +5,21 @@ class JaggedLine extends BaseLine {
 
     this.maxPoints = 100;
 
-    this.color = {
-      dark: "#65739a",
-      dark2: "rgba(55,74,88, .15)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.black(.3);
+    this.color.dark2 = "rgba(0,0,0,0)";
 
-    this.color2 = {
-      dark: "#95b1f9",
-      dark2: "rgba(149,177,249, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.ang = 0;
+    this.color2 = this.colors.grey(1);
 
     this.lastPoints = [];
   }
 
-  trim() {
-    var m = (this.tracing) ? this.maxTracePoints : this.maxPoints;
-    if (this.points.length > m ) {
-      this.disconnect( Math.floor(this.points.length/100) );
-    }
-  }
 
   draw( f=this.form ) {
 
     f.stroke( this.getColor() ).fill( false );
-
     f.polygon( this.points, false );
+
+    f.stroke( this.getColor("color2") );
     f.jaggedLine( this.points, this.lastPoints );
   }
 

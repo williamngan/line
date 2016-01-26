@@ -28,10 +28,10 @@ class NoiseBrush extends SpeedBrush {
 
     // override color
     this.color = {
-      dark: "rgba(0,0,0,.6)",
-      dark2: "rgba(0,0,0,.05)",
+      dark: "rgba(0,15,20,.6)",
+      dark2: "rgba(0,15,20,.05)",
       light: "#f3f5f9",
-      light2: "rgba(243,245,249, 0)"
+      light2: "rgba(0,0,20, 0.01)"
     };
 
   }

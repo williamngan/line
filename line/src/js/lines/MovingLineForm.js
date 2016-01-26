@@ -235,7 +235,7 @@ class MovingLineForm extends Form {
 
       if (!last) last = vec.clone();
       let ln = new Line(last).to(vec);
-      zz.push( ln.getPerpendicular( 0, dist, i%2===0 ).p1 );
+      zz.push( ln.getPerpendicular( 0, dist, i%2 === 0).p1 );
 
       last = vec.clone();
     }

@@ -5,12 +5,7 @@ class DottedLine extends BaseLine {
 
     this.pointThreshold = 50;
 
-    this.color = {
-      dark: "#42dc8e",
-      dark2: "rgba(66,220,142, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.black();
   }
 
 

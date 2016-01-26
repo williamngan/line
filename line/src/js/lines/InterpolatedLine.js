@@ -10,19 +10,8 @@ class InterpolatedLine extends BaseLine {
     this._counter = 0;
     this.direction = 1;
 
-    this.color = {
-      dark: "rgba(51,64,87, .5)",
-      dark2: "rgba(51,64,87, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.color2 = {
-      dark: "rgba(255,0,0,.8)",
-      dark2: "rgba(255,0,0, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
+    this.color = this.colors.grey();
+    this.color2 = this.colors.black();
   }
 
   down(x, y) {

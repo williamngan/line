@@ -13,6 +13,33 @@ class BaseLine extends Curve {
     this.pointThreshold = 10;
     this.distanceThreshold = 200*200;
 
+    this.colors = {
+      "black": (a=0.8) => {return {
+        dark: `rgba(51,64,87, ${a})`,
+        dark2: "rgba(51,64,87, .1)",
+        light: "#fff",
+        light2: "rgba(255,255,255, .1)"
+      }},
+      "grey": (a=0.6) => {return {
+        dark: `rgba(101,115,154, ${a})`,
+        dark2: "rgba(101,115,154,.1)",
+        light: "#fff",
+        light2: "rgba(255,255,255, .1)"
+      }},
+      "tint": (a=0.5) => {return {
+        dark: `rgba(230,235,242, ${a})`,
+        dark2: "rgba(230,235,242, .1)",
+        light: "#fff",
+        light2: "rgba(255,255,255, .1)"
+      }},
+      "white": (a=0.8) => {return {
+        dark: `rgba(255,255,255, ${a})`,
+        dark2: "rgba(255,255,255, .2)",
+        light: "#fff",
+        light2: "rgba(255,255,255, .1)"
+      }
+    }};
+
     this.color = {
       dark: "#ff2d5d",
       dark2: "rgba(255,45,93, .1)",
