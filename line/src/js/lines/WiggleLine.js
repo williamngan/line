@@ -7,21 +7,18 @@ class WiggleLine extends InnerLine {
     this.maxPoints = 100;
     this.angle = 0;
 
-    this.color = {
-      dark: "rgba(0,0,0,0.25)",
-      dark2: "rgba(0,0,0, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+
+    this.color = this.colors.black();
   }
 
   draw( f=this.form ) {
 
     this.angle += Const.one_degree;
+    let density = (this.tracing) ? 6 : 30;
 
     // connect polygons
     f.stroke( this.getColor() ).fill( false );
-    f.innerWiggleLine( this.points, 20, 70, {angle: this.angle, step: Const.one_degree*5 }, 1.5, 2 );
+    f.innerWiggleLine( this.points, density, 70, {angle: this.angle, step: Const.one_degree*5 }, 1.5, 2 );
   }
 
 }

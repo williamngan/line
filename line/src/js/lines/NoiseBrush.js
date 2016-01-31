@@ -28,10 +28,10 @@ class NoiseBrush extends SpeedBrush {
 
     // override color
     this.color = {
-      dark: "rgba(0,15,20,.6)",
-      dark2: "rgba(0,15,20,.05)",
+      dark: "rgba(21,34,47,.65)",
+      dark2: "rgba(21,34,47,.05)",
       light: "#f3f5f9",
-      light2: "rgba(0,0,20, 0.01)"
+      light2: "rgba(21,34,47, 0.05)"
     };
 
   }
@@ -47,12 +47,12 @@ class NoiseBrush extends SpeedBrush {
     f.stroke( false ).fill( this.getColor() );
 
     let distRatio = 0.5;
-    let smooth = 3;
+    let smooth = 5;
     let layers = 5;
     let magnify = 2;
     let curveSegments = 3;
 
-    let noiseFactors = {a: 0, b: 0.01, c: 0.01};
+    let noiseFactors = {a: 0, b: 0.05, c: 0.007};
     f.noisePolygon( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
   }
 

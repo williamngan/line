@@ -30,12 +30,8 @@ class NoiseDashLine extends SpeedBrush {
     this.pointThreshold = 20;
     this.flipSpeed = 0;
 
-    this.color = {
-      dark: "rgba(20,10,0, .3)",
-      dark2: "rgba(20,10,0, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color = this.colors.black(.7);
+    this.color.dark2 = this.colors.black(.05).dark;
   }
 
 
@@ -47,17 +43,16 @@ class NoiseDashLine extends SpeedBrush {
 
 
   draw( f=this.form ) {
-    //f.fill( `rgba(255,255,255,${this.alpha})` ).stroke( `rgba(20,0,70,${this.alpha})` );
 
     f.fill( false ).stroke( this.getColor() );
 
-    let distRatio = (this.seedIndex+1)/5;
+    let distRatio = (this.seedIndex+1)/4;
     let smooth = 4;
     let layers = 8;
-    let magnify = 1.2;
-    let curveSegments = 3;
+    let magnify = 1.25;
+    let curveSegments = 1;
 
-    this.noiseProgress += 0.004;
+    this.noiseProgress += 0.003;
     let noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
     f.noiseDashLine( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
   }

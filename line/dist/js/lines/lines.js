@@ -1371,12 +1371,7 @@ var WiggleLine = (function (_InnerLine) {
     this.maxPoints = 100;
     this.angle = 0;
 
-    this.color = {
-      dark: "rgba(0,0,0,0.25)",
-      dark2: "rgba(0,0,0, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color = this.colors.black();
   }
 
   _createClass(WiggleLine, [{
@@ -1385,10 +1380,11 @@ var WiggleLine = (function (_InnerLine) {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
       this.angle += Const.one_degree;
+      var density = this.tracing ? 6 : 30;
 
       // connect polygons
       f.stroke(this.getColor()).fill(false);
-      f.innerWiggleLine(this.points, 20, 70, { angle: this.angle, step: Const.one_degree * 5 }, 1.5, 2);
+      f.innerWiggleLine(this.points, density, 70, { angle: this.angle, step: Const.one_degree * 5 }, 1.5, 2);
     }
   }]);
 
@@ -1494,10 +1490,10 @@ var NoiseBrush = (function (_SpeedBrush2) {
 
     // override color
     this.color = {
-      dark: "rgba(0,15,20,.6)",
-      dark2: "rgba(0,15,20,.05)",
+      dark: "rgba(21,34,47,.65)",
+      dark2: "rgba(21,34,47,.05)",
       light: "#f3f5f9",
-      light2: "rgba(0,0,20, 0.01)"
+      light2: "rgba(21,34,47, 0.05)"
     };
   }
 
@@ -1516,12 +1512,12 @@ var NoiseBrush = (function (_SpeedBrush2) {
       f.stroke(false).fill(this.getColor());
 
       var distRatio = 0.5;
-      var smooth = 3;
+      var smooth = 5;
       var layers = 5;
       var magnify = 2;
       var curveSegments = 3;
 
-      var noiseFactors = { a: 0, b: 0.01, c: 0.01 };
+      var noiseFactors = { a: 0, b: 0.05, c: 0.007 };
       f.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
     }
   }, {
@@ -1565,19 +1561,12 @@ var SmoothNoiseLine = (function (_SpeedBrush3) {
     this.pointThreshold = 20;
     this.flipSpeed = 0;
 
-    this.color = {
-      dark: "rgba(50,30,140, .3)",
-      dark2: "rgba(50,30,140, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
-
-    this.color2 = {
-      dark: "rgba(0,0,0, .05)",
-      dark2: "rgba(255,255,255, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color = this.colors.grey(0.3);
+    this.color.dark2 = "rgba(0,0,20, .03)";
+    this.color.light2 = "rgba(245,245,255, .02)";
+    this.color2 = this.colors.black(0.1);
+    this.color2.dark2 = "rgba(0,0,20, .01)";
+    this.color2.light2 = "rgba(51,64,87, 0)";
   }
 
   _createClass(SmoothNoiseLine, [{
@@ -1592,13 +1581,11 @@ var SmoothNoiseLine = (function (_SpeedBrush3) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
-      //f.fill( `rgba(255,255,255,${this.alpha})` ).stroke( `rgba(20,0,70,${this.alpha})` );
-
-      //f.fill( false ).stroke( this.getColor() );
-      f.stroke("rgba(0,0,0, .1)").fill(this.getColor("color2"));
+      var strokeWidth = this.tracing ? 3 : 1;
+      f.stroke(this.getColor(), strokeWidth).fill(this.getColor("color2"));
 
       var distRatio = 1;
-      var smooth = 3;
+      var smooth = 5;
       var layers = 8;
       var magnify = 1;
       var curveSegments = 3;
@@ -1652,12 +1639,8 @@ var NoiseDashLine = (function (_SpeedBrush4) {
     this.pointThreshold = 20;
     this.flipSpeed = 0;
 
-    this.color = {
-      dark: "rgba(20,10,0, .3)",
-      dark2: "rgba(20,10,0, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color = this.colors.black(.7);
+    this.color.dark2 = this.colors.black(.05).dark;
   }
 
   _createClass(NoiseDashLine, [{
@@ -1672,17 +1655,15 @@ var NoiseDashLine = (function (_SpeedBrush4) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
-      //f.fill( `rgba(255,255,255,${this.alpha})` ).stroke( `rgba(20,0,70,${this.alpha})` );
-
       f.fill(false).stroke(this.getColor());
 
-      var distRatio = (this.seedIndex + 1) / 5;
+      var distRatio = (this.seedIndex + 1) / 4;
       var smooth = 4;
       var layers = 8;
-      var magnify = 1.2;
-      var curveSegments = 3;
+      var magnify = 1.25;
+      var curveSegments = 1;
 
-      this.noiseProgress += 0.004;
+      this.noiseProgress += 0.003;
       var noiseFactors = { a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
       f.noiseDashLine(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
     }
@@ -1732,12 +1713,8 @@ var NoiseChopLine = (function (_SpeedBrush5) {
     this.pointThreshold = 20;
     this.flipSpeed = 0;
 
-    this.color = {
-      dark: "rgba(20,10,0, .3)",
-      dark2: "rgba(20,10,0, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color = this.colors.black();
+    this.color2 = this.colors.grey(.3);
   }
 
   _createClass(NoiseChopLine, [{
@@ -1752,7 +1729,10 @@ var NoiseChopLine = (function (_SpeedBrush5) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
-      f.fill(false).stroke(this.getColor());
+      f.fill(false).stroke(this.getColor("color2"), 1);
+      if (!this.tracing) f.polygon(this.points, false);
+
+      f.stroke(this.getColor());
 
       var distRatio = 1;
       var smooth = 4;

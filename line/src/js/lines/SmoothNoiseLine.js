@@ -30,19 +30,13 @@ class SmoothNoiseLine extends SpeedBrush {
     this.pointThreshold = 20;
     this.flipSpeed = 0;
 
-    this.color = {
-      dark: "rgba(50,30,140, .3)",
-      dark2: "rgba(50,30,140, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color = this.colors.grey(0.3);
+    this.color.dark2 = "rgba(0,0,20, .03)";
+    this.color.light2 = "rgba(245,245,255, .02)";
+    this.color2 = this.colors.black(0.1);
+    this.color2.dark2 = "rgba(0,0,20, .01)";
+    this.color2.light2 = "rgba(51,64,87, 0)";
 
-    this.color2 = {
-      dark: "rgba(0,0,0, .05)",
-      dark2: "rgba(255,255,255, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
   }
 
 
@@ -54,13 +48,12 @@ class SmoothNoiseLine extends SpeedBrush {
 
 
   draw( f=this.form ) {
-    //f.fill( `rgba(255,255,255,${this.alpha})` ).stroke( `rgba(20,0,70,${this.alpha})` );
 
-    //f.fill( false ).stroke( this.getColor() );
-    f.stroke( "rgba(0,0,0, .1)" ).fill( this.getColor("color2") );
+    let strokeWidth = (this.tracing) ? 3 : 1;
+    f.stroke( this.getColor(), strokeWidth ).fill( this.getColor("color2") );
 
     let distRatio = 1;
-    let smooth = 3;
+    let smooth = 5;
     let layers = 8;
     let magnify = 1;
     let curveSegments = 3;

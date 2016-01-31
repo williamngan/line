@@ -30,12 +30,8 @@ class NoiseChopLine extends SpeedBrush {
     this.pointThreshold = 20;
     this.flipSpeed = 0;
 
-    this.color = {
-      dark: "rgba(20,10,0, .3)",
-      dark2: "rgba(20,10,0, .05)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .05)"
-    };
+    this.color = this.colors.black();
+    this.color2 = this.colors.grey(.3);
   }
 
 
@@ -48,7 +44,10 @@ class NoiseChopLine extends SpeedBrush {
 
   draw( f=this.form ) {
 
-    f.fill( false ).stroke( this.getColor() );
+    f.fill( false ).stroke( this.getColor( "color2" ), 1 );
+    if (!this.tracing) f.polygon( this.points, false );
+
+    f.stroke( this.getColor() );
 
     let distRatio = 1;
     let smooth = 4;
