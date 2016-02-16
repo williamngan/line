@@ -15,6 +15,16 @@
 
 	<style>
 
+        html, body {
+            overflow: hidden;
+        }
+
+        #app {
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+            overflow: hidden;
+        }
+
         #brushes {
             user-select: none;
             -webkit-user-select: none;
@@ -44,23 +54,24 @@
 </head>
 <body>
 
-<div id="buffer"></div>
-<div id="playground"></div>
-<div id="brushes">
-    <div class="brush" data-id="BaseLine">Base</div>
-    <div class="brush" data-id="GrowLineBrush">Grow</div>
-    <div class="brush" data-id="JaggedLineBrush">Jagged</div>
-    <div class="brush" data-id="ZigZagLineBrush">ZigZag</div>
-    <div class="brush" data-id="HatchingLine">Hatch</div>
-    <div class="brush" data-id="RestatedLine">Restate</div>
-    <div class="brush" data-id="NoiseChopLine">Chop</div>
-    <div class="brush" data-id="NoiseDashLine">Dash</div>
-    <div class="brush" data-id="InnerLineBrush">Inner</div>
-    <div class="brush" data-id="NoiseBrush">Overlap</div>
-    <div class="brush" data-id="SmoothNoiseLineBrush">Flow</div>
-    <div class="brush" data-id="DottedLineBrush">Dot</div>
+<div id="app">
+    <div id="buffer"></div>
+    <div id="playground"></div>
+    <div id="brushes">
+        <div class="brush" data-id="BaseLine">Base</div>
+        <div class="brush" data-id="GrowLineBrush">Grow</div>
+        <div class="brush" data-id="JaggedLineBrush">Jagged</div>
+        <div class="brush" data-id="ZigZagLineBrush">ZigZag</div>
+        <div class="brush" data-id="HatchingLine">Hatch</div>
+        <div class="brush" data-id="RestatedLine">Restate</div>
+        <div class="brush" data-id="NoiseChopLine">Chop</div>
+        <div class="brush" data-id="NoiseDashLine">Dash</div>
+        <div class="brush" data-id="InnerLineBrush">Inner</div>
+        <div class="brush" data-id="NoiseBrush">Overlap</div>
+        <div class="brush" data-id="SmoothNoiseLineBrush">Flow</div>
+        <div class="brush" data-id="DottedLineBrush">Dot</div>
+    </div>
 </div>
-
 
 <!--<script type="text/javascript" src="dist/js/_Walking.js"></script>-->
 <script type="text/javascript" src="dist/js/play.js"></script>
