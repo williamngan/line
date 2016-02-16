@@ -1,8 +1,10 @@
+// Optimizing some brushes' settings for painting
+
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x7, _x8, _x9) { var _again = true; _function: while (_again) { var object = _x7, property = _x8, receiver = _x9; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x7 = parent; _x8 = property; _x9 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x9, _x10, _x11) { var _again = true; _function: while (_again) { var object = _x9, property = _x10, receiver = _x11; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x9 = parent; _x10 = property; _x11 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -122,7 +124,7 @@ var ZigZagLineBrush = (function (_ZigZagLine) {
       this.maxTracePoints = 1 + Math.floor(Math.random() * 8);
 
       var swidth = this.tracing ? 1 : 2;
-      f.stroke("rgba(0,0,0,.3)", swidth).fill(false);
+      f.stroke(this.getColor(), swidth).fill(false);
       f.zigZagLine(this.points, Math.random() / 3, this.maxDistance(10));
     }
   }]);
@@ -130,14 +132,118 @@ var ZigZagLineBrush = (function (_ZigZagLine) {
   return ZigZagLineBrush;
 })(ZigZagLine);
 
+var NoiseBrushTwo = (function (_NoiseBrush) {
+  _inherits(NoiseBrushTwo, _NoiseBrush);
+
+  function NoiseBrushTwo() {
+    _classCallCheck(this, NoiseBrushTwo);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _get(Object.getPrototypeOf(NoiseBrushTwo.prototype), "constructor", this).apply(this, args);
+    this.seedIndex = Math.floor(Math.random() * this.seeds.length);
+    this.noise.seed(this.seeds[this.seedIndex]);
+  }
+
+  return NoiseBrushTwo;
+})(NoiseBrush);
+
+var NoiseDashLineBrush = (function (_NoiseDashLine) {
+  _inherits(NoiseDashLineBrush, _NoiseDashLine);
+
+  function NoiseDashLineBrush() {
+    _classCallCheck(this, NoiseDashLineBrush);
+
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    _get(Object.getPrototypeOf(NoiseDashLineBrush.prototype), "constructor", this).apply(this, args);
+    this.seedIndex = Math.floor(Math.random() * this.seeds.length);
+    this.noise.seed(this.seeds[this.seedIndex]);
+  }
+
+  _createClass(NoiseDashLineBrush, [{
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      if (!this.shouldDraw()) return;
+
+      f.fill(false).stroke(this.getColor());
+
+      var distRatio = Math.random() + 1;
+      var smooth = 3;
+      var layers = 10;
+      var magnify = 1.5;
+      var curveSegments = 1;
+
+      this.noiseProgress += 0.001;
+      var noiseFactors = { a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
+      f.noiseDashLine(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
+    }
+  }]);
+
+  return NoiseDashLineBrush;
+})(NoiseDashLine);
+
+var NoiseChopLineBrush = (function (_NoiseChopLine) {
+  _inherits(NoiseChopLineBrush, _NoiseChopLine);
+
+  function NoiseChopLineBrush() {
+    _classCallCheck(this, NoiseChopLineBrush);
+
+    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+      args[_key3] = arguments[_key3];
+    }
+
+    _get(Object.getPrototypeOf(NoiseChopLineBrush.prototype), "constructor", this).apply(this, args);
+    this.seedIndex = Math.floor(Math.random() * this.seeds.length);
+    this.noise.seed(this.seeds[this.seedIndex]);
+  }
+
+  _createClass(NoiseChopLineBrush, [{
+    key: "draw",
+    value: function draw() {
+      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      if (!this.shouldDraw()) return;
+
+      f.stroke(this.getColor());
+
+      var distRatio = Math.random() / 3 + 1;
+      var smooth = 4;
+      var layers = 5;
+      var magnify = 1.2;
+      var curveSegments = 3;
+
+      this.noiseProgress -= 0.008;
+      var noiseFactors = { a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
+      f.noiseChopLine(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
+    }
+  }]);
+
+  return NoiseChopLineBrush;
+})(NoiseChopLine);
+
 var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
   _inherits(SmoothNoiseLineBrush, _SmoothNoiseLine);
 
   function SmoothNoiseLineBrush() {
     _classCallCheck(this, SmoothNoiseLineBrush);
 
-    _get(Object.getPrototypeOf(SmoothNoiseLineBrush.prototype), "constructor", this).apply(this, arguments);
+    for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+      args[_key4] = arguments[_key4];
+    }
+
+    _get(Object.getPrototypeOf(SmoothNoiseLineBrush.prototype), "constructor", this).apply(this, args);
+    this.seedIndex = Math.floor(Math.random() * this.seeds.length);
+    this.noise.seed(this.seeds[this.seedIndex]);
   }
+
+  // Main app
 
   _createClass(SmoothNoiseLineBrush, [{
     key: "draw",
@@ -155,7 +261,7 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
       var magnify = 1;
       var curveSegments = 3;
 
-      this.noiseProgress += 0.003;
+      this.noiseProgress += 0.001;
       var noiseFactors = { a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
       f.noisePolygon(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
     }
@@ -167,17 +273,38 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
 (function () {
 
   var space = new CanvasSpace("playCanvas", false).display("#playground");
-  var buffer = new CanvasSpace("bufferCanvas", false).display("#buffer");
   var line = new NoiseDashLine().init(space);
-
   space.refresh(false);
 
-  var currentBrush = "SmoothNoiseLineBrush";
+  var currentBrush = "NoiseDashLineBrush";
+  var brushColor = "dark";
 
   var brushes = document.querySelectorAll(".brush");
   for (var i = 0; i < brushes.length; i++) {
     brushes[i].addEventListener("click", function (evt) {
       currentBrush = evt.target.getAttribute("data-id") || currentBrush;
+    });
+  }
+
+  var brushcolors = document.querySelectorAll(".brushcolor");
+  for (var i = 0; i < brushcolors.length; i++) {
+    brushcolors[i].addEventListener("click", function (evt) {
+      brushColor = evt.target.getAttribute("data-id") || brushColor;
+    });
+  }
+
+  var bgcolor = document.querySelectorAll(".bgcolor");
+  for (var i = 0; i < bgcolor.length; i++) {
+    bgcolor[i].addEventListener("click", function (evt) {
+      var bg = evt.target.getAttribute("data-id") || "white";
+
+      if (bg === "black") {
+        space.clear("#000");
+      } else if (bg === "grey") {
+        space.clear("#bbb");
+      } else {
+        space.clear("#fff");
+      }
     });
   }
 
@@ -188,12 +315,9 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
   }
 
   function penUp(evt) {
-    //buffer.ctx.drawImage( space.space, 0, 0);
-
     line.points = [];
     line.trace(false);
     space.remove(line);
-    //space.refresh( true );
   }
 
   space.bindCanvas("mousedown", penDown);
@@ -217,24 +341,64 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
     var _temp = line.clone();
     space.remove(line);
     line = new LineClass().init(space);
-    line.setColor({
-      dark: "rgba(0,0,0,.08)",
-      dark2: "rgba(0,0,0,.02)",
-      light: "rgba(0,0,0,.02)",
-      ligh2: "rgba(0,0,0,.02)"
-    }, {
-      dark: "rgba(0,0,0,.01)",
-      dark2: "rgba(0,0,0,.01)",
-      light: "rgba(0,0,0,.01)",
-      ligh2: "rgba(0,0,0,.01)"
-    });
-    if (LineClass === InnerLineBrush) {
+
+    // Very rough color picker logic
+    if (brushColor === "dark") {
       line.setColor({
+        dark: "rgba(0,0,0,.08)",
+        dark2: "rgba(0,0,0,.02)",
+        light: "rgba(0,0,0,.02)",
+        ligh2: "rgba(0,0,0,.02)"
+      }, {
         dark: "rgba(0,0,0,.01)",
         dark2: "rgba(0,0,0,.01)",
         light: "rgba(0,0,0,.01)",
-        ligh2: "rgba(90,90,90,.01)"
+        ligh2: "rgba(0,0,0,.01)"
       });
+      if (LineClass === InnerLineBrush) {
+        line.setColor({
+          dark: "rgba(0,0,0,.01)",
+          dark2: "rgba(0,0,0,.01)",
+          light: "rgba(0,0,0,.01)",
+          ligh2: "rgba(90,90,90,.01)"
+        });
+      }
+      if (LineClass === ZigZagLineBrush) {
+        line.setColor({
+          dark: "rgba(0,0,0,.3)",
+          dark2: "rgba(0,0,0,.3)",
+          light: "rgba(0,0,0,.1)",
+          ligh2: "rgba(0,0,0,.1)"
+        });
+      }
+    } else {
+      line.setColor({
+        dark: "rgba(255,255,255,.08)",
+        dark2: "rgba(255,255,255,.02)",
+        light: "rgba(255,255,255,.02)",
+        ligh2: "rgba(255,255,255,.02)"
+      }, {
+        dark: "rgba(255,255,255,.01)",
+        dark2: "rgba(255,255,255,.01)",
+        light: "rgba(255,255,255,.01)",
+        ligh2: "rgba(255,255,255,.01)"
+      });
+      if (LineClass === InnerLineBrush) {
+        line.setColor({
+          dark: "rgba(255,255,255,.01)",
+          dark2: "rgba(255,255,255,.01)",
+          light: "rgba(255,255,255,.01)",
+          ligh2: "rgba(90,90,90,.01)"
+        });
+      }
+      if (LineClass === ZigZagLineBrush) {
+        line.setColor({
+          dark: "rgba(255,255,255,.3)",
+          dark2: "rgba(255,255,255,.3)",
+          light: "rgba(255,255,255,.1)",
+          ligh2: "rgba(255,255,255,.1)"
+        });
+      }
     }
 
     line.points = _temp.points;

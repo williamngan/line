@@ -3,8 +3,9 @@
 <head>
 	<!--<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,700,300' rel='stylesheet' type='text/css'>-->
 	<!--<link href='https://fonts.googleapis.com/css?family=Noto+Sans:400,700' rel='stylesheet' type='text/css'>-->
-	<link href='https://fonts.googleapis.com/css?family=Lato:400,300,700,900' rel='stylesheet' type='text/css'>
+	<!--<link href='https://fonts.googleapis.com/css?family=Lato:400,300,700,900' rel='stylesheet' type='text/css'>-->
 	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 	<title>Taking a Line for a Walk</title>
 	<script type="text/javascript" src="./dist/js/browser-polyfill.min.js"></script>
@@ -20,8 +21,8 @@
         }
 
         #app {
-            position: absolute;
-            top: 0; bottom: 0; left: 0; right: 0;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             overflow: hidden;
         }
 
@@ -30,6 +31,10 @@
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
+        }
+
+        #brushes > div {
+            line-height: 2;;
         }
 
 		#canvas {
@@ -42,7 +47,6 @@
             position: absolute;
             border: 1px solid #f00;
             cursor: crosshair;
-            background: #f5f9fc;
         }
 
         #playground {
@@ -64,12 +68,19 @@
         <div class="brush" data-id="ZigZagLineBrush">ZigZag</div>
         <div class="brush" data-id="HatchingLine">Hatch</div>
         <div class="brush" data-id="RestatedLine">Restate</div>
-        <div class="brush" data-id="NoiseChopLine">Chop</div>
-        <div class="brush" data-id="NoiseDashLine">Dash</div>
+        <div class="brush" data-id="NoiseChopLineBrush">Chop</div>
+        <div class="brush" data-id="NoiseDashLineBrush">Dash</div>
         <div class="brush" data-id="InnerLineBrush">Inner</div>
-        <div class="brush" data-id="NoiseBrush">Overlap</div>
+        <div class="brush" data-id="NoiseBrushTwo">Overlap</div>
         <div class="brush" data-id="SmoothNoiseLineBrush">Flow</div>
         <div class="brush" data-id="DottedLineBrush">Dot</div>
+        <hr />
+        <div class="brushcolor" data-id="dark">Dark</div>
+        <div class="brushcolor" data-id="light">Light</div>
+        <hr />
+        <div class="bgcolor" data-id="white">white</div>
+        <div class="bgcolor" data-id="grey">Grey</div>
+        <div class="bgcolor" data-id="black">Black</div>
     </div>
 </div>
 

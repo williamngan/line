@@ -1,3 +1,5 @@
+// Optimizing some brushes' settings for painting
+
 class GrowLineBrush extends GrowLine {
 
   draw( f=this.form ) {
@@ -45,14 +47,80 @@ class ZigZagLineBrush extends ZigZagLine {
     this.maxTracePoints = 1 + Math.floor( Math.random()* 8 );
 
     let swidth = (this.tracing) ? 1 : 2;
-    f.stroke( "rgba(0,0,0,.3)", swidth ).fill( false );
+    f.stroke( this.getColor(), swidth ).fill( false );
     f.zigZagLine( this.points, Math.random()/3, this.maxDistance(10) );
 
   }
 }
 
+class NoiseBrushTwo extends NoiseBrush {
+  constructor(...args) {
+    super( ...args );
+    this.seedIndex = Math.floor( Math.random() * this.seeds.length );
+    this.noise.seed( this.seeds[this.seedIndex] );
+  }
+
+}
+
+class NoiseDashLineBrush extends NoiseDashLine {
+  constructor(...args) {
+    super( ...args );
+    this.seedIndex = Math.floor( Math.random() * this.seeds.length );
+    this.noise.seed( this.seeds[this.seedIndex] );
+  }
+
+  draw( f=this.form ) {
+    if (!this.shouldDraw()) return;
+
+    f.fill( false ).stroke( this.getColor() );
+
+    let distRatio = Math.random() + 1;
+    let smooth = 3;
+    let layers = 10;
+    let magnify = 1.5;
+    let curveSegments = 1;
+
+    this.noiseProgress += 0.001;
+    let noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
+    f.noiseDashLine( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
+  }
+}
+
+class NoiseChopLineBrush extends NoiseChopLine {
+  constructor(...args) {
+    super( ...args );
+    this.seedIndex = Math.floor( Math.random() * this.seeds.length );
+    this.noise.seed( this.seeds[this.seedIndex] );
+  }
+
+  draw( f=this.form ) {
+
+    if (!this.shouldDraw()) return;
+
+    f.stroke( this.getColor() );
+
+    let distRatio = Math.random()/3 + 1;
+    let smooth = 4;
+    let layers = 5;
+    let magnify = 1.2;
+    let curveSegments = 3;
+
+    this.noiseProgress -= 0.008;
+    let noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
+    f.noiseChopLine( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
+
+  }
+}
+
+
 
 class SmoothNoiseLineBrush extends SmoothNoiseLine {
+
+  constructor(...args) {
+    super( ...args );
+    this.seedIndex = Math.floor( Math.random() * this.seeds.length );
+    this.noise.seed( this.seeds[this.seedIndex] );
+  }
 
   draw( f=this.form ) {
     if (!this.shouldDraw()) return;
@@ -66,30 +134,53 @@ class SmoothNoiseLineBrush extends SmoothNoiseLine {
     let magnify = 1;
     let curveSegments = 3;
 
-    this.noiseProgress += 0.003;
+    this.noiseProgress += 0.001;
     let noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
     f.noisePolygon( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
   }
 }
 
+
+
+// Main app
 (function() {
 
-
   var space = new CanvasSpace("playCanvas", false ).display("#playground");
-  var buffer = new CanvasSpace("bufferCanvas", false ).display("#buffer");
   var line = new NoiseDashLine().init( space );
-
   space.refresh( false );
 
-  var currentBrush = "SmoothNoiseLineBrush";
+  var currentBrush = "NoiseDashLineBrush";
+  var brushColor = "dark";
+
 
   var brushes = document.querySelectorAll(".brush");
-  for (var i=0; i<brushes.length; i++) {
+  for (let i=0; i<brushes.length; i++) {
     brushes[i].addEventListener("click", function(evt) {
       currentBrush = evt.target.getAttribute("data-id") || currentBrush;
     })
   }
 
+  var brushcolors = document.querySelectorAll(".brushcolor");
+  for (let i=0; i<brushcolors.length; i++) {
+    brushcolors[i].addEventListener("click", function(evt) {
+      brushColor = evt.target.getAttribute("data-id") || brushColor;
+    })
+  }
+
+  var bgcolor = document.querySelectorAll(".bgcolor");
+  for (let i=0; i<bgcolor.length; i++) {
+    bgcolor[i].addEventListener("click", function(evt) {
+      let bg = evt.target.getAttribute("data-id") || "white";
+
+      if (bg === "black") {
+        space.clear("#000");
+      } else if (bg ==="grey") {
+        space.clear("#bbb");
+      } else {
+        space.clear("#fff");
+      }
+    })
+  }
 
   function penDown(evt) {
 
@@ -99,13 +190,9 @@ class SmoothNoiseLineBrush extends SmoothNoiseLine {
   }
 
   function penUp(evt) {
-    //buffer.ctx.drawImage( space.space, 0, 0);
-
     line.points = [];
     line.trace( false );
     space.remove(line);
-    //space.refresh( true );
-
   }
 
 
@@ -131,27 +218,70 @@ class SmoothNoiseLineBrush extends SmoothNoiseLine {
     var _temp = line.clone();
     space.remove( line );
     line = new LineClass().init( space );
-    line.setColor(
-        {
-          dark: "rgba(0,0,0,.08)",
-          dark2: "rgba(0,0,0,.02)",
-          light: "rgba(0,0,0,.02)",
-          ligh2: "rgba(0,0,0,.02)"
-        },
-        {
+
+    // Very rough color picker logic
+    if (brushColor === "dark") {
+      line.setColor(
+          {
+            dark: "rgba(0,0,0,.08)",
+            dark2: "rgba(0,0,0,.02)",
+            light: "rgba(0,0,0,.02)",
+            ligh2: "rgba(0,0,0,.02)"
+          },
+          {
+            dark: "rgba(0,0,0,.01)",
+            dark2: "rgba(0,0,0,.01)",
+            light: "rgba(0,0,0,.01)",
+            ligh2: "rgba(0,0,0,.01)"
+          }
+      );
+      if (LineClass === InnerLineBrush) {
+        line.setColor( {
           dark: "rgba(0,0,0,.01)",
           dark2: "rgba(0,0,0,.01)",
           light: "rgba(0,0,0,.01)",
-          ligh2: "rgba(0,0,0,.01)"
+          ligh2: "rgba(90,90,90,.01)"
+        } )
+      }
+      if (LineClass === ZigZagLineBrush) {
+        line.setColor( {
+          dark: "rgba(0,0,0,.3)",
+          dark2: "rgba(0,0,0,.3)",
+          light: "rgba(0,0,0,.1)",
+          ligh2: "rgba(0,0,0,.1)"
+        } )
+      }
+    } else {
+      line.setColor(
+        {
+          dark: "rgba(255,255,255,.08)",
+          dark2: "rgba(255,255,255,.02)",
+          light: "rgba(255,255,255,.02)",
+          ligh2: "rgba(255,255,255,.02)"
+        },
+        {
+          dark: "rgba(255,255,255,.01)",
+          dark2: "rgba(255,255,255,.01)",
+          light: "rgba(255,255,255,.01)",
+          ligh2: "rgba(255,255,255,.01)"
         }
-    );
-    if (LineClass === InnerLineBrush) {
-      line.setColor({
-        dark: "rgba(0,0,0,.01)",
-        dark2: "rgba(0,0,0,.01)",
-        light: "rgba(0,0,0,.01)",
-        ligh2: "rgba(90,90,90,.01)"
-      })
+      );
+      if (LineClass === InnerLineBrush) {
+        line.setColor( {
+          dark: "rgba(255,255,255,.01)",
+          dark2: "rgba(255,255,255,.01)",
+          light: "rgba(255,255,255,.01)",
+          ligh2: "rgba(90,90,90,.01)"
+        } )
+      }
+      if (LineClass === ZigZagLineBrush) {
+        line.setColor( {
+          dark: "rgba(255,255,255,.3)",
+          dark2: "rgba(255,255,255,.3)",
+          light: "rgba(255,255,255,.1)",
+          ligh2: "rgba(255,255,255,.1)"
+        } )
+      }
     }
 
 

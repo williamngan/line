@@ -499,9 +499,15 @@ class MovingLineForm extends Form {
 
         if (lastLayer[n] && (i+n)%2===0) {
           let older = (olderLayer[n] && Math.abs(i-n)%3==0 ) ? olderLayer : lastLayer;
+          let ln1 = new Line(older[n].p1).to( normal.p1 );
+          let ln2 = new Line(older[n].p2).to( normal.p2 );
 
-          this.line( new Line(older[n].p1).to( normal.p1 ) );
-          this.line( new Line(older[n].p2).to( normal.p2 ) );
+          // a bit shorter to avoid "banding" when drawing closely
+          if (Math.max(ln1.size().x, ln1.size().y) < 20) ln1.to( ln1.interpolate(0.95) );
+          if (Math.max(ln2.size().x, ln2.size().y) < 20) ln2.to( ln2.interpolate(0.95) );
+
+          this.line( ln1 );
+          this.line( ln2 );
 
           olderLayer[n] = {p1: lastLayer[n].p1, p2: lastLayer[n].p2 };
         }
