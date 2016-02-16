@@ -13,6 +13,8 @@ class WiggleLine extends InnerLine {
 
   draw( f=this.form ) {
 
+    if (!this.shouldDraw()) return;
+
     this.angle += Const.one_degree;
     let density = (this.tracing) ? 6 : 30;
 

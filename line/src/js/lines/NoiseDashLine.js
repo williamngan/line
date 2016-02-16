@@ -43,6 +43,7 @@ class NoiseDashLine extends SpeedBrush {
 
 
   draw( f=this.form ) {
+    if (!this.shouldDraw()) return;
 
     f.fill( false ).stroke( this.getColor() );
 

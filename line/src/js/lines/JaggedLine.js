@@ -8,13 +8,14 @@ class JaggedLine extends BaseLine {
     this.color = this.colors.black(.3);
     this.color.dark2 = "rgba(0,0,0,0)";
 
-    this.color2 = this.colors.grey(1);
+    this.color2 = this.colors.black(1);
 
     this.lastPoints = [];
   }
 
 
   draw( f=this.form ) {
+    if (!this.shouldDraw()) return;
 
     f.stroke( this.getColor() ).fill( false );
     f.polygon( this.points, false );

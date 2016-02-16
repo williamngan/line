@@ -10,6 +10,8 @@ class DottedLine extends BaseLine {
 
 
   draw( f=this.form ) {
+    if (!this.shouldDraw()) return;
+
     f.fill( this.getColor() ).stroke(false);
     f.dottedLine( this.points, 3, 3, 0.5 );
   }

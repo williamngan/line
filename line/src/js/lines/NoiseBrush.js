@@ -44,6 +44,8 @@ class NoiseBrush extends SpeedBrush {
 
 
   draw( f=this.form ) {
+    if (!this.shouldDraw()) return;
+
     f.stroke( false ).fill( this.getColor() );
 
     let distRatio = 0.5;

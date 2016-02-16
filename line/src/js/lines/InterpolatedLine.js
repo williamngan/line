@@ -23,6 +23,8 @@ class InterpolatedLine extends BaseLine {
 
   draw( f=this.form ) {
 
+    if (!this.shouldDraw()) return;
+
     if (this.points.length < 4 || !this.points[0]) return;
 
     // increment counter, and flip direction when reached the end

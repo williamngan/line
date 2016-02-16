@@ -14,6 +14,8 @@ class HatchingLine extends BaseLine {
 
   draw( f=this.form ) {
 
+    if (!this.shouldDraw()) return;
+
     f.stroke( this.getColor() ).fill(false);
     f.hatchingLine( this.points );
 

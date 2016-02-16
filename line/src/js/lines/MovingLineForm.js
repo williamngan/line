@@ -74,9 +74,10 @@ class MovingLineForm extends Form {
    * @param subdivision how many extra dots per line segments
    * @param largeSize size of vertex
    * @param smallSize size of interpolated points
+   * @param asCircle if `true`, draw point as circle. if `false`, draw point as rectangle.
    */
-  dottedLine( pts, subdivision=5, largeSize=2, smallSize=0.5 ) {
-    this.points( pts, largeSize, true );
+  dottedLine( pts, subdivision=5, largeSize=2, smallSize=0.5, asCircle=true ) {
+    this.points( pts, largeSize, asCircle );
 
     var last = pts[0];
     for (var i=0; i<pts.length; i++) {
@@ -157,7 +158,7 @@ class MovingLineForm extends Form {
    * @param pts points list
    * @param lastPts last points list (for calculations)
    */
-  growLine( pts, lastPts ) {
+  growLine( pts, lastPts, speed=10 ) {
 
     var last = pts[0] || new Vector();
 
@@ -166,7 +167,7 @@ class MovingLineForm extends Form {
         pts[i].z += 1; // use z for count
 
         var ln = new Line( last ).to( pts[i] );
-        var ip = ln.interpolate( Math.min( 30, pts[i].z ) / 10 );
+        var ip = ln.interpolate( Math.min( 30, pts[i].z ) / speed );
         this.line( new Line( last ).to( ip ) );
 
         last = pts[i];
@@ -183,7 +184,7 @@ class MovingLineForm extends Form {
    * @param lastPts last points list (for calculations)
    * @param speed number of cycles to finish the expanding perpendicular lines
    */
-  jaggedLine( pts, lastPts, speed=40 ) {
+  jaggedLine( pts, lastPts, speed=40, division=10 ) {
 
     var last = pts[0] || new Vector();
     var halfSpeed = speed/2;
@@ -194,8 +195,8 @@ class MovingLineForm extends Form {
         pts[i].z += 1; // use z for count
         var dist = this._getSegmentDistance( last, pts[i], i ) * 1;
 
-        for (var s=0; s<10; s++) {
-          var ds = s/10;
+        for (var s=0; s<division; s++) {
+          var ds = s/division;
           var normal = this._getSegmentNormal(
               last, pts[i],
               dist * Math.min( speed, pts[i].z ) / halfSpeed,

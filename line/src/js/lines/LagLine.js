@@ -46,6 +46,8 @@ class LagLine extends BaseLine {
 
   draw( f=this.form ) {
 
+    if (!this.shouldDraw()) return;
+
     this.ang += Const.one_degree;
 
     if (this.targets.length > 3 && this.points.length > 10) {

@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x90, _x91, _x92) { var _again = true; _function: while (_again) { var object = _x90, property = _x91, receiver = _x92; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x90 = parent; _x91 = property; _x92 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x95, _x96, _x97) { var _again = true; _function: while (_again) { var object = _x95, property = _x96, receiver = _x97; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x95 = parent; _x96 = property; _x97 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -139,6 +139,7 @@ var MovingLineForm = (function (_Form) {
      * @param subdivision how many extra dots per line segments
      * @param largeSize size of vertex
      * @param smallSize size of interpolated points
+     * @param asCircle if `true`, draw point as circle. if `false`, draw point as rectangle.
      */
   }, {
     key: "dottedLine",
@@ -146,8 +147,9 @@ var MovingLineForm = (function (_Form) {
       var subdivision = arguments.length <= 1 || arguments[1] === undefined ? 5 : arguments[1];
       var largeSize = arguments.length <= 2 || arguments[2] === undefined ? 2 : arguments[2];
       var smallSize = arguments.length <= 3 || arguments[3] === undefined ? 0.5 : arguments[3];
+      var asCircle = arguments.length <= 4 || arguments[4] === undefined ? true : arguments[4];
 
-      this.points(pts, largeSize, true);
+      this.points(pts, largeSize, asCircle);
 
       var last = pts[0];
       for (var i = 0; i < pts.length; i++) {
@@ -239,6 +241,7 @@ var MovingLineForm = (function (_Form) {
   }, {
     key: "growLine",
     value: function growLine(pts, lastPts) {
+      var speed = arguments.length <= 2 || arguments[2] === undefined ? 10 : arguments[2];
 
       var last = pts[0] || new Vector();
 
@@ -247,7 +250,7 @@ var MovingLineForm = (function (_Form) {
           pts[i].z += 1; // use z for count
 
           var ln = new Line(last).to(pts[i]);
-          var ip = ln.interpolate(Math.min(30, pts[i].z) / 10);
+          var ip = ln.interpolate(Math.min(30, pts[i].z) / speed);
           this.line(new Line(last).to(ip));
 
           last = pts[i];
@@ -267,6 +270,7 @@ var MovingLineForm = (function (_Form) {
     key: "jaggedLine",
     value: function jaggedLine(pts, lastPts) {
       var speed = arguments.length <= 2 || arguments[2] === undefined ? 40 : arguments[2];
+      var division = arguments.length <= 3 || arguments[3] === undefined ? 10 : arguments[3];
 
       var last = pts[0] || new Vector();
       var halfSpeed = speed / 2;
@@ -277,8 +281,8 @@ var MovingLineForm = (function (_Form) {
           pts[i].z += 1; // use z for count
           var dist = this._getSegmentDistance(last, pts[i], i) * 1;
 
-          for (var s = 0; s < 10; s++) {
-            var ds = s / 10;
+          for (var s = 0; s < division; s++) {
+            var ds = s / division;
             var normal = this._getSegmentNormal(last, pts[i], dist * Math.min(speed, pts[i].z) / halfSpeed, ds, Math.abs(ds - 0.5));
 
             var ln = new Line(normal.p1).to(normal.p2);
@@ -729,6 +733,8 @@ var BaseLine = (function (_Curve) {
 
     this.pointThreshold = 10;
     this.distanceThreshold = 200 * 200;
+    this.moveCount = 0;
+    this.maxMoveCount = 10;
 
     this.colors = {
       "black": function black() {
@@ -808,6 +814,20 @@ var BaseLine = (function (_Curve) {
     }
 
     /**
+     * Set line color
+     * @param c { dark, dark2, light, light2 }
+     * @param c2 { dark, dark2, light, light2 }
+     */
+  }, {
+    key: "setColor",
+    value: function setColor(c) {
+      var c2 = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+      this.color = c;
+      if (c2) this.color2 = c2;
+    }
+
+    /**
      * Space's animate callback. Override in subclass for additional features and drawing styles.
      */
   }, {
@@ -828,6 +848,21 @@ var BaseLine = (function (_Curve) {
 
       f.stroke(this.getColor()).fill(false);
       f.curve(this.catmullRom(5), false);
+    }
+
+    /**
+     * Stop drawing shortly after mouse has stopped moving
+     * @param threshold
+     * @returns {boolean}
+     */
+  }, {
+    key: "shouldDraw",
+    value: function shouldDraw() {
+      var threshold = arguments.length <= 0 || arguments[0] === undefined ? -2 : arguments[0];
+
+      if (!this.tracing) return true;
+      if (this.moveCount > threshold) this.moveCount--;
+      return this.moveCount > threshold;
     }
 
     /**
@@ -874,6 +909,8 @@ var BaseLine = (function (_Curve) {
 
         if (this.pressed) this.drag(x, y);
       }
+
+      if (this.moveCount < this.maxMoveCount) this.moveCount += 2;
     }
 
     /**
@@ -952,6 +989,8 @@ var DottedLine = (function (_BaseLine) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
+      if (!this.shouldDraw()) return;
+
       f.fill(this.getColor()).stroke(false);
       f.dottedLine(this.points, 3, 3, 0.5);
     }
@@ -994,6 +1033,8 @@ var InterpolatedLine = (function (_BaseLine2) {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      if (!this.shouldDraw()) return;
 
       if (this.points.length < 4 || !this.points[0]) return;
 
@@ -1051,6 +1092,8 @@ var HatchingLine = (function (_BaseLine3) {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      if (!this.shouldDraw()) return;
 
       f.stroke(this.getColor()).fill(false);
       f.hatchingLine(this.points);
@@ -1204,6 +1247,8 @@ var RestatedLine = (function (_SpeedLine2) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
+      if (!this.shouldDraw()) return;
+
       f.stroke(this.getColor()).fill(false);
       f.curve(this.catmullRom(5), false);
 
@@ -1344,6 +1389,8 @@ var InnerLine = (function (_SmoothSpeedBrush) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
+      if (!this.shouldDraw()) return;
+
       f.stroke(this.getColor()).fill(false);
       f.innerLine(this.points, 20, 1, 7);
     }
@@ -1378,6 +1425,8 @@ var WiggleLine = (function (_InnerLine) {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      if (!this.shouldDraw()) return;
 
       this.angle += Const.one_degree;
       var density = this.tracing ? 6 : 30;
@@ -1509,6 +1558,8 @@ var NoiseBrush = (function (_SpeedBrush2) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
+      if (!this.shouldDraw()) return;
+
       f.stroke(false).fill(this.getColor());
 
       var distRatio = 0.5;
@@ -1580,6 +1631,8 @@ var SmoothNoiseLine = (function (_SpeedBrush3) {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      if (!this.shouldDraw()) return;
 
       var strokeWidth = this.tracing ? 3 : 1;
       f.stroke(this.getColor(), strokeWidth).fill(this.getColor("color2"));
@@ -1655,6 +1708,8 @@ var NoiseDashLine = (function (_SpeedBrush4) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
+      if (!this.shouldDraw()) return;
+
       f.fill(false).stroke(this.getColor());
 
       var distRatio = (this.seedIndex + 1) / 4;
@@ -1728,6 +1783,8 @@ var NoiseChopLine = (function (_SpeedBrush5) {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      if (!this.shouldDraw()) return;
 
       f.fill(false).stroke(this.getColor("color2"), 1);
       if (!this.tracing) f.polygon(this.points, false);
@@ -1822,6 +1879,8 @@ var LagLine = (function (_BaseLine5) {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      if (!this.shouldDraw()) return;
 
       this.ang += Const.one_degree;
 
@@ -2235,6 +2294,8 @@ var GrowLine = (function (_BaseLine7) {
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
 
+      if (!this.shouldDraw()) return;
+
       f.stroke(this.getColor()).fill(false);
       f.growLine(this.points, this.lastPoints);
     }
@@ -2260,7 +2321,7 @@ var JaggedLine = (function (_BaseLine8) {
     this.color = this.colors.black(.3);
     this.color.dark2 = "rgba(0,0,0,0)";
 
-    this.color2 = this.colors.grey(1);
+    this.color2 = this.colors.black(1);
 
     this.lastPoints = [];
   }
@@ -2269,6 +2330,8 @@ var JaggedLine = (function (_BaseLine8) {
     key: "draw",
     value: function draw() {
       var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
+
+      if (!this.shouldDraw()) return;
 
       f.stroke(this.getColor()).fill(false);
       f.polygon(this.points, false);

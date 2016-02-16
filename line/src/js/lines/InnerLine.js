@@ -13,6 +13,8 @@ class InnerLine extends SmoothSpeedBrush {
 
   draw( f=this.form ) {
 
+    if (!this.shouldDraw()) return;
+
     f.stroke( this.getColor() ).fill( false );
     f.innerLine( this.points, 20, 1, 7 );
   }

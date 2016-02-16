@@ -12,6 +12,8 @@ class BaseLine extends Curve {
 
     this.pointThreshold = 10;
     this.distanceThreshold = 200*200;
+    this.moveCount = 0;
+    this.maxMoveCount = 10;
 
     this.colors = {
       "black": (a=0.8) => {return {
@@ -74,6 +76,17 @@ class BaseLine extends Curve {
   }
 
   /**
+   * Set line color
+   * @param c { dark, dark2, light, light2 }
+   * @param c2 { dark, dark2, light, light2 }
+   */
+  setColor( c, c2=null ) {
+    this.color = c;
+    if (c2) this.color2 = c2;
+  }
+
+
+  /**
    * Space's animate callback. Override in subclass for additional features and drawing styles.
    */
   animate( time, fs, context) {
@@ -89,6 +102,17 @@ class BaseLine extends Curve {
   draw( f=this.form ) {
     f.stroke( this.getColor() ).fill(false);
     f.curve( this.catmullRom(5), false );
+  }
+
+  /**
+   * Stop drawing shortly after mouse has stopped moving
+   * @param threshold
+   * @returns {boolean}
+   */
+  shouldDraw( threshold=-2 ) {
+    if (!this.tracing) return true;
+    if (this.moveCount > threshold) this.moveCount--;
+    return (this.moveCount>threshold);
   }
 
   /**
@@ -130,6 +154,8 @@ class BaseLine extends Curve {
 
       if (this.pressed) this.drag( x, y );
     }
+
+    if (this.moveCount < this.maxMoveCount) this.moveCount+=2;
   }
 
 

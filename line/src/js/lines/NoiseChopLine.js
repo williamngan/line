@@ -44,6 +44,8 @@ class NoiseChopLine extends SpeedBrush {
 
   draw( f=this.form ) {
 
+    if (!this.shouldDraw()) return;
+
     f.fill( false ).stroke( this.getColor( "color2" ), 1 );
     if (!this.tracing) f.polygon( this.points, false );
 

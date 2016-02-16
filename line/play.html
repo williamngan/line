@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,700,300' rel='stylesheet' type='text/css'>-->
+	<!--<link href='https://fonts.googleapis.com/css?family=Noto+Sans:400,700' rel='stylesheet' type='text/css'>-->
+	<link href='https://fonts.googleapis.com/css?family=Lato:400,300,700,900' rel='stylesheet' type='text/css'>
+	<meta charset="UTF-8">
+
+	<title>Taking a Line for a Walk</title>
+	<script type="text/javascript" src="./dist/js/browser-polyfill.min.js"></script>
+	<script type="text/javascript" src="./dist/js/pt.js"></script>
+	<script type="text/javascript" src="./dist/js/lines/lines.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="./dist/css/index.css" />
+
+	<style>
+
+        #brushes {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+		#canvas {
+			background-color: #f2f2f2;
+		}
+
+        #playground, #buffer {
+            top: 10px; left: 100px;
+            right: 10px; bottom: 10px;
+            position: absolute;
+            border: 1px solid #f00;
+            cursor: crosshair;
+            background: #f5f9fc;
+        }
+
+        #playground {
+            z-index: 1;
+        }
+
+	</style>
+
+</head>
+<body>
+
+<div id="buffer"></div>
+<div id="playground"></div>
+<div id="brushes">
+    <div class="brush" data-id="BaseLine">Base</div>
+    <div class="brush" data-id="GrowLineBrush">Grow</div>
+    <div class="brush" data-id="JaggedLineBrush">Jagged</div>
+    <div class="brush" data-id="ZigZagLineBrush">ZigZag</div>
+    <div class="brush" data-id="HatchingLine">Hatch</div>
+    <div class="brush" data-id="RestatedLine">Restate</div>
+    <div class="brush" data-id="NoiseChopLine">Chop</div>
+    <div class="brush" data-id="NoiseDashLine">Dash</div>
+    <div class="brush" data-id="InnerLineBrush">Inner</div>
+    <div class="brush" data-id="NoiseBrush">Overlap</div>
+    <div class="brush" data-id="SmoothNoiseLineBrush">Flow</div>
+    <div class="brush" data-id="DottedLineBrush">Dot</div>
+</div>
+
+
+<!--<script type="text/javascript" src="dist/js/_Walking.js"></script>-->
+<script type="text/javascript" src="dist/js/play.js"></script>
+
+
+</body>
+</html>

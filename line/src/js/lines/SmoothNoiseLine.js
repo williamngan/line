@@ -48,6 +48,7 @@ class SmoothNoiseLine extends SpeedBrush {
 
 
   draw( f=this.form ) {
+    if (!this.shouldDraw()) return;
 
     let strokeWidth = (this.tracing) ? 3 : 1;
     f.stroke( this.getColor(), strokeWidth ).fill( this.getColor("color2") );
