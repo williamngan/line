@@ -328,6 +328,13 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
   space.bindCanvas("mouseout", penUp);
   space.bindCanvas("touchend", penUp);
 
+  document.addEventListener('ontouchstart', function (e) {
+    e.preventDefault();
+  }, false);
+  document.addEventListener('ontouchmove', function (e) {
+    e.preventDefault();
+  }, false);
+
   space.bindMouse();
   space.play();
   space.stop(100000);
