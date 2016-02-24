@@ -273,69 +273,111 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
 (function () {
 
   var space = new CanvasSpace("playCanvas", false).display("#playground");
-  var line = new NoiseDashLine().init(space);
+  var line = new BaseLine().init(space);
   space.refresh(false);
 
-  var currentBrush = "NoiseDashLineBrush";
+  var currentBrush = "BaseLine";
   var brushColor = "dark";
 
   var brushes = document.querySelectorAll(".brush");
-  for (var i = 0; i < brushes.length; i++) {
-    brushes[i].addEventListener("click", function (evt) {
-      currentBrush = evt.target.getAttribute("data-id") || currentBrush;
+
+  var _loop = function (i) {
+    ["click", "touchend"].forEach(function (evt) {
+      brushes[i].addEventListener(evt, function (evt) {
+        currentBrush = evt.target.getAttribute("data-id") || currentBrush;
+        evt.target.className = "brush selected";
+        console.log("@@@");
+      });
     });
+  };
+
+  for (var i = 0; i < brushes.length; i++) {
+    _loop(i);
   }
 
   var brushcolors = document.querySelectorAll(".brushcolor");
-  for (var i = 0; i < brushcolors.length; i++) {
-    brushcolors[i].addEventListener("click", function (evt) {
-      brushColor = evt.target.getAttribute("data-id") || brushColor;
+
+  var _loop2 = function (i) {
+    ["click", "touchend"].forEach(function (evt) {
+      brushcolors[i].addEventListener(evt, function (evt) {
+        brushColor = evt.target.getAttribute("data-id") || brushColor;
+      });
     });
+  };
+
+  for (var i = 0; i < brushcolors.length; i++) {
+    _loop2(i);
   }
 
   var bgcolor = document.querySelectorAll(".bgcolor");
-  for (var i = 0; i < bgcolor.length; i++) {
-    bgcolor[i].addEventListener("click", function (evt) {
-      var bg = evt.target.getAttribute("data-id") || "white";
 
-      if (bg === "black") {
-        space.clear("#000");
-      } else if (bg === "grey") {
-        space.clear("#bbb");
-      } else {
-        space.clear("#fff");
-      }
+  var _loop3 = function (i) {
+    ["click", "touchend"].forEach(function (evt) {
+      bgcolor[i].addEventListener(evt, function (evt) {
+        var bg = evt.target.getAttribute("data-id") || "white";
+
+        if (bg === "black") {
+          space.clear("#000");
+        } else if (bg === "grey") {
+          space.clear("#bbb");
+        } else {
+          space.clear("#fff");
+        }
+      });
     });
+  };
+
+  for (var i = 0; i < bgcolor.length; i++) {
+    _loop3(i);
   }
 
   function penDown(evt) {
+    console.log("###");
 
     updateTo(window[currentBrush]);
     line.trace(true);
   }
 
   function penUp(evt) {
+    console.log("!!!");
     line.points = [];
     line.trace(false);
     space.remove(line);
   }
 
-  space.bindCanvas("mousedown", penDown);
-  space.bindCanvas("touchstart", penDown);
+  space.add({
+    animate: function animate() {
+      // app specific animation here
+    },
 
-  space.bindCanvas("mouseup", penUp);
-  space.bindCanvas("mouseleave", penUp);
-  space.bindCanvas("mouseout", penUp);
-  space.bindCanvas("touchend", penUp);
+    onMouseAction: function onMouseAction(type, x, y) {
+      if (type == "down") {
+        penDown();
+      } else if (type == "up") {
+        penUp();
+      }
+    },
 
-  document.addEventListener('ontouchstart', function (e) {
-    e.preventDefault();
-  }, false);
-  document.addEventListener('ontouchmove', function (e) {
-    e.preventDefault();
-  }, false);
+    onTouchAction: function onTouchAction(type, x, y) {
+      if (type == "down") {
+        penDown();
+      } else if (type == "up") {
+        penUp();
+      }
+    }
+
+  });
+
+  //space.bindCanvas( "mousedown", penDown );
+  //space.bindCanvas( "touchstart", penDown );
+  //
+  //space.bindCanvas( "mouseup", penUp );
+  //space.bindCanvas( "mouseleave", penUp );
+  //space.bindCanvas( "mouseout", penUp );
+  //space.bindCanvas( "touchend", penUp );
 
   space.bindMouse();
+  space.bindTouch();
   space.play();
   space.stop(100000);
 
@@ -345,7 +387,7 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
    */
   function updateTo(LineClass) {
 
-    var _temp = line.clone();
+    var _temp = line.points.slice();
     space.remove(line);
     line = new LineClass().init(space);
 
@@ -408,13 +450,8 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
       }
     }
 
-    line.points = _temp.points;
+    line.points = _temp;
     line.maxPoints = 20;
-
-    line.down = function (x, y) {
-      this.points = [];
-      this.to(x, y);
-    };
 
     space.add(line);
   }

@@ -126,14 +126,17 @@ class BaseLine extends Curve {
   }
 
   glue(mag) {
-    if ( mag > this.distanceThreshold ) {
+    if ( mag > this.distanceThreshold && this.points.length > 1 ) {
 
       if (mag > this.distanceThreshold * 3) {
         this.points = [ this.points.pop() ];
         return;
       }
+
       let p2 = this.points.pop();
       let p1 = this.points.pop();
+
+      console.log( p2, p1, this.distanceThreshold );
       let lns = new Line( p1 ).to( p2 ).subpoints( Math.floor(this.distanceThreshold/5000) );
 
       this.to( lns );
@@ -183,11 +186,7 @@ class BaseLine extends Curve {
 
   }
 
-
-  /**
-   * Space's bindMouse callback
-   */
-  onMouseAction( type, x, y, evt ) {
+  _penAction( type, x, y ) {
 
     // when mouse move, add a point to the trail
     if (type == "move") {
@@ -205,5 +204,18 @@ class BaseLine extends Curve {
       this.pressed = false;
     }
   }
+
+  /**
+   * Space's bindMouse callback
+   */
+  onMouseAction( type, x, y, evt ) {
+    this._penAction(type, x, y);
+  }
+
+  onTouchAction( type, px, py, evt ) {
+    let touchPoints = this.form.space.touchesToPoints( evt );
+    if (touchPoints && touchPoints.length > 0) this._penAction(type, touchPoints[0].x, touchPoints[0].y);
+  }
+
 
 }

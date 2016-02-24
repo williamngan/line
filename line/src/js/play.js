@@ -146,70 +146,102 @@ class SmoothNoiseLineBrush extends SmoothNoiseLine {
 (function() {
 
   var space = new CanvasSpace("playCanvas", false ).display("#playground");
-  var line = new NoiseDashLine().init( space );
+  var line = new BaseLine().init( space );
   space.refresh( false );
 
-  var currentBrush = "NoiseDashLineBrush";
+  var currentBrush = "BaseLine";
   var brushColor = "dark";
 
 
   var brushes = document.querySelectorAll(".brush");
   for (let i=0; i<brushes.length; i++) {
-    brushes[i].addEventListener("click", function(evt) {
-      currentBrush = evt.target.getAttribute("data-id") || currentBrush;
-    })
+    ["click", "touchend"].forEach( function(evt) {
+      brushes[i].addEventListener( evt, function ( evt ) {
+        currentBrush = evt.target.getAttribute( "data-id" ) || currentBrush;
+        evt.target.className = "brush selected";
+        console.log( "@@@" );
+      } )
+    });
   }
 
   var brushcolors = document.querySelectorAll(".brushcolor");
   for (let i=0; i<brushcolors.length; i++) {
-    brushcolors[i].addEventListener("click", function(evt) {
-      brushColor = evt.target.getAttribute("data-id") || brushColor;
-    })
+    ["click", "touchend"].forEach( function(evt) {
+      brushcolors[i].addEventListener( evt, function ( evt ) {
+        brushColor = evt.target.getAttribute( "data-id" ) || brushColor;
+      } )
+    });
   }
 
   var bgcolor = document.querySelectorAll(".bgcolor");
   for (let i=0; i<bgcolor.length; i++) {
-    bgcolor[i].addEventListener("click", function(evt) {
-      let bg = evt.target.getAttribute("data-id") || "white";
+    ["click", "touchend"].forEach( function(evt) {
+      bgcolor[i].addEventListener( evt, function ( evt ) {
+        let bg = evt.target.getAttribute( "data-id" ) || "white";
 
-      if (bg === "black") {
-        space.clear("#000");
-      } else if (bg ==="grey") {
-        space.clear("#bbb");
-      } else {
-        space.clear("#fff");
-      }
-    })
+        if (bg === "black") {
+          space.clear( "#000" );
+        } else if (bg === "grey") {
+          space.clear( "#bbb" );
+        } else {
+          space.clear( "#fff" );
+        }
+      } )
+    });
   }
 
   function penDown(evt) {
+    console.log("###");
 
     updateTo( window[currentBrush] );
     line.trace( true );
-
   }
 
   function penUp(evt) {
+    console.log("!!!");
     line.points = [];
     line.trace( false );
     space.remove(line);
   }
 
+  space.add( {
+    animate: function() {
+      // app specific animation here
+    },
 
-  space.bindCanvas( "mousedown", penDown );
-  space.bindCanvas( "touchstart", penDown );
+    onMouseAction: function(type, x, y) {
+      if (type == "down") {
+        penDown();
+      } else if (type == "up") {
+        penUp();
+      }
 
-  space.bindCanvas( "mouseup", penUp );
-  space.bindCanvas( "mouseleave", penUp );
-  space.bindCanvas( "mouseout", penUp );
-  space.bindCanvas( "touchend", penUp );
+    },
 
-  document.addEventListener('ontouchstart', function(e) {e.preventDefault()}, false);
-  document.addEventListener('ontouchmove', function(e) {e.preventDefault()}, false);
+    onTouchAction: function(type, x, y) {
+      if (type == "down") {
+        penDown();
+      } else if (type == "up") {
+        penUp();
+      }
+    }
+
+  });
+
+  //space.bindCanvas( "mousedown", penDown );
+  //space.bindCanvas( "touchstart", penDown );
+  //
+  //space.bindCanvas( "mouseup", penUp );
+  //space.bindCanvas( "mouseleave", penUp );
+  //space.bindCanvas( "mouseout", penUp );
+  //space.bindCanvas( "touchend", penUp );
 
   space.bindMouse();
+  space.bindTouch();
   space.play();
   space.stop(100000);
+
+
 
 
   /**
@@ -218,7 +250,7 @@ class SmoothNoiseLineBrush extends SmoothNoiseLine {
    */
   function updateTo( LineClass ) {
 
-    var _temp = line.clone();
+    var _temp = line.points.slice();
     space.remove( line );
     line = new LineClass().init( space );
 
@@ -288,17 +320,12 @@ class SmoothNoiseLineBrush extends SmoothNoiseLine {
     }
 
 
-    line.points = _temp.points;
+    line.points = _temp;
     line.maxPoints = 20;
 
-    line.down = function(x, y) {
-      this.points = [];
-      this.to(x, y);
-    };
 
     space.add( line );
   }
-
 
 
 })();

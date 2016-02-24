@@ -885,14 +885,17 @@ var BaseLine = (function (_Curve) {
   }, {
     key: "glue",
     value: function glue(mag) {
-      if (mag > this.distanceThreshold) {
+      if (mag > this.distanceThreshold && this.points.length > 1) {
 
         if (mag > this.distanceThreshold * 3) {
           this.points = [this.points.pop()];
           return;
         }
+
         var p2 = this.points.pop();
         var p1 = this.points.pop();
+
+        console.log(p2, p1, this.distanceThreshold);
         var lns = new Line(p1).to(p2).subpoints(Math.floor(this.distanceThreshold / 5000));
 
         this.to(lns);
@@ -944,13 +947,9 @@ var BaseLine = (function (_Curve) {
   }, {
     key: "up",
     value: function up(x, y) {}
-
-    /**
-     * Space's bindMouse callback
-     */
   }, {
-    key: "onMouseAction",
-    value: function onMouseAction(type, x, y, evt) {
+    key: "_penAction",
+    value: function _penAction(type, x, y) {
 
       // when mouse move, add a point to the trail
       if (type == "move") {
@@ -967,6 +966,21 @@ var BaseLine = (function (_Curve) {
       } else if (type == "out") {
         this.pressed = false;
       }
+    }
+
+    /**
+     * Space's bindMouse callback
+     */
+  }, {
+    key: "onMouseAction",
+    value: function onMouseAction(type, x, y, evt) {
+      this._penAction(type, x, y);
+    }
+  }, {
+    key: "onTouchAction",
+    value: function onTouchAction(type, px, py, evt) {
+      var touchPoints = this.form.space.touchesToPoints(evt);
+      if (touchPoints && touchPoints.length > 0) this._penAction(type, touchPoints[0].x, touchPoints[0].y);
     }
   }]);
 
