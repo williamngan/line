@@ -1,6 +1,6 @@
 "use strict";
 
-var _get = function get(_x95, _x96, _x97) { var _again = true; _function: while (_again) { var object = _x95, property = _x96, receiver = _x97; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x95 = parent; _x96 = property; _x97 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x97, _x98, _x99) { var _again = true; _function: while (_again) { var object = _x97, property = _x98, receiver = _x99; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x97 = parent; _x98 = property; _x99 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -398,6 +398,7 @@ var MovingLineForm = (function (_Form) {
       var distRatio = arguments.length <= 2 || arguments[2] === undefined ? 0.5 : arguments[2];
       var smoothSteps = arguments.length <= 3 || arguments[3] === undefined ? 3 : arguments[3];
       var maxDist = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
+      var skip = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
 
       var last = null;
       var normals = [];
@@ -408,8 +409,13 @@ var MovingLineForm = (function (_Form) {
         normals[n] = [];
       }
 
-      for (var i = 0; i < pts.length; i++) {
+      for (var i = skip; i < pts.length - skip; i++) {
         var vec = new Vector(pts[i]);
+
+        if (!last) {
+          last = vec.clone();
+          continue;
+        }
 
         // smooth distance
         var dist = this._getSegmentDistance(last, vec, i) * distRatio;
@@ -461,6 +467,11 @@ var MovingLineForm = (function (_Form) {
 
       for (var i = 0; i < pts.length; i++) {
         var vec = new Vector(pts[i]);
+
+        if (!last) {
+          last = vec.clone();
+          continue;
+        }
 
         // smooth distance
         var dist = this._getSegmentDistance(last, vec, i) * distRatio;
@@ -595,6 +606,7 @@ var MovingLineForm = (function (_Form) {
      * @param layers number of layers
      * @param magnify magnification ratio
      * @param curveSegments number of segments for curve, or 0 for no curve
+     * @param flatness a number between 0 to 1, to randomize the flatness of the tip
      */
   }, {
     key: "noiseDashLine",
@@ -607,6 +619,7 @@ var MovingLineForm = (function (_Form) {
       var layers = arguments.length <= 7 || arguments[7] === undefined ? 15 : arguments[7];
       var magnify = arguments.length <= 8 || arguments[8] === undefined ? 3 : arguments[8];
       var curveSegments = arguments.length <= 9 || arguments[9] === undefined ? 0 : arguments[9];
+      var flatness = arguments.length <= 10 || arguments[10] === undefined ? 1 : arguments[10];
 
       var last = null;
       var lastLayer = [];
@@ -616,6 +629,11 @@ var MovingLineForm = (function (_Form) {
       // go through each points
       for (var i = 0; i < pts.length; i++) {
         var vec = new Vector(pts[i]);
+
+        if (!last && Math.random() < flatness) {
+          last = vec.clone();
+          continue;
+        }
 
         // smooth distance
         var dist = this._getSegmentDistance(last, vec, i) * distRatio;

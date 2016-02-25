@@ -303,7 +303,7 @@ class MovingLineForm extends Form {
    * @param smoothSteps number of steps for the smoothing function. defaults to 3.
    * @param maxDist maximum distance
    */
-  innerLine( pts, nums = 5, distRatio=0.5, smoothSteps=3, maxDist=0 ) {
+  innerLine( pts, nums = 5, distRatio=0.5, smoothSteps=3, maxDist=0, skip=0 ) {
 
     var last = null;
     var normals = [];
@@ -312,8 +312,13 @@ class MovingLineForm extends Form {
     // init normal arrays
     for (var n=0; n<nums; n++) { normals[n] = []; }
 
-    for (var i=0; i<pts.length; i++) {
+    for (var i=skip; i<(pts.length-skip); i++) {
       let vec = new Vector( pts[i] );
+
+      if (!last) {
+        last = vec.clone();
+        continue;
+      }
 
       // smooth distance
       let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
@@ -353,6 +358,11 @@ class MovingLineForm extends Form {
 
     for (var i=0; i<pts.length; i++) {
       let vec = new Vector( pts[i] );
+
+      if (!last) {
+        last = vec.clone();
+        continue;
+      }
 
       // smooth distance
       let dist = this._getSegmentDistance( last, vec, i ) * distRatio;
@@ -471,8 +481,9 @@ class MovingLineForm extends Form {
    * @param layers number of layers
    * @param magnify magnification ratio
    * @param curveSegments number of segments for curve, or 0 for no curve
+   * @param flatness a number between 0 to 1, to randomize the flatness of the tip
    */
-  noiseDashLine( pts, noise, nf={a:0, b:0.005, c:0.005}, flipSpeed=0, distRatio=0.5, smoothSteps=1, maxDist=0, layers=15,  magnify=3, curveSegments=0 ) {
+  noiseDashLine( pts, noise, nf={a:0, b:0.005, c:0.005}, flipSpeed=0, distRatio=0.5, smoothSteps=1, maxDist=0, layers=15,  magnify=3, curveSegments=0, flatness=1 ) {
 
     var last = null;
     var lastLayer = [];
@@ -482,6 +493,11 @@ class MovingLineForm extends Form {
     // go through each points
     for (let i=0; i<pts.length; i++) {
       let vec = new Vector( pts[i] );
+
+      if (!last && Math.random() < flatness) {
+        last = vec.clone();
+        continue;
+      }
 
       // smooth distance
       let dist = this._getSegmentDistance( last, vec, i ) * distRatio;

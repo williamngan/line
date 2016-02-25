@@ -21,13 +21,13 @@ class JaggedLineBrush extends JaggedLine {
 
 }
 
-class InnerLineBrush extends InnerLine {
+class InnerLineBrush extends WiggleLine {
   draw( f=this.form ) {
 
     if (!this.shouldDraw()) return;
 
     f.stroke( this.getColor() ).fill( false );
-    f.innerLine( this.points, 20, 2, 7 );
+    f.innerLine( this.points, 20, 2, 7, 0, 2 );
   }
 }
 
@@ -79,10 +79,11 @@ class NoiseDashLineBrush extends NoiseDashLine {
     let layers = 10;
     let magnify = 1.5;
     let curveSegments = 1;
+    let flatness = 0.87;
 
     this.noiseProgress += 0.001;
     let noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
-    f.noiseDashLine( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
+    f.noiseDashLine( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments, flatness);
   }
 }
 
@@ -149,7 +150,7 @@ class SmoothNoiseLineBrush extends SmoothNoiseLine {
   var line = new BaseLine().init( space );
   space.refresh( false );
 
-  var currentBrush = "BaseLine";
+  var currentBrush = "RestatedLine";
   var brushColor = "dark";
 
 
@@ -321,7 +322,9 @@ class SmoothNoiseLineBrush extends SmoothNoiseLine {
 
 
     line.points = _temp;
-    line.maxPoints = 20;
+    line.maxPoints = 30;
+    line.maxTracePoints = 30;
+    line.pointThreshold = Math.max( line.pointThreshold, 50 );
 
 
     space.add( line );

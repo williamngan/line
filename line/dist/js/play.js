@@ -57,8 +57,8 @@ var JaggedLineBrush = (function (_JaggedLine) {
   return JaggedLineBrush;
 })(JaggedLine);
 
-var InnerLineBrush = (function (_InnerLine) {
-  _inherits(InnerLineBrush, _InnerLine);
+var InnerLineBrush = (function (_WiggleLine) {
+  _inherits(InnerLineBrush, _WiggleLine);
 
   function InnerLineBrush() {
     _classCallCheck(this, InnerLineBrush);
@@ -74,12 +74,12 @@ var InnerLineBrush = (function (_InnerLine) {
       if (!this.shouldDraw()) return;
 
       f.stroke(this.getColor()).fill(false);
-      f.innerLine(this.points, 20, 2, 7);
+      f.innerLine(this.points, 20, 2, 7, 0, 2);
     }
   }]);
 
   return InnerLineBrush;
-})(InnerLine);
+})(WiggleLine);
 
 var DottedLineBrush = (function (_DottedLine) {
   _inherits(DottedLineBrush, _DottedLine);
@@ -179,10 +179,11 @@ var NoiseDashLineBrush = (function (_NoiseDashLine) {
       var layers = 10;
       var magnify = 1.5;
       var curveSegments = 1;
+      var flatness = 0.87;
 
       this.noiseProgress += 0.001;
       var noiseFactors = { a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
-      f.noiseDashLine(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments);
+      f.noiseDashLine(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments, flatness);
     }
   }]);
 
@@ -276,7 +277,7 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
   var line = new BaseLine().init(space);
   space.refresh(false);
 
-  var currentBrush = "BaseLine";
+  var currentBrush = "RestatedLine";
   var brushColor = "dark";
 
   var brushes = document.querySelectorAll(".brush");
@@ -451,7 +452,9 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
     }
 
     line.points = _temp;
-    line.maxPoints = 20;
+    line.maxPoints = 30;
+    line.maxTracePoints = 30;
+    line.pointThreshold = Math.max(line.pointThreshold, 50);
 
     space.add(line);
   }
