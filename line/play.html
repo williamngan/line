@@ -12,18 +12,14 @@
 	<script type="text/javascript" src="./dist/js/pt.js"></script>
 	<script type="text/javascript" src="./dist/js/lines/lines.js"></script>
 
-	<link rel="stylesheet" type="text/css" href="./dist/css/index.css" />
+	<link rel="stylesheet" type="text/css" href="./dist/css/app.css" />
 
 
 
 	<style>
-
+/*
         html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow-y: hidden;
-            overflow-x: hidden;
+
         }
 
         #app {
@@ -63,41 +59,61 @@
         #playground {
             z-index: 1;
         }
-
+*/
 	</style>
 
 </head>
 <body>
 
-<div id="app">
+<div id="container">
     <div id="buffer"></div>
     <div id="playground"></div>
-    <div id="brushes">
-        <div class="brush" data-id="BaseLine">Base</div>
-        <div class="brush" data-id="GrowLineBrush">Grow</div>
-        <div class="brush" data-id="JaggedLineBrush">Jagged</div>
-        <div class="brush" data-id="ZigZagLineBrush">ZigZag</div>
-        <div class="brush" data-id="HatchingLine">Hatch</div>
-        <div class="brush" data-id="RestatedLine">Restate</div>
-        <div class="brush" data-id="NoiseChopLineBrush">Chop</div>
-        <div class="brush" data-id="NoiseDashLineBrush">Dash</div>
-        <div class="brush" data-id="InnerLineBrush">Inner</div>
-        <div class="brush" data-id="NoiseBrushTwo">Overlap</div>
-        <div class="brush" data-id="SmoothNoiseLineBrush">Flow</div>
-        <div class="brush" data-id="DottedLineBrush">Dot</div>
+    <div id="menu">
+        <!--<div class="brush" data-id="BaseLine" style="background-position: -20px -20px;">Base</div>-->
+        <div class="brush" data-id="RestatedLine" style="background-position: -25px -25px;"><div class="light"></div></div>
+        <div class="brush" data-id="GrowLineBrush"  style="background-position: -225px -25px;"><div class="light"></div></div>
+
+        <div class="brush" data-id="ZigZagLineBrush" style="background-position: -25px -225px;"><div class="light"></div></div>
+        <div class="brush" data-id="HatchingLine" style="background-position: -225px -225px;"><div class="light"></div></div>
+
+        <div class="brush" data-id="JaggedLineBrush" style="background-position: -25px -425px;"><div class="light"></div></div>
+        <div class="brush" data-id="NoiseChopLineBrush" style="background-position: -225px -425px;"><div class="light"></div></div>
+
+        <div class="brush" data-id="NoiseDashLineBrush" style="background-position: -25px -625px;"><div class="light"></div></div>
+        <div class="brush" data-id="InnerLineBrush" style="background-position: -225px -625px;"><div class="light"></div></div>
+
+        <div class="brush" data-id="NoiseBrushTwo" style="background-position: -25px -825px;"><div class="light"></div></div>
+        <div class="brush" data-id="SmoothNoiseLineBrush" style="background-position: -225px -825px;"><div class="light"></div></div>
+
+        <!--<div class="brush" data-id="DottedLineBrush">Dot</div>-->
         <hr />
-        <div class="brushcolor" data-id="dark">Dark</div>
-        <div class="brushcolor" data-id="light">Light</div>
+
+
+        <div class="brushcolor" data-id="dark" style="background: #111"><div class="light"></div></div>
+        <div class="brushcolor" data-id="light" style="background: #f5f5f5"><div class="light"></div></div>
+
         <hr />
-        <div class="bgcolor" data-id="white">white</div>
-        <div class="bgcolor" data-id="grey">Grey</div>
-        <div class="bgcolor" data-id="black">Black</div>
+        <div class="bgcolors">
+            <div class="bgcolor" data-id="white" style="background: #f5f5f5">white</div>
+            <div class="bgcolor" data-id="grey" style="background: #bbb">Grey</div>
+            <div class="bgcolor" data-id="black" style="background: #111">Black</div>
+        </div>
     </div>
+
+    <div id="close" onclick="menuToggle()">&times;</div>
 </div>
 
 <script type="text/javascript">
     document.addEventListener('touchstart', function(e) { e.preventDefault(); });
     document.addEventListener('touchmove', function(e) {e.preventDefault(); });
+</script>
+
+<script type="text/javascript">
+	function menuToggle() {
+		document.querySelector("#menu").classList.toggle("open");
+		document.querySelector("#playground").classList.toggle("larger");
+		document.querySelector("#close").classList.toggle("closed");
+	}
 </script>
 
 <!--<script type="text/javascript" src="dist/js/_Walking.js"></script>-->

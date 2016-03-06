@@ -1,0 +1,167 @@
+$bg: #f3f5f9;
+$fg: #1e2123;
+$grey1: #456;
+$grey2: #678;
+$grey3: #9AB;
+$link: #00A3F1;
+$fs: 10px;
+$head_h: 0;
+
+body {
+  font-family: 'San Francisco', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+#container {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  background-color: $bg;
+  padding: 30px;
+  overflow: hidden;
+
+}
+
+#playground, #buffer {
+  position: absolute;
+  top: 0; right: 0; left: 0; bottom: 0;
+  overflow: hidden;
+  transition: right .5s;
+
+  cursor: crosshair;
+
+  &.larger {
+    right: 0;
+  }
+
+  > svg {
+    display: block;
+    margin: 0 auto;
+    overflow: visible;
+  }
+}
+
+#playground {
+  z-index: 1;
+}
+
+#canvas {
+    background-color: #f2f2f2;
+}
+
+
+#menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25vw;
+  bottom: 0;
+  background-color: #fff;
+  border-left: 1px solid darken($bg, 2);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: right .5s;
+  z-index: 2;
+  padding-left: 2vw;
+
+
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  &.open {
+    right: -25vw;
+  }
+
+  .brush {
+    width: 8vw;
+    height: 8vw;
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 7vw;
+    display: inline-block;
+    margin: 1vw;
+    background: url(../img/brushes_white.jpg) no-repeat;
+    position: relative;
+    overflow: hidden;
+
+    .light {
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,10,35,.05);
+      transition: background-color .3s;
+    }
+
+    &:hover {
+      .light {
+        background-color: rgba(0,70,185,.15);
+      }
+    }
+
+    &.selected {
+      .light {
+        background-color: rgba(250,70,0,.15);
+      }
+    }
+  }
+
+
+
+  .brushcolor {
+    width: 8vw;
+    height: 8vw;
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 1vw;
+    margin: 1vw;
+    background: #f00;
+    display: inline-block;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 5px solid #fff;
+
+    .light {
+      width: 100%;
+      height: 100%;
+      border-radius: 1vw;
+      background-color: transparent;
+    }
+
+    &:hover {
+      border-color: #c6d9f5;
+    }
+
+    &.selected {
+      border-color: #ffe3d9;
+    }
+  }
+
+}
+
+
+#close {
+  position: fixed;
+  right: 5px; top: 0px;
+  font-weight: 100;
+  font-size: 2em;
+  line-height: 1;
+  padding: 10px;
+  display: block;
+  color: $grey2;
+  cursor: pointer;
+  transform: rotateZ(0deg);
+  transition: transform .2s;
+  z-index: 3;
+
+  &:hover {
+    color: $link;
+  }
+
+  &.closed {
+    transform: rotateZ(-45deg);
+  }
+}

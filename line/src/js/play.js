@@ -151,6 +151,7 @@ class SmoothNoiseLineBrush extends SmoothNoiseLine {
   space.refresh( false );
 
   var currentBrush = "RestatedLine";
+  var lastBrush = null;
   var brushColor = "dark";
 
 
@@ -158,9 +159,10 @@ class SmoothNoiseLineBrush extends SmoothNoiseLine {
   for (let i=0; i<brushes.length; i++) {
     ["click", "touchend"].forEach( function(evt) {
       brushes[i].addEventListener( evt, function ( evt ) {
-        currentBrush = evt.target.getAttribute( "data-id" ) || currentBrush;
-        evt.target.className = "brush selected";
-        console.log( "@@@" );
+        if (lastBrush) lastBrush.className = "brush";
+        currentBrush = evt.currentTarget.getAttribute( "data-id" ) || currentBrush;
+        evt.currentTarget.className = "brush selected";
+        lastBrush = evt.currentTarget;
       } )
     });
   }

@@ -1,0 +1,119 @@
+body {
+  font-family: 'San Francisco', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: hidden;
+  overflow-x: hidden; }
+
+#container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #f3f5f9;
+  padding: 30px;
+  overflow: hidden; }
+
+#playground, #buffer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  transition: right .5s;
+  cursor: crosshair; }
+  #playground.larger, #buffer.larger {
+    right: 0; }
+  #playground > svg, #buffer > svg {
+    display: block;
+    margin: 0 auto;
+    overflow: visible; }
+
+#playground {
+  z-index: 1; }
+
+#canvas {
+  background-color: #f2f2f2; }
+
+#menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25vw;
+  bottom: 0;
+  background-color: #fff;
+  border-left: 1px solid #eceff6;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: right .5s;
+  z-index: 2;
+  padding-left: 2vw;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none; }
+  #menu.open {
+    right: -25vw; }
+  #menu .brush {
+    width: 8vw;
+    height: 8vw;
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 7vw;
+    display: inline-block;
+    margin: 1vw;
+    background: url(../img/brushes_white.jpg) no-repeat;
+    position: relative;
+    overflow: hidden; }
+    #menu .brush .light {
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 10, 35, 0.05);
+      transition: background-color .3s; }
+    #menu .brush:hover .light {
+      background-color: rgba(0, 70, 185, 0.15); }
+    #menu .brush.selected .light {
+      background-color: rgba(250, 70, 0, 0.15); }
+  #menu .brushcolor {
+    width: 8vw;
+    height: 8vw;
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 1vw;
+    margin: 1vw;
+    background: #f00;
+    display: inline-block;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 5px solid #fff; }
+    #menu .brushcolor .light {
+      width: 100%;
+      height: 100%;
+      border-radius: 1vw;
+      background-color: transparent; }
+    #menu .brushcolor:hover {
+      border-color: #c6d9f5; }
+    #menu .brushcolor.selected {
+      border-color: #ffe3d9; }
+
+#close {
+  position: fixed;
+  right: 5px;
+  top: 0px;
+  font-weight: 100;
+  font-size: 2em;
+  line-height: 1;
+  padding: 10px;
+  display: block;
+  color: #667788;
+  cursor: pointer;
+  transform: rotateZ(0deg);
+  transition: transform .2s;
+  z-index: 3; }
+  #close:hover {
+    color: #00a3f1; }
+  #close.closed {
+    transform: rotateZ(-45deg); }
