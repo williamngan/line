@@ -276,20 +276,24 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
   var space = new CanvasSpace("playCanvas", false).display("#playground");
   var line = new BaseLine().init(space);
   space.refresh(false);
+  space.clear("rgb(250,252,255)");
 
   var currentBrush = "RestatedLine";
-  var lastBrush = null;
+  var lastBrush = document.querySelector("#initialBrush");
+  var lastBrushColor = document.querySelector("#initialBrushColor");
   var brushColor = "dark";
 
   var brushes = document.querySelectorAll(".brush");
 
   var _loop = function (i) {
-    ["click", "touchend"].forEach(function (evt) {
-      brushes[i].addEventListener(evt, function (evt) {
+    ["mouseup", "touchend"].forEach(function (e) {
+      brushes[i].addEventListener(e, function (evt) {
         if (lastBrush) lastBrush.className = "brush";
         currentBrush = evt.currentTarget.getAttribute("data-id") || currentBrush;
         evt.currentTarget.className = "brush selected";
         lastBrush = evt.currentTarget;
+
+        evt.stopPropagation();
       });
     });
   };
@@ -301,9 +305,15 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
   var brushcolors = document.querySelectorAll(".brushcolor");
 
   var _loop2 = function (i) {
-    ["click", "touchend"].forEach(function (evt) {
-      brushcolors[i].addEventListener(evt, function (evt) {
-        brushColor = evt.target.getAttribute("data-id") || brushColor;
+    ["mouseup", "touchend"].forEach(function (e) {
+      brushcolors[i].addEventListener(e, function (evt) {
+        if (lastBrushColor) lastBrushColor.className = "brushcolor";
+        brushColor = evt.currentTarget.getAttribute("data-id") || brushColor;
+        evt.currentTarget.className = "brushcolor selected";
+        updateTo(false);
+        lastBrushColor = evt.currentTarget;
+
+        evt.stopPropagation();
       });
     });
   };
@@ -312,37 +322,27 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
     _loop2(i);
   }
 
-  var bgcolor = document.querySelectorAll(".bgcolor");
+  document.querySelector("#pager").addEventListener("click", function (evt) {
+    var curr = evt.target.className;
+    if (curr == "black") {
+      evt.target.className = "white";
+      space.clear("rgb(30,35,42)");
+    } else {
+      evt.target.className = "black";
+      space.clear("rgb(237,240,242)");
+    }
+  });
 
-  var _loop3 = function (i) {
-    ["click", "touchend"].forEach(function (evt) {
-      bgcolor[i].addEventListener(evt, function (evt) {
-        var bg = evt.target.getAttribute("data-id") || "white";
-
-        if (bg === "black") {
-          space.clear("#000");
-        } else if (bg === "grey") {
-          space.clear("#bbb");
-        } else {
-          space.clear("#fff");
-        }
-      });
-    });
-  };
-
-  for (var i = 0; i < bgcolor.length; i++) {
-    _loop3(i);
-  }
+  document.querySelector("#menu").addEventListener("mouseenter", function () {
+    penUp();
+  });
 
   function penDown(evt) {
-    console.log("###");
-
     updateTo(window[currentBrush]);
     line.trace(true);
   }
 
   function penUp(evt) {
-    console.log("!!!");
     line.points = [];
     line.trace(false);
     space.remove(line);
@@ -390,6 +390,12 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
    */
   function updateTo(LineClass) {
 
+    var shouldAddLine = true;
+    if (!LineClass) {
+      LineClass = window[currentBrush];
+      shouldAddLine = false;
+    }
+
     var _temp = line.points.slice();
     space.remove(line);
     line = new LineClass().init(space);
@@ -425,22 +431,22 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
       }
     } else {
       line.setColor({
-        dark: "rgba(255,255,255,.08)",
+        dark: "rgba(255,255,255,.05)",
+        dark2: "rgba(255,255,255,.05)",
+        light: "rgba(255,255,255,.05)",
+        ligh2: "rgba(255,255,255,.05)"
+      }, {
+        dark: "rgba(255,255,255,.02)",
         dark2: "rgba(255,255,255,.02)",
         light: "rgba(255,255,255,.02)",
         ligh2: "rgba(255,255,255,.02)"
-      }, {
-        dark: "rgba(255,255,255,.01)",
-        dark2: "rgba(255,255,255,.01)",
-        light: "rgba(255,255,255,.01)",
-        ligh2: "rgba(255,255,255,.01)"
       });
       if (LineClass === InnerLineBrush) {
         line.setColor({
-          dark: "rgba(255,255,255,.01)",
-          dark2: "rgba(255,255,255,.01)",
-          light: "rgba(255,255,255,.01)",
-          ligh2: "rgba(90,90,90,.01)"
+          dark: "rgba(255,255,255,.05)",
+          dark2: "rgba(255,255,255,.05)",
+          light: "rgba(255,255,255,.05)",
+          ligh2: "rgba(90,90,90,.05)"
         });
       }
       if (LineClass === ZigZagLineBrush) {
@@ -451,6 +457,15 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
           ligh2: "rgba(255,255,255,.1)"
         });
       }
+      if (LineClass === SmoothNoiseLineBrush) {
+        console.log("!!");
+        line.setColor({
+          dark: "rgba(255,255,255,.01)",
+          dark2: "rgba(255,255,255,.01)",
+          light: "rgba(255,255,255,.01)",
+          ligh2: "rgba(255,255,255,.01)"
+        });
+      }
     }
 
     line.points = _temp;
@@ -458,6 +473,13 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
     line.maxTracePoints = 30;
     line.pointThreshold = Math.max(line.pointThreshold, 50);
 
-    space.add(line);
+    if (shouldAddLine) space.add(line);
   }
+
+  // UI
+  window.menuToggle = function () {
+    document.querySelector("#menu").classList.toggle("open");
+    document.querySelector("#playground").classList.toggle("larger");
+    document.querySelector("#close").classList.toggle("closed");
+  };
 })();

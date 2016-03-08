@@ -14,6 +14,11 @@ body {
   padding: 0;
   overflow-y: hidden;
   overflow-x: hidden;
+
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 #container {
@@ -65,13 +70,20 @@ body {
   overflow-x: hidden;
   transition: right .5s;
   z-index: 2;
-  padding-left: 2vw;
 
 
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+
+  text-align: center;
+
+  .menuWrap {
+    margin-top: 40px;
+    display: inline-block;
+  }
+
 
   &.open {
     right: -25vw;
@@ -82,9 +94,9 @@ body {
     height: 8vw;
     max-width: 100px;
     max-height: 100px;
-    border-radius: 7vw;
+    border-radius: 8vw;
     display: inline-block;
-    margin: 1vw;
+    margin: 0.6vw;
     background: url(../img/brushes_white.jpg) no-repeat;
     position: relative;
     overflow: hidden;
@@ -116,13 +128,22 @@ body {
     height: 8vw;
     max-width: 100px;
     max-height: 100px;
-    border-radius: 1vw;
+    border-radius: 8vw;
     margin: 1vw;
     background: #f00;
     display: inline-block;
     overflow: hidden;
     box-sizing: border-box;
-    border: 5px solid #fff;
+    border-width: 5px;
+    border-style: solid;
+
+    &[data-id="dark"] {
+      border-color: #111;
+    }
+
+    &[data-id="light"] {
+      border-color: #f5f5f5;
+    }
 
     .light {
       width: 100%;
@@ -136,10 +157,45 @@ body {
     }
 
     &.selected {
-      border-color: #ffe3d9;
+      border-color: #ffa993;
     }
   }
 
+}
+
+#pager {
+  box-sizing: border-box;
+  $ps: 20px;
+  border-width: $ps;
+  border-style: solid;
+  width: $ps * 2; height: $ps * 2;
+  position: fixed;
+  bottom: 0; left: 0; z-index: 5;
+
+  cursor: pointer;
+  transition: border-color .3s;
+
+
+  &.white {
+    border-top-color: rgba(255,255,255,.05);
+    border-right-color: rgba(255,255,255,.05);
+    border-bottom-color: rgba(250,252,255,1);
+    border-left-color: rgba(250,252,255,1);
+  }
+
+  &.grey {
+    border-top-color: rgba(187,205,212,.2);
+    border-right-color: rgba(187,205,212,.2);
+    border-bottom-color: rgba(187,205,212,1);
+    border-left-color: rgba(187,205,212,1);
+  }
+
+  &.black {
+    border-top-color: rgba(0,0,0,.1);
+    border-right-color: rgba(0,0,0,.1);
+    border-bottom-color: rgba(39,43,47,1);
+    border-left-color: rgba(39,43,47,1);
+  }
 }
 
 
@@ -156,6 +212,12 @@ body {
   transform: rotateZ(0deg);
   transition: transform .2s;
   z-index: 3;
+
+
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 
   &:hover {
     color: $link;
