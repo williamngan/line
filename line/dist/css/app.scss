@@ -227,3 +227,63 @@ body {
     transform: rotateZ(-45deg);
   }
 }
+
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen and (max-width : 500px) {
+  #menu {
+
+    width: 70vw;
+
+    &.open {
+      right: -70vw;
+    }
+
+    .brush, .brushcolor {
+      width: 20vw;
+      height: 20vw;
+      margin: 2vw;
+      border-radius: 20vw;
+    }
+  }
+}
+
+/* Tablet portrait mode */
+@media only screen and (min-width : 501px) and (max-width : 1000px)  {
+  #menu {
+
+    width: 30vw;
+
+    &.open {
+      right: -30vw;
+    }
+
+    .brush, .brushcolor {
+      width: 10vw;
+      height: 10vw;
+      margin: 1vw;
+      border-radius: 20vw;
+    }
+  }
+}
+
+/* Large smartphone (landscape) ----------- */
+@media only screen and (max-width : 767px) and (orientation : landscape) {
+  #menu {
+
+    width: 70vw;
+
+    &.open {
+      right: -70vw;
+    }
+
+    .brush, .brushcolor {
+      width: 12vw;
+      height: 12vw;
+      margin: 1.5vw;
+      border-radius: 20vw;
+    }
+  }
+}
+
+
