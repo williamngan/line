@@ -373,8 +373,14 @@ var MovingLineForm = (function (_Form) {
         var d1 = i % gap;
         var d2 = i % (gap * 2);
         var d3 = i % (gap * 3);
-        if (ps1[d1] && ps2[d2] && ps3[d3]) {
-          this.curve(new Curve().to([ps3[d3], ps2[d2], ps1[d1], pts[i]]).bspline(10));
+
+        var p1 = pts[i];
+        var p2 = ps1[d1] || ps1[i];
+        var p3 = ps2[d2] || ps2[d1] || ps2[i];
+        var p4 = ps3[d3] || ps3[d2] || ps3[d1] || ps3[i];
+
+        if (p4 && p3 && p2 && p1) {
+          this.curve(new Curve().to([p4, p3, p2, p1]).bspline(10));
         }
 
         ps3[d3] = ps2[d2];
