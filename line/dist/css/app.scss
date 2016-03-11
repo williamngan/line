@@ -201,9 +201,9 @@ body {
 
 #close {
   position: fixed;
-  right: 5px; top: 0px;
+  right: 10px; top: 0px;
   font-weight: 100;
-  font-size: 2em;
+  font-size: 2.5em;
   line-height: 1;
   padding: 10px;
   display: block;
@@ -228,6 +228,29 @@ body {
   }
 }
 
+.action {
+  position: fixed;
+  z-index: 2;
+  bottom: 10px;
+  width: 35px; height: 35px;
+  fill: $grey2;
+  display: block;
+}
+
+.action:hover {
+  fill: $link;
+  cursor: pointer;
+}
+
+#download {
+  right: 70px;
+}
+
+#info {
+  right: 10px;
+}
+
+
 
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen and (max-width : 500px) {
@@ -242,7 +265,7 @@ body {
     .brush, .brushcolor {
       width: 20vw;
       height: 20vw;
-      margin: 2vw;
+      margin: 2vw 2vw 1.5vw 2vw;
       border-radius: 20vw;
     }
   }

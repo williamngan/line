@@ -30,7 +30,7 @@ var path = {
 };
 
 
-// Define class sequence manually. To be modularize later.
+// Define class sequence manually. Eventually it will be webpack or browserify or something.
 // Parent classes needs to be defined before its extended children
 var coreElems = [
   "SegmentList", "MovingLineForm", "BaseLine", "DottedLine", "InterpolatedLine", "HatchingLine",

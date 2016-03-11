@@ -141,10 +141,10 @@ body {
 
 #close {
   position: fixed;
-  right: 5px;
+  right: 10px;
   top: 0px;
   font-weight: 100;
-  font-size: 2em;
+  font-size: 2.5em;
   line-height: 1;
   padding: 10px;
   display: block;
@@ -162,6 +162,25 @@ body {
   #close.closed {
     transform: rotateZ(-45deg); }
 
+.action {
+  position: fixed;
+  z-index: 2;
+  bottom: 10px;
+  width: 35px;
+  height: 35px;
+  fill: #667788;
+  display: block; }
+
+.action:hover {
+  fill: #00a3f1;
+  cursor: pointer; }
+
+#download {
+  right: 70px; }
+
+#info {
+  right: 10px; }
+
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen and (max-width : 500px) {
   #menu {
@@ -171,7 +190,7 @@ body {
     #menu .brush, #menu .brushcolor {
       width: 20vw;
       height: 20vw;
-      margin: 2vw;
+      margin: 2vw 2vw 1.5vw 2vw;
       border-radius: 20vw; } }
 /* Tablet portrait mode */
 @media only screen and (min-width : 501px) and (max-width : 1000px) {
