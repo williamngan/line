@@ -525,8 +525,8 @@ class MovingLineForm extends Form {
           let ln2 = new Line(older[n].p2).to( normal.p2 );
 
           // a bit shorter to avoid "banding" when drawing closely
-          if (Math.max(ln1.size().x, ln1.size().y) < 20) ln1.to( ln1.interpolate(0.95) );
-          if (Math.max(ln2.size().x, ln2.size().y) < 20) ln2.to( ln2.interpolate(0.95) );
+          if (Math.max(ln1.size().x, ln1.size().y) < 20) ln1.to( ln1.interpolate(0.94) );
+          if (Math.max(ln2.size().x, ln2.size().y) < 20) ln2.to( ln2.interpolate(0.94) );
 
           this.line( ln1 );
           this.line( ln2 );

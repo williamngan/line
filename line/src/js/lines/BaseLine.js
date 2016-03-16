@@ -15,6 +15,8 @@ class BaseLine extends Curve {
     this.moveCount = 0;
     this.maxMoveCount = 10;
 
+    this.noInput = false; // set to true to disable mouse and touch input
+
     this.colors = {
       "black": (a=0.8) => {return {
         dark: `rgba(51,64,87, ${a})`,
@@ -187,6 +189,8 @@ class BaseLine extends Curve {
   }
 
   _penAction( type, x, y ) {
+
+    if (this.noInput === true) return;
 
     // when mouse move, add a point to the trail
     if (type == "move") {

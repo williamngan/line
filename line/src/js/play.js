@@ -74,14 +74,15 @@ class NoiseDashLineBrush extends NoiseDashLine {
 
     f.fill( false ).stroke( this.getColor() );
 
-    let distRatio = Math.random() + 1;
+    let distRatio = (this.points.length < this.maxPoints) ? Math.random() + 0.5 : Math.random() + 1;
     let smooth = 3;
     let layers = 10;
-    let magnify = 1.5;
+    let magnify = 2;
     let curveSegments = 1;
-    let flatness = 0.87;
+    let flatness = 0.5;
 
-    this.noiseProgress += 0.001;
+    this.noiseProgress += (this.points.length < this.maxPoints) ? 0.7 : 0.005;
+
     let noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
     f.noiseDashLine( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments, flatness);
   }

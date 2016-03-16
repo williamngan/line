@@ -174,14 +174,15 @@ var NoiseDashLineBrush = (function (_NoiseDashLine) {
 
       f.fill(false).stroke(this.getColor());
 
-      var distRatio = Math.random() + 1;
+      var distRatio = this.points.length < this.maxPoints ? Math.random() + 0.5 : Math.random() + 1;
       var smooth = 3;
       var layers = 10;
-      var magnify = 1.5;
+      var magnify = 2;
       var curveSegments = 1;
-      var flatness = 0.87;
+      var flatness = 0.5;
 
-      this.noiseProgress += 0.001;
+      this.noiseProgress += this.points.length < this.maxPoints ? 0.7 : 0.005;
+
       var noiseFactors = { a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
       f.noiseDashLine(this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments, flatness);
     }
