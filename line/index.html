@@ -4,12 +4,18 @@
 	<meta charset="UTF-8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,300,700' rel='stylesheet' type='text/css'>
 
 	<title>Taking a Line for a Walk</title>
 	<script type="text/javascript" src="./dist/js/pt.js"></script>
 	<script type="text/javascript" src="./dist/js/lines/lines.js"></script>
 
 	<style>
+        body {
+            font-family: 'Lato', "Helvetica Neue", Helvetica, sans-serif;
+            margin: 0; padding: 0;
+            color: #33404d;
+        }
         #pt {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -17,6 +23,52 @@
             background: #d9e3ea;
         }
 
+        #title {
+            position: absolute;
+            top: 0;
+            left: 20vw; right: 20vw;
+            background: #fff;
+            padding: 40px;
+            text-align: center;
+            padding-bottom: 120px;
+        }
+
+        h1, h2, h3, h4 {
+            margin: 0;
+        }
+
+        h1 {
+            font-weight: 400;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        h4 {
+            font-weight: 300;
+            font-size: 16px;
+        }
+
+        #actions {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        #actions .btn {
+            width: 25%; height: 70px;
+            line-height: 65px;
+            display: inline-block;
+            color: #33404d;
+            background-color: #fff;
+            border-top: 1px solid #ff0;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        #actions .btn:hover {
+            background: #ff0;
+        }
 	</style>
 
 </head>
@@ -24,6 +76,12 @@
 
 
 <div id="pt"></div>
+<div id="title">
+    <h1>Taking a line for a walk</h1>
+    <h4>Code experiments of an active line in a pencil-less age</h4>
+
+    <div id="actions"><div class="btn">Idea</div><div class="btn">Line</div><div class="btn">App</div><div class="btn">Code</div></div>
+</div>
 
 
 

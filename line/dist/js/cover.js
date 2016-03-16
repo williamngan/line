@@ -2,7 +2,7 @@
  * Created by William on 3/14/2016.
  */
 
-var space = new CanvasSpace( "cover", false ).display();
+var space = new CanvasSpace( "cover", "#d9e3ea" ).display();
 space.refresh( false );
 
 var form = new Form( space );
@@ -46,8 +46,8 @@ var blue = 0;
 var red = 0;
 
 var darkcolor = {
-  dark: "rgba(0,0,0,.01)",
-  dark2: "rgba(0,0,0,.01)",
+  dark: "rgba(0,0,10,.01)",
+  dark2: "rgba(0,0,10,.01)",
   light: "rgba(0,0,0,.01)",
   ligh2: "rgba(0,0,0,.01)"
 };
@@ -79,7 +79,7 @@ line3.distanceThreshold = 50*50;
 line3.trace( true );
 line3.setColor( lightcolor, lightcolor );
 
-var lineB = line3;
+var lineB = line2;
 space.add( lineB );
 
 
@@ -133,13 +133,13 @@ function checkBounds() {
 
     world.add( a );
 
-    darkcolor.dark2 = "rgba("+Math.floor(Math.random()*20)+",0, 0,0.02)";
-    darkcolor.light2 = "rgba(0,0,"+Math.floor(Math.random()*80)+",0.02)";
+    darkcolor.dark2 = "rgba(0, 0, "+Math.floor(Math.random()*20+15)+", "+(Math.random()*0.03 + 0.01)+")";
+    darkcolor.light2 = "rgba(0,0,0,0)";
 
-    lightcolor.dark2 = "rgba(220, "+Math.floor(Math.random()*40+210)+","+Math.floor(Math.random()*50+180)+",0.04)";
-    lightcolor.light2 = "rgba(220, "+Math.floor(Math.random()*40+210)+","+Math.floor(Math.random()*50+180)+",0.02)";
+    lightcolor.dark2 = "rgba(220, "+Math.floor(Math.random()*40+210)+","+Math.floor(Math.random()*50+180)+",0.07)";
+    lightcolor.light2 = "rgba(0,0,0,0)";
 
-    if (Math.random() < 0.5) {
+    if (Math.random() < 0.3) {
 
       space.remove( lineB );
       lineB = line3;
@@ -150,7 +150,7 @@ function checkBounds() {
       space.add( lineB );
     }
 
-
+/*
     if (Math.random() < 0.25) {
       lineB.setColor( darkcolor, darkcolor );
       line.setColor( lightcolor, lightcolor );
@@ -158,7 +158,7 @@ function checkBounds() {
       line.setColor( darkcolor, darkcolor );
       lineB.setColor( lightcolor, lightcolor );
     }
-
+*/
   }
 }
 
