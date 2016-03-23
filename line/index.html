@@ -27,7 +27,7 @@
             position: absolute;
             top: 0;
             left: 20vw; right: 20vw;
-            background: #fff;
+            background: transparent;
             padding: 40px;
             text-align: center;
             padding-bottom: 120px;
@@ -38,14 +38,16 @@
         }
 
         h1 {
-            font-weight: 400;
-            font-size: 36px;
+            font-weight: 700;
+            font-size: 9vw;
             margin-bottom: 20px;
+            color: #fff;
         }
 
         h4 {
             font-weight: 300;
             font-size: 16px;
+            display: none;
         }
 
         #actions {
@@ -56,18 +58,54 @@
         }
 
         #actions .btn {
-            width: 25%; height: 70px;
+            width: 20%; height: 70px;
+            margin: 0 2%;
             line-height: 65px;
             display: inline-block;
-            color: #33404d;
-            background-color: #fff;
-            border-top: 1px solid #ff0;
-            font-size: 14px;
+            text-decoration: none;
+
+            font-size: 32px;
             font-weight: 700;
+            color: #f37;
+
+            border-bottom: 3px solid #f37;
+            cursor: pointer;
         }
 
         #actions .btn:hover {
-            background: #ff0;
+            background: #fff;
+        }
+
+        #by {
+            position: absolute;
+            bottom: 15px; right: 15px;
+            display: block;
+            font-size: 11px;
+            color: rgba(0,0,0,.4);
+            text-decoration: none;
+        }
+
+        #by:hover {
+            color: rgba(0,0,0,.7);
+        }
+
+        @media only screen and (min-width : 500px) and (max-width : 767px) {
+            #title {
+                left: 12vw; right: 12vw;
+            }
+            h1 {
+                font-size: 9vw;
+            }
+
+            #actions .btn {
+                font-size: 22px;
+            }
+        }
+
+        @media only screen and (max-width : 500px) {
+            #actions .btn {
+                font-size: 18px;
+            }
         }
 	</style>
 
@@ -80,10 +118,16 @@
     <h1>Taking a line for a walk</h1>
     <h4>Code experiments of an active line in a pencil-less age</h4>
 
-    <div id="actions"><div class="btn">Idea</div><div class="btn">Line</div><div class="btn">App</div><div class="btn">Code</div></div>
+    <div id="actions">
+        <a class="btn" href="http://medium.com/@williamngan/" target="_blank">Idea</a>
+        <a class="btn" href="./line.html">Line</a>
+        <a class="btn" href="./app.html">App</a>
+        <a class="btn" href="http://github.com/williamngan/" target="_blank">Code</a>
+    </div>
 </div>
 
 
+<a id="by" href="http://twitter.com/williamngan">@williamngan</a>
 
 <script type="text/javascript" src="./dist/js/cover.js"></script>
 

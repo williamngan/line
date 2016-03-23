@@ -1,9 +1,6 @@
-/**
- * Created by William on 3/14/2016.
- */
-
 var space = new CanvasSpace( "cover", "#d9e3ea" ).display();
 space.refresh( false );
+space.clear("#d9e3ea");
 
 var form = new Form( space );
 
@@ -11,15 +8,15 @@ var form = new Form( space );
 var world = new ParticleSystem(); // a system to track the particles
 space.add( world );
 
-var mouse = new Particle(); // speckles to gravitate toward the mouse, which has a larger mass
-mouse.mass = 200;
+var follower = new Particle(); // particle gravitate toward the follower, which has a larger mass
+follower.mass = 200;
 
 
+// Custom Brush extending NoiseDashLine
 function NoiseDashLineBrush() {
   NoiseDashLine.call( this, arguments );
 }
 Util.extend( NoiseDashLineBrush, NoiseDashLine );
-
 
 NoiseDashLineBrush.prototype.draw = function( f ) {
 
@@ -42,9 +39,8 @@ NoiseDashLineBrush.prototype.draw = function( f ) {
 
 };
 
-var blue = 0;
-var red = 0;
 
+// set up lines
 var darkcolor = {
   dark: "rgba(0,0,10,.01)",
   dark2: "rgba(0,0,10,.01)",
@@ -84,56 +80,56 @@ space.add( lineB );
 
 
 
-
-// A Speckle is a kind of Particle
-function Speckle() {
+// A drawing Tip is a kind of Particle
+function Tip() {
   Particle.call( this, arguments );
   this.mass = 1;
 }
-Util.extend( Speckle, Particle );
+Util.extend( Tip, Particle );
 
 // animate this speckle
-Speckle.prototype.animate = function( time, frame, ctx ) {
+Tip.prototype.animate = function( time, frame, ctx ) {
   this.play(time, frame);
-  form.point( this, 1);
+
   if (this.x < 0 || this.x > space.size.x || this.y < 0) {
     world.remove( this );
   }
 };
 
 // Particle use RK4 to integrate by default. Here we change it to Euler which is faster but less accurate.
-Speckle.prototype.integrate = function(t, dt) {
+Tip.prototype.integrate = function(t, dt) {
   return this.integrateEuler(t, dt);
 };
 
 // calculate the forces
-Speckle.prototype.forces = function( state, t ) {
+Tip.prototype.forces = function( state, t ) {
   var brownian = new Vector( (Math.random()-Math.random())/7, (Math.random()-Math.random())/7 ); // random
-  var g = Particle.force_gravitation( state, t, this, mouse ); // mouse gravity
+  var g = Particle.force_gravitation( state, t, this, follower ); // follower gravity
   return {force: brownian.add(g.force)};
 };
 
-var a = new Speckle(space.size.x/2, space.size.y/2);
+// Create a tip
+var a = new Tip(space.size.x/2, space.size.y/2);
 world.add( a );
 
 
-var ang = Const.one_degree;
-
+// follower spins around the tip slowly
+var ang = 0;
 function orbit() {
   ang += Const.one_degree*1.2;
-  mouse.set( Math.cos(ang) * 60 + a.x, Math.sin(ang) * 60 + a.y );
+  follower.set( Math.cos(ang) * 60 + a.x, Math.sin(ang) * 60 + a.y );
 }
 
 
-
+// Redraw when out of bounds
 function checkBounds() {
   if (a.x <= 0 || a.x >= space.size.x || a.y <= 0 || a.y >= space.size.y ) {
     world.remove(a);
-    a = new Speckle( space.size.x*Math.random(), space.size.x*Math.random() );
+    a = new Tip( space.size.x*Math.random(), space.size.x*Math.random() );
 
     world.add( a );
 
-    darkcolor.dark2 = "rgba(0, 0, "+Math.floor(Math.random()*20+15)+", "+(Math.random()*0.03 + 0.01)+")";
+    darkcolor.dark2 = "rgba(0, 0, "+Math.floor(Math.random()*20+15)+", "+(Math.random()*0.015 + 0.005)+")";
     darkcolor.light2 = "rgba(0,0,0,0)";
 
     lightcolor.dark2 = "rgba(220, "+Math.floor(Math.random()*40+210)+","+Math.floor(Math.random()*50+180)+",0.07)";
@@ -149,16 +145,6 @@ function checkBounds() {
       lineB = line2;
       space.add( lineB );
     }
-
-/*
-    if (Math.random() < 0.25) {
-      lineB.setColor( darkcolor, darkcolor );
-      line.setColor( lightcolor, lightcolor );
-    } else {
-      line.setColor( darkcolor, darkcolor );
-      lineB.setColor( lightcolor, lightcolor );
-    }
-*/
   }
 }
 
@@ -166,29 +152,16 @@ function checkBounds() {
 space.add({
   animate: function(time, fps, context) {
 
-    // fill background
-    //form.fill("rgba(0,0,0,0.05)");
-    //form.rect( new Pair().to(space.size) );
-
-    // fill speckles
-    form.fill( "rgba(255,255,200,.1)" );
-
     checkBounds();
     orbit();
 
     form.fill(false).stroke();
     lineB.move( a.x, a.y );
-    line.move(mouse.x, mouse.y);
-    //form.fill("#eee").point( mouse, 5);
-
-  },
-  onMouseAction: function(type, x, y, evt) {
+    line.move(follower.x, follower.y);
 
   }
 });
 
 
 // 4. Start playing
-space.bindMouse();
 space.play();
-//space.stop(10000);
