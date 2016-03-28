@@ -1,8 +1,10 @@
-var space = new CanvasSpace( "cover", "#d9e3ea" ).display();
+var space = new CanvasSpace( "cover", "#d9e3ea" ).display()
 space.refresh( false );
 space.clear("#d9e3ea");
+space.ctx.lineCap = "round";
 
 var form = new Form( space );
+
 
 //// 2. Create Elements
 var world = new ParticleSystem(); // a system to track the particles
@@ -26,15 +28,15 @@ NoiseDashLineBrush.prototype.draw = function( f ) {
 
   f.fill( false ).stroke( this.getColor() );
 
-  let distRatio = (this.points.length < this.maxPoints/2) ? this.seedIndex/6 + 0.2 : (this.seedIndex+Math.random()+Math.random())/4 ;
-  let smooth = 3;
-  let layers = 8;
-  let magnify = 2;
-  let curveSegments = 1;
-  let flatness = 0.87;
+  var distRatio = (this.points.length < this.maxPoints/2) ? this.seedIndex/6 + 0.2 : (this.seedIndex+Math.random()+Math.random())/4 ;
+  var smooth = 3;
+  var layers = 8;
+  var magnify = 1.25;
+  var curveSegments = 1;
+  var flatness = 0.87;
 
   this.noiseProgress +=  0.008;
-  let noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
+  var noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
   f.noiseDashLine( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments, flatness);
 
 };

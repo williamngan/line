@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link href='https://fonts.googleapis.com/css?family=Lato:400,300,700' rel='stylesheet' type='text/css'>
 
-	<title>Taking a Line for a Walk</title>
+    <!--<link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>-->
+
+	<meta charset="UTF-8">
+    <title>Taking a Line for a Walk</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+
 	<script type="text/javascript" src="./dist/js/pt.js"></script>
 	<script type="text/javascript" src="./dist/js/lines/lines.js"></script>
 
 	<style>
         body {
-            font-family: 'Lato', "Helvetica Neue", Helvetica, sans-serif;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
             margin: 0; padding: 0;
             color: #33404d;
         }
@@ -25,7 +29,7 @@
 
         #title {
             position: absolute;
-            top: 0;
+            top: 10vh;
             left: 20vw; right: 20vw;
             background: transparent;
             padding: 40px;
@@ -38,14 +42,15 @@
         }
 
         h1 {
-            font-weight: 700;
+            font-weight: 600;
             font-size: 9vw;
             margin-bottom: 20px;
             color: #fff;
+            letter-spacing: -0.03em;
         }
 
         h4 {
-            font-weight: 300;
+            font-weight: 400;
             font-size: 16px;
             display: none;
         }
@@ -99,12 +104,23 @@
 
             #actions .btn {
                 font-size: 22px;
+                height: 55px;
             }
         }
 
         @media only screen and (max-width : 500px) {
+            #title {
+                padding-left: 0; padding-right: 0;
+            }
             #actions .btn {
                 font-size: 18px;
+                height: 55px;
+            }
+        }
+
+        @media only screen and (max-height : 600px) {
+            #title {
+                top: 0;
             }
         }
 	</style>
