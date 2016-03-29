@@ -24,7 +24,7 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             overflow: hidden;
-            background: #d9e3ea;
+            background: #424855;
         }
 
         #title {
@@ -43,16 +43,17 @@
 
         h1 {
             font-weight: 600;
-            font-size: 9vw;
+            font-size: 7vw;
             margin-bottom: 20px;
             color: #fff;
-            letter-spacing: -0.03em;
+
         }
 
         h4 {
             font-weight: 400;
             font-size: 16px;
             display: none;
+            letter-spacing: -0.03em;
         }
 
         #actions {
@@ -65,13 +66,14 @@
         #actions .btn {
             width: 20%; height: 70px;
             margin: 0 2%;
-            line-height: 65px;
+            line-height: 70px;
             display: inline-block;
             text-decoration: none;
 
             font-size: 32px;
             font-weight: 700;
             color: #f37;
+            letter-spacing: -0.02em;
 
             border-bottom: 3px solid #f37;
             cursor: pointer;
@@ -86,7 +88,7 @@
             bottom: 15px; right: 15px;
             display: block;
             font-size: 11px;
-            color: rgba(0,0,0,.4);
+            color: rgba(0,0,0,.7);
             text-decoration: none;
         }
 
@@ -99,22 +101,30 @@
                 left: 12vw; right: 12vw;
             }
             h1 {
-                font-size: 9vw;
+                font-size: 60px;
             }
 
             #actions .btn {
-                font-size: 22px;
-                height: 55px;
+                font-size: 28px;
+                height: 65px;
+                line-height: 65px;
             }
         }
 
-        @media only screen and (max-width : 500px) {
+        @media only screen and (max-width : 600px) {
             #title {
                 padding-left: 0; padding-right: 0;
             }
+
+            h1 {
+                font-size: 30px;
+            }
+
             #actions .btn {
-                font-size: 18px;
-                height: 55px;
+                font-size: 14px;
+                height: 45px;
+                line-height: 55px;
+                border-bottom-width: 2px;
             }
         }
 

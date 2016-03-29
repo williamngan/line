@@ -1,6 +1,6 @@
-var space = new CanvasSpace( "cover", "#d9e3ea" ).display()
+var space = new CanvasSpace( "cover", "#424855" ).display()
 space.refresh( false );
-space.clear("#d9e3ea");
+space.clear("#424855");
 space.ctx.lineCap = "round";
 
 var form = new Form( space );
@@ -17,6 +17,7 @@ follower.mass = 200;
 // Custom Brush extending NoiseDashLine
 function NoiseDashLineBrush() {
   NoiseDashLine.call( this, arguments );
+  this.color = this.colors.black(.9);
 }
 Util.extend( NoiseDashLineBrush, NoiseDashLine );
 
@@ -31,7 +32,7 @@ NoiseDashLineBrush.prototype.draw = function( f ) {
   var distRatio = (this.points.length < this.maxPoints/2) ? this.seedIndex/6 + 0.2 : (this.seedIndex+Math.random()+Math.random())/4 ;
   var smooth = 3;
   var layers = 8;
-  var magnify = 1.25;
+  var magnify = 2.25;
   var curveSegments = 1;
   var flatness = 0.87;
 
@@ -44,8 +45,8 @@ NoiseDashLineBrush.prototype.draw = function( f ) {
 
 // set up lines
 var darkcolor = {
-  dark: "rgba(0,0,10,.01)",
-  dark2: "rgba(0,0,10,.01)",
+  dark: "rgba(0,0,10,.02)",
+  dark2: "rgba(0,0,10,.02)",
   light: "rgba(0,0,0,.01)",
   ligh2: "rgba(0,0,0,.01)"
 };
@@ -71,7 +72,7 @@ line2.distanceThreshold = 50*50;
 line2.trace( true );
 line2.setColor( lightcolor, lightcolor );
 
-var line3 = new InterpolatedLine().init( space );
+var line3 = new GrowLine().init( space );
 line3.noInput = true;
 line3.distanceThreshold = 50*50;
 line3.trace( true );
@@ -131,10 +132,10 @@ function checkBounds() {
 
     world.add( a );
 
-    darkcolor.dark2 = "rgba(0, 0, "+Math.floor(Math.random()*20+15)+", "+(Math.random()*0.015 + 0.005)+")";
+    darkcolor.dark2 = "rgba(0, 0, "+Math.floor(Math.random()*10+5)+", "+(Math.random()*0.015 + 0.01)+")";
     darkcolor.light2 = "rgba(0,0,0,0)";
 
-    lightcolor.dark2 = "rgba(220, "+Math.floor(Math.random()*40+210)+","+Math.floor(Math.random()*50+180)+",0.07)";
+    lightcolor.dark2 = "rgba(230, "+Math.floor(Math.random()*50+200)+","+Math.floor(Math.random()*50+180)+",0.02)";
     lightcolor.light2 = "rgba(0,0,0,0)";
 
     if (Math.random() < 0.3) {
