@@ -372,19 +372,6 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
 
   });
 
-  //space.bindCanvas( "mousedown", penDown );
-  //space.bindCanvas( "touchstart", penDown );
-  //
-  //space.bindCanvas( "mouseup", penUp );
-  //space.bindCanvas( "mouseleave", penUp );
-  //space.bindCanvas( "mouseout", penUp );
-  //space.bindCanvas( "touchend", penUp );
-
-  space.bindMouse();
-  space.bindTouch();
-  space.play();
-  space.stop(100000);
-
   /**
    * Load Line class
    * @param LineClass
@@ -432,22 +419,22 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
       }
     } else {
       line.setColor({
-        dark: "rgba(255,255,255,.05)",
-        dark2: "rgba(255,255,255,.05)",
-        light: "rgba(255,255,255,.05)",
-        ligh2: "rgba(255,255,255,.05)"
+        dark: "rgba(255,255,255,.03)",
+        dark2: "rgba(255,255,255,.03)",
+        light: "rgba(255,255,255,.03)",
+        ligh2: "rgba(255,255,255,.03)"
       }, {
-        dark: "rgba(255,255,255,.02)",
-        dark2: "rgba(255,255,255,.02)",
-        light: "rgba(255,255,255,.02)",
-        ligh2: "rgba(255,255,255,.02)"
+        dark: "rgba(255,255,255,.01)",
+        dark2: "rgba(255,255,255,.01)",
+        light: "rgba(255,255,255,.01)",
+        ligh2: "rgba(255,255,255,.01)"
       });
       if (LineClass === InnerLineBrush) {
         line.setColor({
-          dark: "rgba(255,255,255,.05)",
-          dark2: "rgba(255,255,255,.05)",
-          light: "rgba(255,255,255,.05)",
-          ligh2: "rgba(90,90,90,.05)"
+          dark: "rgba(255,255,255,.03)",
+          dark2: "rgba(255,255,255,.03)",
+          light: "rgba(255,255,255,.03)",
+          ligh2: "rgba(90,90,90,.03)"
         });
       }
       if (LineClass === ZigZagLineBrush) {
@@ -459,7 +446,6 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
         });
       }
       if (LineClass === SmoothNoiseLineBrush) {
-        console.log("!!");
         line.setColor({
           dark: "rgba(255,255,255,.01)",
           dark2: "rgba(255,255,255,.01)",
@@ -484,6 +470,10 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
     document.querySelector("#close").classList.toggle("closed");
   };
 
+  window.infoToggle = function () {
+    document.querySelector("#description").classList.toggle("open");
+  };
+
   // http://stackoverflow.com/questions/12796513/html5-canvas-to-png-file
   function dlCanvas() {
     var dt = space.space.toDataURL('image/png');
@@ -492,4 +482,9 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
     this.href = dt;
   };
   document.getElementById("download").addEventListener('click', dlCanvas, false);
+
+  // Start
+  space.bindMouse();
+  space.bindTouch();
+  space.play();
 })();

@@ -135,7 +135,7 @@ function checkBounds() {
     darkcolor.dark2 = "rgba(0, 0, "+Math.floor(Math.random()*10+5)+", "+(Math.random()*0.015 + 0.01)+")";
     darkcolor.light2 = "rgba(0,0,0,0)";
 
-    lightcolor.dark2 = "rgba(230, "+Math.floor(Math.random()*50+200)+","+Math.floor(Math.random()*50+180)+",0.02)";
+    lightcolor.dark2 = "rgba(150, "+Math.floor(Math.random()*150+80)+","+Math.floor(Math.random()*180+50)+",0.02)";
     lightcolor.light2 = "rgba(0,0,0,0)";
 
     if (Math.random() < 0.3) {

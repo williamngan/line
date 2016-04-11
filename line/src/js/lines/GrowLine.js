@@ -3,7 +3,7 @@ class GrowLine extends BaseLine {
   constructor( ...args ) {
     super( ...args );
 
-    this.maxPoints = 500;
+    this.maxPoints = 100;
     this.color = this.colors.black();
     this.color.dark2 = "rgba(0,10,15,.1)";
     this.lastPoints = [];

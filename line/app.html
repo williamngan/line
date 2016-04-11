@@ -15,53 +15,6 @@
 	<link rel="stylesheet" type="text/css" href="./dist/css/app.css" />
 
 
-
-	<style>
-/*
-        html, body {
-
-        }
-
-        #app {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            overflow: hidden;
-        }
-
-        #brushes {
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-
-        #brushes > div {
-            line-height: 2;;
-        }
-
-        .selected {
-            font-weight: bold;
-            color: #f00;
-        }
-
-		#canvas {
-			background-color: #f2f2f2;
-		}
-
-        #playground, #buffer {
-            top: 10px; left: 100px;
-            right: 10px; bottom: 10px;
-            position: absolute;
-            border: 1px solid #f00;
-            cursor: crosshair;
-        }
-
-        #playground {
-            z-index: 1;
-        }
-*/
-	</style>
-
 </head>
 <body>
 
@@ -78,7 +31,7 @@
         </svg>
     </a>
 
-    <div id="info" class="action">
+    <div id="info" class="action" onclick="infoToggle()">
         <svg width="35" height="35" viewBox="0 0 35 35">
         <g transform="translate(10, 6)">
             <path d="M 14 1L 14 19L 1 19L 1 1L 14 1ZM 14 20L 15 20L 15 19L 15 1L 15 0L 14 0L 1 0L 0 0L 0 1L 0 19L 0 20L 1 20L 14 20Z"/>
@@ -117,6 +70,11 @@
     <div id="close" onclick="menuToggle()">&times;</div>
 
     <div id="pager" class="black"></div>
+
+    <div id="description">
+        <div id="closeDescription" onclick="infoToggle()">&times;</div>
+        <p>This is a little drawing app for testing the lines created in <a href="./index.html">Taking a Line for a Walk</a> experiment. Learn more and view the source code <a href="./index.html">here</a>.</p>
+    </div>
 
 
 </div>

@@ -21,6 +21,15 @@ body {
   -ms-user-select: none;
 }
 
+a:link, a:visited {
+  color: $link;
+  text-decoration: none;
+}
+
+a:hover {
+  color: lighten($link, 20);
+}
+
 #container {
   position: absolute;
   top: 0; bottom: 0; left: 0; right: 0;
@@ -157,7 +166,7 @@ body {
     }
 
     &.selected {
-      border-color: #ffa993;
+      border-color: #78a3f9;
     }
   }
 
@@ -250,6 +259,59 @@ body {
   right: 10px;
 }
 
+#description {
+  position: fixed;
+  top: 20vh; bottom: 20vh;
+  left: 20vw; right: 20vw;
+  z-index: 100;
+  padding: 0 30px;
+  background: #fff;
+  box-shadow: 0 0 200px rgba(0,20,50,.5);
+  box-sizing: border-box;
+  display: none;
+
+  line-height: 1.5;
+  font-size: 24px;
+
+  &:before {
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+    width: 1px;
+    content: "";
+  }
+
+  p {
+    margin-top: 0;
+    margin-bottom: 1.5em;
+    display: inline-block;
+    vertical-align: middle;
+    width: 95%;
+  }
+
+  &.open {
+    display: block;
+  }
+}
+
+#closeDescription {
+  position: absolute;
+  top: 0px; right: 5px;
+  font-size: 30px;
+  padding: 10px;
+  font-weight: 100;
+  line-height: 1;
+  color: $grey2;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  cursor: pointer;
+
+  &:hover {
+    color: $link;
+  }
+}
 
 
 /* Smartphones (portrait and landscape) ----------- */
@@ -269,7 +331,13 @@ body {
       border-radius: 20vw;
     }
   }
+
+  #description {
+    font-size: 14px;
+  }
 }
+
+
 
 /* Tablet portrait mode */
 @media only screen and (min-width : 501px) and (max-width : 1000px)  {
@@ -287,6 +355,10 @@ body {
       margin: 1vw;
       border-radius: 20vw;
     }
+  }
+
+  #description {
+    font-size: 16px;
   }
 }
 
