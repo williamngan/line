@@ -50,17 +50,17 @@ var SegmentList = (function () {
   return SegmentList;
 })();
 
-var MovingLineForm = (function (_Form) {
-  _inherits(MovingLineForm, _Form);
+var LineForm = (function (_Form) {
+  _inherits(LineForm, _Form);
 
-  function MovingLineForm() {
-    _classCallCheck(this, MovingLineForm);
+  function LineForm() {
+    _classCallCheck(this, LineForm);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    _get(Object.getPrototypeOf(MovingLineForm.prototype), "constructor", this).apply(this, args);
+    _get(Object.getPrototypeOf(LineForm.prototype), "constructor", this).apply(this, args);
   }
 
   /**
@@ -68,7 +68,7 @@ var MovingLineForm = (function (_Form) {
    * It's a Pt.Curve and define basic functions for drawing a line and responding to mouse and touch events
    */
 
-  _createClass(MovingLineForm, [{
+  _createClass(LineForm, [{
     key: "_getSegmentDistance",
     value: function _getSegmentDistance(last, curr) {
       return last && curr ? curr.distance(last) : 0;
@@ -747,7 +747,7 @@ var MovingLineForm = (function (_Form) {
     }
   }]);
 
-  return MovingLineForm;
+  return LineForm;
 })(Form);
 
 var BaseLine = (function (_Curve) {
@@ -837,7 +837,7 @@ var BaseLine = (function (_Curve) {
       var maxPoints = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
       this.canvasSize.set(space.size);
-      this.form = new MovingLineForm(space);
+      this.form = new LineForm(space);
       if (maxPoints) this.maxPoints = maxPoints;
       return this;
     }

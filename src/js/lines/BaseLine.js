@@ -67,7 +67,7 @@ class BaseLine extends Curve {
    */
   init( space, maxPoints=false ) {
     this.canvasSize.set( space.size );
-    this.form = new MovingLineForm(space);
+    this.form = new LineForm(space);
     if (maxPoints) this.maxPoints = maxPoints;
     return this;
   }

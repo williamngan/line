@@ -26,7 +26,7 @@ var path = {
 // Define class sequence manually. Eventually it will be webpack or browserify or something.
 // Parent classes needs to be defined before its extended children
 var coreElems = [
-  "SegmentList", "MovingLineForm", "BaseLine", "DottedLine", "InterpolatedLine", "HatchingLine",
+  "SegmentList", "LineForm", "BaseLine", "DottedLine", "InterpolatedLine", "HatchingLine",
   "SpeedLine", "ZigZagLine", "RestatedLine", "SpeedBrush", "SmoothSpeedBrush", "InnerLine",
   "WiggleLine", "NoiseLine", "NoiseBrush", "SmoothNoiseLine", "NoiseDashLine", "NoiseChopLine", "LagLine",
   "GrowLine", "JaggedLine"

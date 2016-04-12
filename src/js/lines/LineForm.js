@@ -1,4 +1,4 @@
-class MovingLineForm extends Form {
+class LineForm extends Form {
 
   constructor(...args) {
     super(...args);
