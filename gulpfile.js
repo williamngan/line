@@ -8,13 +8,6 @@ var insert = require('gulp-insert');
 var es = require('event-stream');
 var babel = require('gulp-babel');
 
-/*
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var browserify = require('browserify');
-var watchify = require('watchify');
-var babel = require('babelify');
-*/
 
 // Define Paths
 var path = {
@@ -36,7 +29,8 @@ var coreElems = [
   "SegmentList", "MovingLineForm", "BaseLine", "DottedLine", "InterpolatedLine", "HatchingLine",
   "SpeedLine", "ZigZagLine", "RestatedLine", "SpeedBrush", "SmoothSpeedBrush", "InnerLine",
   "WiggleLine", "NoiseLine", "NoiseBrush", "SmoothNoiseLine", "NoiseDashLine", "NoiseChopLine", "LagLine",
-    "ContinuousLine", "StepperLine", "ReflectLine", "ArcLine", "GrowLine", "JaggedLine"
+  "GrowLine", "JaggedLine"
+  /* , "ContinuousLine", "StepperLine", "ReflectLine", "ArcLine", */
 ];
 var coreFiles = coreElems.map(function(n) { return path.src.js+"lines/"+n+".js"; } );
 

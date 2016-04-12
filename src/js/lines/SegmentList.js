@@ -1,3 +1,6 @@
+/**
+ * SegmentList keeps track of the points of a line in different layers
+ */
 class SegmentList {
 
   constructor( layers = 1) {

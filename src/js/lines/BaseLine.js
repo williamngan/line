@@ -1,3 +1,7 @@
+/**
+ * This is the base for all experimental line classes
+ * It's a Pt.Curve and define basic functions for drawing a line and responding to mouse and touch events
+ */
 class BaseLine extends Curve {
 
   constructor( ...args ) {
@@ -138,7 +142,6 @@ class BaseLine extends Curve {
       let p2 = this.points.pop();
       let p1 = this.points.pop();
 
-      console.log( p2, p1, this.distanceThreshold );
       let lns = new Line( p1 ).to( p2 ).subpoints( Math.floor(this.distanceThreshold/5000) );
 
       this.to( lns );

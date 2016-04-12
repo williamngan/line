@@ -1,6 +1,9 @@
+/**
+ * SegmentList keeps track of the points of a line in different layers
+ */
 "use strict";
 
-var _get = function get(_x97, _x98, _x99) { var _again = true; _function: while (_again) { var object = _x97, property = _x98, receiver = _x99; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x97 = parent; _x98 = property; _x99 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x91, _x92, _x93) { var _again = true; _function: while (_again) { var object = _x91, property = _x92, receiver = _x93; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x91 = parent; _x92 = property; _x93 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -59,6 +62,11 @@ var MovingLineForm = (function (_Form) {
 
     _get(Object.getPrototypeOf(MovingLineForm.prototype), "constructor", this).apply(this, args);
   }
+
+  /**
+   * This is the base for all experimental line classes
+   * It's a Pt.Curve and define basic functions for drawing a line and responding to mouse and touch events
+   */
 
   _createClass(MovingLineForm, [{
     key: "_getSegmentDistance",
@@ -921,7 +929,6 @@ var BaseLine = (function (_Curve) {
         var p2 = this.points.pop();
         var p1 = this.points.pop();
 
-        console.log(p2, p1, this.distanceThreshold);
         var lns = new Line(p1).to(p2).subpoints(Math.floor(this.distanceThreshold / 5000));
 
         this.to(lns);
@@ -1954,379 +1961,14 @@ var LagLine = (function (_BaseLine5) {
   return LagLine;
 })(BaseLine);
 
-var ContinuousLine = (function (_NoiseLine) {
-  _inherits(ContinuousLine, _NoiseLine);
-
-  function ContinuousLine() {
-    _classCallCheck(this, ContinuousLine);
-
-    for (var _len19 = arguments.length, args = Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
-      args[_key19] = arguments[_key19];
-    }
-
-    _get(Object.getPrototypeOf(ContinuousLine.prototype), "constructor", this).apply(this, args);
-
-    this.maxPoints = 30;
-    this.bounds = null;
-    this.splitLines = [];
-  }
-
-  _createClass(ContinuousLine, [{
-    key: "onSpaceResize",
-    value: function onSpaceResize(w, h, evt) {
-      this.bounds = new Rectangle(0, 0).to(w, h);
-    }
-
-    /**
-     * Move the split lines
-     * @param pts
-     * @private
-     */
-  }, {
-    key: "_continuous",
-    value: function _continuous(pts) {
-      var d1 = pts.$getAt(1).$subtract(pts.getAt(0));
-      pts.disconnect(0);
-      pts.to(pts.$getAt(pts.points.length - 1).$add(d1));
-    }
-
-    /**
-     * Check if the split line is out of bound
-     * @param pts
-     * @private
-     */
-  }, {
-    key: "_checkBounds",
-    value: function _checkBounds(pts) {
-      if (!this.bounds || pts.points.length === 0) return;
-
-      var count = -1;
-      for (var i = pts.points.length - 1; i >= 0; i--) {
-        if (!this.bounds.withinBounds(pts.points[i])) {
-          count = i;
-        }
-      }
-
-      if (count >= 0) {
-        pts.disconnect(pts.points.length - count);
-      }
-    }
-
-    /**
-     * Trim and create new split line
-     */
-  }, {
-    key: "trim",
-    value: function trim() {
-      if (this.points.length >= this.maxPoints) {
-        var sp = new NoiseLine().to(this.clone().points);
-        this.splitLines.push(sp);
-        this.points = [];
-      }
-    }
-  }, {
-    key: "draw",
-    value: function draw() {
-      var _this = this;
-
-      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
-
-      _get(Object.getPrototypeOf(ContinuousLine.prototype), "draw", this).call(this, f);
-
-      // track split lines
-      var clear = this.splitLines.map(function (sp, i) {
-        sp.draw(f);
-        _this._continuous(sp);
-        _this._checkBounds(sp);
-        return sp.points.length === 0 ? i : -1;
-      });
-
-      // clear empty split lines
-      for (var i = 0; i < clear.length; i++) {
-        if (clear[i] >= 0) this.splitLines.splice(clear[i], 1);
-      }
-    }
-  }]);
-
-  return ContinuousLine;
-})(NoiseLine);
-
-var StepperLine = (function (_NoiseLine2) {
-  _inherits(StepperLine, _NoiseLine2);
-
-  function StepperLine() {
-    _classCallCheck(this, StepperLine);
-
-    for (var _len20 = arguments.length, args = Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
-      args[_key20] = arguments[_key20];
-    }
-
-    _get(Object.getPrototypeOf(StepperLine.prototype), "constructor", this).apply(this, args);
-
-    this.maxPoints = 50;
-    this.splitLines = [];
-  }
-
-  _createClass(StepperLine, [{
-    key: "onSpaceResize",
-    value: function onSpaceResize(w, h, evt) {
-
-      this.splitLines = [];
-      var dw = w / 9;
-      for (var i = 0; i < 8; i++) {
-        this.splitLines.push(new BaseLine().to(dw + dw * i, h / 2));
-      }
-    }
-
-    /**
-     * Move the split lines
-     * @param pts
-     * @private
-     */
-  }, {
-    key: "_continuous",
-    value: function _continuous(sp, pts) {
-      var offset = arguments.length <= 2 || arguments[2] === undefined ? 5 : arguments[2];
-
-      var ps = [];
-      var pa = pts.slice(1, offset);
-      var pb = pts.slice(offset);
-
-      // double
-      if (pb.length > 1 && pa.length > 1) {
-
-        var ang = pb[pb.length - 1].angle(pb[pb.length - 2]);
-        var ang2 = pa[1].angle(pa[0]);
-
-        pb = pb.map(function (p) {
-          return p.$subtract(pb[0]).add(sp.getAt(0));
-        });
-        pa = pa.map(function (p, i) {
-          return p.$subtract(pa[0]).rotate2D(ang - ang2).add(pb[pb.length - 1]);
-        });
-        ps = pb.concat(pa);
-
-        // single
-      } else if (pa.length < 2) {
-          ps = pb.map(function (p) {
-            return p.$subtract(pb[0]).add(sp.getAt(0));
-          });
-        } else if (pb.length < 2) {
-          ps = pa.map(function (p) {
-            return p.$subtract(pa[0]).add(sp.getAt(0));
-          });
-        }
-
-      for (var i = 0; i < ps.length; i++) {
-        sp.setAt(i + 1, ps[i]);
-      }
-    }
-
-    /**
-     * Trim and create new split line
-     */
-  }, {
-    key: "trim",
-    value: function trim() {
-      if (this.points.length > this.maxPoints) {
-        this.disconnect(Math.floor(this.points.length / 100));
-      }
-    }
-  }, {
-    key: "draw",
-    value: function draw() {
-      var _this2 = this;
-
-      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
-
-      _get(Object.getPrototypeOf(StepperLine.prototype), "draw", this).call(this, f);
-
-      var pts = this.$op("subtract", this.$getAt(0)).toArray();
-
-      // track split lines
-      this.splitLines.map(function (sp, i) {
-        sp.draw(f);
-        _this2._continuous(sp, pts, Math.floor(i * pts.length / _this2.splitLines.length));
-      });
-    }
-  }]);
-
-  return StepperLine;
-})(NoiseLine);
-
-var ReflectLine = (function (_NoiseLine3) {
-  _inherits(ReflectLine, _NoiseLine3);
-
-  function ReflectLine() {
-    _classCallCheck(this, ReflectLine);
-
-    for (var _len21 = arguments.length, args = Array(_len21), _key21 = 0; _key21 < _len21; _key21++) {
-      args[_key21] = arguments[_key21];
-    }
-
-    _get(Object.getPrototypeOf(ReflectLine.prototype), "constructor", this).apply(this, args);
-
-    this.maxPoints = 20;
-    this.splitLines = [];
-    this.radian = 0;
-    this.offset = 20;
-  }
-
-  _createClass(ReflectLine, [{
-    key: "onSpaceResize",
-    value: function onSpaceResize(w, h, evt) {
-
-      this.splitLines = [];
-      this.cutLines = [];
-
-      var dw = w / 10;
-      var dw2 = dw / 2;
-      var dh = h / 10;
-      var dh2 = dh / 2;
-
-      this.offset = w / 20;
-      for (var i = 0; i < 10; i++) {
-        this.cutLines.push(new Line(dw2 + dw * i, 0).to(dw2 + dw * i, h));
-        this.splitLines.push(new SmoothSpeedBrush());
-      }
-
-      for (var i = 0; i < 10; i++) {
-        this.cutLines.push(new Line(0, dh2 + dh * i).to(w, dh2 + dh * i));
-        this.splitLines.push(new SmoothSpeedBrush());
-      }
-    }
-
-    /**
-     * Move the split lines
-     * @param pts
-     * @private
-     */
-  }, {
-    key: "_continuous",
-    value: function _continuous(cutline, index, form) {
-      var _this3 = this;
-
-      this.points.map(function (p, i) {
-        _this3.splitLines[index].setAt(i, p.clone().reflect2D(cutline));
-      });
-
-      this.splitLines[index].draw(form);
-    }
-
-    /**
-     * Trim and create new split line
-     */
-  }, {
-    key: "trim",
-    value: function trim() {
-      if (this.points.length > this.maxPoints) {
-        this.disconnect(Math.floor(this.points.length / 100));
-      }
-    }
-  }, {
-    key: "draw",
-    value: function draw() {
-      var _this4 = this;
-
-      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
-
-      this.radian += Const.one_degree / 5;
-
-      _get(Object.getPrototypeOf(ReflectLine.prototype), "draw", this).call(this, f);
-
-      // track split lines
-      this.cutLines.map(function (cut, i) {
-
-        var c, di;
-        var offset = _this4.offset * Math.sin(_this4.radian * (i + 1) / 10);
-        if (i < 10) {
-          di = i % Math.floor(_this4.cutLines.length / 2) + 1;
-          c = new Line(cut.$add(offset * di, 0)).to(cut.p1.$add(-offset * di, 0));
-        } else {
-          di = (i - 10) % Math.floor(_this4.cutLines.length / 2) + 1;
-          c = new Line(cut.$add(0, offset * di)).to(cut.p1.$add(0, -offset * di));
-        }
-        f.stroke("#fff").line(c);
-
-        _this4._continuous(c, i, f);
-      });
-    }
-  }]);
-
-  return ReflectLine;
-})(NoiseLine);
-
-var ArcLine = (function (_BaseLine6) {
-  _inherits(ArcLine, _BaseLine6);
-
-  function ArcLine() {
-    _classCallCheck(this, ArcLine);
-
-    for (var _len22 = arguments.length, args = Array(_len22), _key22 = 0; _key22 < _len22; _key22++) {
-      args[_key22] = arguments[_key22];
-    }
-
-    _get(Object.getPrototypeOf(ArcLine.prototype), "constructor", this).apply(this, args);
-
-    this.color = {
-      dark: "#65739a",
-      dark2: "rgba(55,74,88, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.color2 = {
-      dark: "#95b1f9",
-      dark2: "rgba(149,177,249, .1)",
-      light: "#fff",
-      light2: "rgba(255,255,255, .1)"
-    };
-
-    this.ang = 0;
-  }
-
-  _createClass(ArcLine, [{
-    key: "distances",
-    value: function distances() {
-      var last = null;
-      this.points.map(function (p) {
-        if (!last) return 0;
-        var dist = p.distance(last);
-        last = p.clone();
-        return dist;
-      });
-    }
-  }, {
-    key: "maxDistance",
-    value: function maxDistance() {
-      var ratio = arguments.length <= 0 || arguments[0] === undefined ? 20 : arguments[0];
-
-      return Math.min(this.canvasSize.x, this.canvasSize.y) / ratio;
-    }
-  }, {
-    key: "draw",
-    value: function draw() {
-      var f = arguments.length <= 0 || arguments[0] === undefined ? this.form : arguments[0];
-
-      f.stroke(this.getColor()).fill(false);
-      f.polygon(this.points, false);
-
-      f.stroke(this.getColor("color2"));
-      f.arcLine(this.points, 0.5, this.maxDistance(), 7, this.ang += Const.one_degree / 10);
-    }
-  }]);
-
-  return ArcLine;
-})(BaseLine);
-
-var GrowLine = (function (_BaseLine7) {
-  _inherits(GrowLine, _BaseLine7);
+var GrowLine = (function (_BaseLine6) {
+  _inherits(GrowLine, _BaseLine6);
 
   function GrowLine() {
     _classCallCheck(this, GrowLine);
 
-    for (var _len23 = arguments.length, args = Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
-      args[_key23] = arguments[_key23];
+    for (var _len19 = arguments.length, args = Array(_len19), _key19 = 0; _key19 < _len19; _key19++) {
+      args[_key19] = arguments[_key19];
     }
 
     _get(Object.getPrototypeOf(GrowLine.prototype), "constructor", this).apply(this, args);
@@ -2352,14 +1994,14 @@ var GrowLine = (function (_BaseLine7) {
   return GrowLine;
 })(BaseLine);
 
-var JaggedLine = (function (_BaseLine8) {
-  _inherits(JaggedLine, _BaseLine8);
+var JaggedLine = (function (_BaseLine7) {
+  _inherits(JaggedLine, _BaseLine7);
 
   function JaggedLine() {
     _classCallCheck(this, JaggedLine);
 
-    for (var _len24 = arguments.length, args = Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
-      args[_key24] = arguments[_key24];
+    for (var _len20 = arguments.length, args = Array(_len20), _key20 = 0; _key20 < _len20; _key20++) {
+      args[_key20] = arguments[_key20];
     }
 
     _get(Object.getPrototypeOf(JaggedLine.prototype), "constructor", this).apply(this, args);
