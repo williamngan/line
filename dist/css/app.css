@@ -234,6 +234,9 @@ a:hover {
   #closeDescription:hover {
     color: #00a3f1; }
 
+*, canvas {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen and (max-width : 500px) {
   #menu {

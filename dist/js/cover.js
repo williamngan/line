@@ -32,9 +32,9 @@ NoiseDashLineBrush.prototype.draw = function( f ) {
   var distRatio = (this.points.length < this.maxPoints/2) ? this.seedIndex/6 + 0.2 : (this.seedIndex+Math.random()+Math.random())/4 ;
   var smooth = 3;
   var layers = 8;
-  var magnify = 2.25;
+  var magnify = 1.75;
   var curveSegments = 1;
-  var flatness = 0.87;
+  var flatness = 0.57;
 
   this.noiseProgress +=  0.008;
   var noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
@@ -84,19 +84,22 @@ space.add( lineB );
 
 
 // A drawing Tip is a kind of Particle
+var baseAge = 8000;
+
 function Tip() {
   Particle.call( this, arguments );
   this.mass = 1;
+  baseAge -= 50;
+  this.maxAge = Math.max( 2000, Math.random()*(10000 + baseAge) + 3000 + (baseAge/2) );
+  console.log( this.maxAge, baseAge );
+  this.age = 0;
 }
 Util.extend( Tip, Particle );
 
 // animate this speckle
 Tip.prototype.animate = function( time, frame, ctx ) {
   this.play(time, frame);
-
-  if (this.x < 0 || this.x > space.size.x || this.y < 0) {
-    world.remove( this );
-  }
+  this.age += frame;
 };
 
 // Particle use RK4 to integrate by default. Here we change it to Euler which is faster but less accurate.
@@ -126,7 +129,7 @@ function orbit() {
 
 // Redraw when out of bounds
 function checkBounds() {
-  if (a.x <= 0 || a.x >= space.size.x || a.y <= 0 || a.y >= space.size.y ) {
+  if (a.x <= 0 || a.x >= space.size.x || a.y <= 0 || a.y >= space.size.y || a.age >= a.maxAge ) {
     world.remove(a);
     a = new Tip( space.size.x*Math.random(), space.size.x*Math.random() );
 
@@ -135,7 +138,7 @@ function checkBounds() {
     darkcolor.dark2 = "rgba(0, 0, "+Math.floor(Math.random()*10+5)+", "+(Math.random()*0.015 + 0.01)+")";
     darkcolor.light2 = "rgba(0,0,0,0)";
 
-    lightcolor.dark2 = "rgba(150, "+Math.floor(Math.random()*150+80)+","+Math.floor(Math.random()*180+50)+",0.02)";
+    lightcolor.dark2 = "rgba(220, "+Math.floor(Math.random()*150+100)+","+Math.floor(Math.random()*180+50)+",0.02)";
     lightcolor.light2 = "rgba(0,0,0,0)";
 
     if (Math.random() < 0.3) {
