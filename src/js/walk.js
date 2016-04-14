@@ -6,6 +6,7 @@
   var pages = document.querySelector( "#pages" );
 
   var msgTimeout = -1;
+  var slowFPS = false;
 
   views[0].className = "step curr";
 
@@ -80,48 +81,49 @@
     roll.on( "roll", function ( step, progress, total ) {
       var curr = (step >= 0) ? step : "(padding)";
       var str = "Step " + curr + " at " + Math.floor( progress * 100 ) + "% (total: " + total + ")";
-
-      /*
-      line.points.map( (p) => {
-        let d1 = Math.random()*space.size.x/30;
-        let d2 = Math.random()*space.size.x/30;
-        p.set( p.x+d1-d2, p.y );
-      });
-      */
-
-      //document.querySelector( "#progress" ).textContent = str;
     } );
   }
 
+  // go to a step
   function step( index ) {
     roll.scroll( index, viewport );
   }
 
+  function showMessage( msg, time ) {
+    message.className = "show";
+    message.textContent = msg;
+    slowFPS = true;
+    setTimeout( function() {
+      message.className = "";
+      slowFPS = false;
+    }, time);
+  }
 
+
+  // Toggle between moving and drawing
   space.bindCanvas( "mouseup", function(evt) {
     isTracing = !isTracing;
     space.refresh( !isTracing );
     line.trace( isTracing );
+
+    showMessage( ((isTracing) ? "Drawing Mode" : "Walking Mode"), 2500 );
   });
 
+  // Track mouse
   space.bindMouse();
 
-
+  // Add animated elements
   space.add( line );
   space.add( {
     animate: function (time, fs) {
-      if ( time>5000 && 1000/fs < 19) {
+      if ( time>5000 && 1000/fs < 19 && !slowFPS) {
         clearTimeout(msgTimeout);
-        message.className = "show";
-        setTimeout( function() {
-          message.className = "";
-        }, 5000);
+        showMessage( "Slow? A smaller browser window may improve speed.", 5000 );
       }
     }
   });
-  space.play();
-  space.stop(100000);
 
+  space.play();
   track();
 
 
@@ -154,7 +156,6 @@
     if (sid >= 0) step( sid );
 
   }
-
 
 
   for (var i=0; i<views.length; i++) {

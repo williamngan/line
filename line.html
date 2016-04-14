@@ -12,7 +12,7 @@
 	<script type="text/javascript" src="./dist/js/lines/lines.js"></script>
 	<script type="text/javascript" src="./dist/js/roll.min.js"></script>
 
-	<link rel="stylesheet" type="text/css" href="./dist/css/index.css" />
+	<link rel="stylesheet" type="text/css" href="./dist/css/walk.css" />
 
 	<style>
 		#canvas {
@@ -31,29 +31,34 @@
 <div id="walks">
 
 
-	<div id="message">
-		Making you browser window smaller may improve drawing speed.
+	<div id="messageContainer">
+		<span id="message"></span>
 	</div>
+
+	<div id="mainMenu">
+		<a href="./index.html">
+		</a>
+	 </div>
 
 
 	<div id="steps">
 		<div id="InterpolatedLine" class="step">
 			<div class="heading">
-				<h1>Walk <span class="zh">行</span></h1>
+				<h1>Walk <!-- <!-- <span class="zh">行</span> --></h1>
 				<p>Move freely. <br />Click to toggle modes. <br /> Scroll down and up. <br />Go.</p>
 			</div>
 		</div>
 
 		<div id="DottedLine" class="step">
 			<div class="heading">
-				<h1>Dot <span class="zh">點</span></h1>
+				<h1>Dot <!-- <!-- <span class="zh">點</span> --></h1>
 				<p>A series of dots along a point's moving path. A line imagined and yet to be realized.</p>
 			</div>
 		</div>
 
 		<div id="SpeedBrush" class="step">
 			<div class="heading">
-				<h1>Contour <span class="zh">廓</span></h1>
+				<h1>Contour <!-- <span class="zh">廓</span> --></h1>
 				<p>A structural correspondence between thickness of a line and distance travelled by a point.</p>
 			</div>
 		</div>
@@ -61,21 +66,21 @@
 
 		<div id="JaggedLine" class="step">
 			<div class="heading">
-				<h1>Serrate <span class="zh">鋸</span></h1>
+				<h1>Serrate <!-- <span class="zh">鋸</span> --></h1>
 				<p>An aggressive and industrial line, with sharp teeth.</p>
 			</div>
 		</div>
 
 		<div id="ZigZagLine" class="step">
 			<div class="heading">
-				<h1>Zig Zag <span class="zh">曲</span></h1>
+				<h1>Zig Zag <!-- <span class="zh">曲</span> --></h1>
 				<p>A meandering line that goes around a series of points.</p>
 			</div>
 		</div>
 
 		<div id="GrowLine" class="step">
 			<div class="heading">
-				<h1>Delineate <span class="zh">勾</span></h1>
+				<h1>Delineate <!-- <span class="zh">勾</span> --></h1>
 				<p>Carving a fine curve through short, straight, cutting lines.</p>
 			</div>
 		</div>
@@ -83,7 +88,7 @@
 
 		<div id="RestatedLine" class="step">
 			<div class="heading">
-				<h1>Restate <span class="zh">復</span></h1>
+				<h1>Restate <!-- <span class="zh">復</span> --></h1>
 				<p>Redrawing as a way to correct and clarify.</p>
 			</div>
 		</div>
@@ -91,7 +96,7 @@
 
 		<div id="HatchingLine" class="step">
 			<div class="heading">
-				<h1>Hatch <span class="zh">縷</span></h1>
+				<h1>Hatch <!-- <span class="zh">縷</span> --></h1>
 				<p>Bundles of lines drawn meticulously to portray tones and movements.</p>
 			</div>
 		</div>
@@ -99,7 +104,7 @@
 
 		<div id="InnerLine" class="step">
 			<div class="heading">
-				<h1>Interlace <span class="zh">織</span></h1>
+				<h1>Interlace <!-- <span class="zh">織</span> --></h1>
 				<p>Optical patterns weaved together by closely packed lines.</p>
 			</div>
 		</div>
@@ -107,14 +112,14 @@
 
 		<div id="WiggleLine" class="step">
 			<div class="heading">
-				<h1>Wiggle <span class="zh">扭</span></h1>
-				<p>Pararllel lines tracing a path and oscillating in place.</p>
+				<h1>Wiggle <!-- <span class="zh">扭</span> --></h1>
+				<p>Pararllel lines tracing a path and oscillating&nbsp;in&nbsp;place.</p>
 			</div>
 		</div>
 
 		<div id="NoiseBrush" class="step">
 			<div class="heading">
-				<h1>Overlap <span class="zh">疊</span></h1>
+				<h1>Overlap <!-- <span class="zh">疊</span> --></h1>
 				<p>Layers of identical lines whose thickness is derived from a noise function.</p>
 			</div>
 		</div>
@@ -122,29 +127,29 @@
 
 		<div id="SmoothNoiseLine" class="step">
 			<div class="heading">
-				<h1>Flow <span class="zh">流</span></h1>
+				<h1>Flow <!-- <span class="zh">流</span> --></h1>
 				<p>Layers of identical lines whose thickness are in flux.</p>
 			</div>
 		</div>
 
 		<div id="NoiseDashLine" class="step">
 			<div class="heading">
-				<h1>Dash <span class="zh">劃</span></h1>
-				<p>A line restated as many short moving line segments.</p>
+				<h1>Dash <!-- <span class="zh">劃</span> --></h1>
+				<p>A line restated as many short moving line&nbsp;segments.</p>
 			</div>
 		</div>
 
 		<div id="NoiseChopLine" class="step">
 			<div class="heading">
-				<h1>Sway <span class="zh">引</span></h1>
+				<h1>Sway <!-- <span class="zh">引</span> --></h1>
 				<p>A series of curves jotting along the moving path of a point.</p>
 			</div>
 		</div>
 
 		<div id="LagLine" class="step">
 			<div class="heading">
-				<h1>Dance <span class="zh">舞</span></h1>
-				<p>Can movements beget movements? Can we take a line for a dance? To be continued.</p>
+				<h1>Dance <!-- <span class="zh">舞</span> --></h1>
+				<p>Can movements beget movements? Can we take a line for a dance?<br />To be continued.</p>
 			</div>
 		</div>
 
