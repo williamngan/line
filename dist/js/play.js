@@ -328,9 +328,17 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
     if (curr == "black") {
       evt.target.className = "white";
       space.clear("rgb(30,35,42)");
+
+      brushColor = "light";
+      document.querySelector("#initialBrushColor").className = "brushcolor";
+      document.querySelector("#nextBrushColor").className = "brushcolor selected";
     } else {
       evt.target.className = "black";
       space.clear("rgb(237,240,242)");
+
+      brushColor = "dark";
+      document.querySelector("#initialBrushColor").className = "brushcolor selected";
+      document.querySelector("#nextBrushColor").className = "brushcolor";
     }
   });
 
