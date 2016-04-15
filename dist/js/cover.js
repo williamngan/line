@@ -1,6 +1,6 @@
 var space = new CanvasSpace( "cover", "#424855" ).display()
 space.refresh( false );
-space.clear("#cdf");
+space.clear("#424855");
 space.ctx.lineCap = "round";
 
 var form = new Form( space );
@@ -18,8 +18,6 @@ follower.mass = 200;
 function NoiseDashLineBrush() {
   NoiseDashLine.call( this, arguments );
   this.color = this.colors.black(.9);
-  this.color.light = "rgba(0,0,0,0)";
-  this.color.light2 = "rgba(0,0,0,0)";
 
   this._layer = 3 + Math.floor( Math.random()*5);
   this._mag = 0.5 + Math.random()*1.5;
@@ -28,10 +26,6 @@ function NoiseDashLineBrush() {
 Util.extend( NoiseDashLineBrush, NoiseDashLine );
 
 NoiseDashLineBrush.prototype.resetBrush = function() {
-  this.color.dark = "rgba(255,255,255," + (0.1 + Math.random()*0.3) + ")";
-  this.color.dark2 = "rgba(255,255,255," + (Math.random()*0.1) + ")";
-  this.color.light = "rgba(0,0,0,0)";
-  this.color.light2 = "rgba(0,0,0,0)";
   this._layer = 3 + Math.floor( Math.random()*5);
   this._mag = 0.5 + Math.random()*1.5;
   this._progress = Math.random()/100 + 0.008;
@@ -75,7 +69,6 @@ var lightcolor = {
 };
 
 var line = new NoiseDashLineBrush().init( space );
-
 
 line.noInput = true;
 line.distanceThreshold = 50*50;
@@ -148,11 +141,8 @@ function orbit() {
 function checkBounds() {
 
   var pxc = form.cc.getImageData(a.x, a.y, 1, 1).data;
-  if (pxc[0] < 100) {
-    console.log("HIT!");
-  }
 
-  if (a.x <= 0 || a.x >= space.size.x || a.y <= 0 || a.y >= space.size.y || a.age >= a.maxAge || pxc[0] < 100 ) {
+  if (a.x <= 0 || a.x >= space.size.x || a.y <= 0 || a.y >= space.size.y || a.age >= a.maxAge || pxc[0] > 80 ) {
     world.remove(a);
     a = new Tip( space.size.x*Math.random(), space.size.x*Math.random() );
 
@@ -161,7 +151,7 @@ function checkBounds() {
     darkcolor.dark2 = "rgba(0, 0, "+Math.floor(Math.random()*10+5)+", "+(Math.random()*0.015 + 0.01)+")";
     darkcolor.light2 = "rgba(0,0,0,0)";
 
-    lightcolor.dark2 = "rgba(00, "+Math.floor(Math.random()*20)+","+Math.floor(Math.random()*50)+",0.02)";
+    lightcolor.dark2 = "rgba(150, "+Math.floor(Math.random()*150+80)+","+Math.floor(Math.random()*180+50)+",0.02)";
     lightcolor.light2 = "rgba(0,0,0,0)";
 
     if (Math.random() < 0.3) {
