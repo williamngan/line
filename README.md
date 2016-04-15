@@ -1,6 +1,6 @@
 # Taking a Line for a Walk
 
-![a drawing gif](./images/hatch.gif)
+![a drawing gif](./images/hatch.gif) ![a drawing gif](./images/overlap.gif)
 
 This is a code experiment to study the expressions of an active line, inspired by Paul Klee's idea of "taking a line for a walk".
 
