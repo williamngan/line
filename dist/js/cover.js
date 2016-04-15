@@ -1,6 +1,6 @@
 var space = new CanvasSpace( "cover", "#424855" ).display()
 space.refresh( false );
-space.clear("#424855");
+space.clear("#cdf");
 space.ctx.lineCap = "round";
 
 var form = new Form( space );
@@ -18,8 +18,24 @@ follower.mass = 200;
 function NoiseDashLineBrush() {
   NoiseDashLine.call( this, arguments );
   this.color = this.colors.black(.9);
+  this.color.light = "rgba(0,0,0,0)";
+  this.color.light2 = "rgba(0,0,0,0)";
+
+  this._layer = 3 + Math.floor( Math.random()*5);
+  this._mag = 0.5 + Math.random()*1.5;
+  this._progress = Math.random()/100 + 0.002;
 }
 Util.extend( NoiseDashLineBrush, NoiseDashLine );
+
+NoiseDashLineBrush.prototype.resetBrush = function() {
+  this.color.dark = "rgba(255,255,255," + (0.1 + Math.random()*0.3) + ")";
+  this.color.dark2 = "rgba(255,255,255," + (Math.random()*0.1) + ")";
+  this.color.light = "rgba(0,0,0,0)";
+  this.color.light2 = "rgba(0,0,0,0)";
+  this._layer = 3 + Math.floor( Math.random()*5);
+  this._mag = 0.5 + Math.random()*1.5;
+  this._progress = Math.random()/100 + 0.008;
+};
 
 NoiseDashLineBrush.prototype.draw = function( f ) {
 
@@ -31,12 +47,12 @@ NoiseDashLineBrush.prototype.draw = function( f ) {
 
   var distRatio = (this.points.length < this.maxPoints/2) ? this.seedIndex/6 + 0.2 : (this.seedIndex+Math.random()+Math.random())/4 ;
   var smooth = 3;
-  var layers = 8;
-  var magnify = 1.75;
+  var layers = this._layer;
+  var magnify = this._mag;
   var curveSegments = 1;
   var flatness = 0.57;
 
-  this.noiseProgress +=  0.008;
+  this.noiseProgress +=  this._progress;
   var noiseFactors = {a: this.noiseProgress, b: this.noiseFactorIndex, c: this.noiseFactorLayer };
   f.noiseDashLine( this.points, this.noise, noiseFactors, this.flipSpeed, distRatio, smooth, this.maxDistance(), layers, magnify, curveSegments, flatness);
 
@@ -60,10 +76,12 @@ var lightcolor = {
 
 var line = new NoiseDashLineBrush().init( space );
 
+
 line.noInput = true;
 line.distanceThreshold = 50*50;
 line.trace( true );
 line.setColor( darkcolor, darkcolor );
+line.resetBrush();
 space.add( line );
 
 var line2 = new NoiseChopLine().init( space );
@@ -89,9 +107,8 @@ var baseAge = 8000;
 function Tip() {
   Particle.call( this, arguments );
   this.mass = 1;
-  baseAge -= 50;
+  //baseAge -= 50;
   this.maxAge = Math.max( 2000, Math.random()*(10000 + baseAge) + 3000 + (baseAge/2) );
-  console.log( this.maxAge, baseAge );
   this.age = 0;
 }
 Util.extend( Tip, Particle );
@@ -129,7 +146,13 @@ function orbit() {
 
 // Redraw when out of bounds
 function checkBounds() {
-  if (a.x <= 0 || a.x >= space.size.x || a.y <= 0 || a.y >= space.size.y || a.age >= a.maxAge ) {
+
+  var pxc = form.cc.getImageData(a.x, a.y, 1, 1).data;
+  if (pxc[0] < 100) {
+    console.log("HIT!");
+  }
+
+  if (a.x <= 0 || a.x >= space.size.x || a.y <= 0 || a.y >= space.size.y || a.age >= a.maxAge || pxc[0] < 100 ) {
     world.remove(a);
     a = new Tip( space.size.x*Math.random(), space.size.x*Math.random() );
 
@@ -138,7 +161,7 @@ function checkBounds() {
     darkcolor.dark2 = "rgba(0, 0, "+Math.floor(Math.random()*10+5)+", "+(Math.random()*0.015 + 0.01)+")";
     darkcolor.light2 = "rgba(0,0,0,0)";
 
-    lightcolor.dark2 = "rgba(220, "+Math.floor(Math.random()*150+100)+","+Math.floor(Math.random()*180+50)+",0.02)";
+    lightcolor.dark2 = "rgba(00, "+Math.floor(Math.random()*20)+","+Math.floor(Math.random()*50)+",0.02)";
     lightcolor.light2 = "rgba(0,0,0,0)";
 
     if (Math.random() < 0.3) {
@@ -151,6 +174,8 @@ function checkBounds() {
       lineB = line2;
       space.add( lineB );
     }
+
+    line.resetBrush();
   }
 }
 
