@@ -183,10 +183,10 @@ a:hover {
   cursor: pointer; }
 
 #download {
-  right: 70px; }
+  left: 70px; }
 
 #info {
-  right: 10px; }
+  left: 120px; }
 
 #description {
   position: fixed;
