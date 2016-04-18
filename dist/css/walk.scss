@@ -37,24 +37,24 @@ body {
 #mainMenu {
   position: fixed;
   z-index: 2;
-  right: 35px;
-  bottom: 15px;
+  right: 20px;
+  top: 0px;
   display: block;
+  padding: 10px;
   color: #b7c3c9;
+  font-size: 12px;
+  font-weight: 300;
 
   > a {
     color: #b7c3c9;
     text-decoration: none;
     &:before {
-      content: '☷';
+      content: '✕';
     }
 
     &:hover {
       color: #00A3F1;
 
-      &:before {
-        content: '☰';
-      }
     }
   }
 }

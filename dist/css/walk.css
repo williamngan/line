@@ -29,19 +29,20 @@ body {
 #mainMenu {
   position: fixed;
   z-index: 2;
-  right: 35px;
-  bottom: 15px;
+  right: 20px;
+  top: 0px;
   display: block;
-  color: #b7c3c9; }
+  padding: 10px;
+  color: #b7c3c9;
+  font-size: 12px;
+  font-weight: 300; }
   #mainMenu > a {
     color: #b7c3c9;
     text-decoration: none; }
     #mainMenu > a:before {
-      content: '☷'; }
+      content: '✕'; }
     #mainMenu > a:hover {
       color: #00A3F1; }
-      #mainMenu > a:hover:before {
-        content: '☰'; }
 
 #pt {
   width: 100%;
