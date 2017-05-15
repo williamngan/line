@@ -485,8 +485,8 @@ var SmoothNoiseLineBrush = (function (_SmoothNoiseLine) {
   // http://stackoverflow.com/questions/12796513/html5-canvas-to-png-file
   function dlCanvas() {
     var dt = space.space.toDataURL('image/png');
-    dt = dt.replace(/^data:image\/[^;]*/, 'data:application/octet-stream');
-    dt = dt.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=drawing.png');
+    // dt = dt.replace(/^data:image\/[^;]*/, 'data:application/octet-stream');
+    dt = dt.replace(/^data:image\/png/, 'data:image/png;headers=Content-Disposition%3A%20attachment%3B%20filename=drawing.png');
     this.href = dt;
   };
   document.getElementById("download").addEventListener('click', dlCanvas, false);
